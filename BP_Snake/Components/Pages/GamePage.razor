@@ -1,0 +1,74 @@
+﻿@page "/"
+
+<h3>Snake!</h3>
+
+@if (_engine.IsGameOver)
+{
+    <div>
+        <button type="button" class="btn btn-success" @onclick="StartGame">RESTART HRY</button>
+        <button type="button" class="btn btn-warning" @onclick="SaveScore" disabled="@_isSaveSuccess">Uložit score</button>
+
+        @if (_isSaveSuccess) {
+            <p style="color:green">@_errorMessage</p>
+        } else {
+            <p style="color:red">@_errorMessage</p>
+        }
+        <div>
+            <p>Finální score: @_engine.CurrentGameScore</p>
+            <p>Finální level: @_engine.CurrentLevel</p>
+            <input type="text" placeholder="Jméno hráče" @bind-value="_playerName"/>
+        </div>
+        <div>
+            <p>--Výpis tabulky všech score--</p>
+            @if (_highScores.Count != 0) {
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Jméno</td>
+                            <td>Score</td>
+                        </tr>
+                    </thead>
+                    @foreach (var item in _highScores) {
+                        <tr>
+                            <td>@item.PlayerName</td>
+                            <td>@item.Score</td>
+                        </tr>
+                    }
+                </table>
+            }
+        </div>
+    </div>
+}else 
+{
+    <div>
+        <button type="button" class="btn btn-success" @onclick="StartGame">START HRY</button>
+        <div>
+            <p>Score: @_engine.CurrentGameScore</p>
+            <p>Aktuální level: @_engine.CurrentLevel</p>
+        </div>
+    </div>
+}
+
+@* CSS Grid, nebo tabulku? *@
+<div class="game-board" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
+    @for (int y = 0; y < _engine.CurrentGameBoard.Height; y++) {
+        <div>
+            @for (int x = 0; x < _engine.CurrentGameBoard.Width; x++) {
+                <div class="@GetCellClass(x, y)"></div>
+            }
+        </div>
+    }
+</div>
+
+<div>
+    @if (!_showTouchControls) {
+        <div class="d-pad">
+            <div></div>
+            <button @ontouchstart="() => _engine.ChangeDirection(Models.Direction.Up)">&#8593;</button>
+            <div></div>
+            <button @ontouchstart="() => _engine.ChangeDirection(Models.Direction.Left)">&#8592;</button>
+            <button @ontouchstart="() => _engine.ChangeDirection(Models.Direction.Down)">&#8595;</button>
+            <button @ontouchstart="() => _engine.ChangeDirection(Models.Direction.Right)">&#8594;</button>
+        </div>
+    }
+</div>

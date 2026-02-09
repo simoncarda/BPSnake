@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="BP_Snake/BP_Snake.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>

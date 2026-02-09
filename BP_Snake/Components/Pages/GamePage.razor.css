@@ -1,0 +1,68 @@
+/* Základní buòka - velikost a møížka */
+.cell {
+    width: 20px; /* Velikost buòky */
+    height: 20px;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+/* --- BARVY --- */
+
+.empty {
+    background-color: #ffffff;
+}
+
+.snake-body {
+    background-color: #4CAF50; /* Zelená */
+    border-radius: 2px;
+}
+
+.snake-head {
+    background-color: #2E7D32; /* Tmavší zelená */
+    border-radius: 4px;
+}
+
+.food {
+    background-color: #F44336; /* Èervená */
+}
+
+.food-bonus {
+    background-color: #FFD700; /* Zlatá */
+}
+
+.wall {
+    background-color: #424242; /* Tmavì šedá */
+}
+
+/* BRÁNA */
+.gate-closed {
+    background-color: #9E9E9E; /* Šedá (vypadá jako zeï) */
+}
+
+.gate-open {
+    background-color: #00BFFF; /* Svìtle modrá */
+    box-shadow: 0 0 10px #00BFFF; /* "Záøe" */
+}
+
+.d-pad {
+    display: grid;
+    grid-template-columns: 60px 60px 60px; /* 3 sloupce */
+    grid-template-rows: 60px 60px; /* 2 øádky */
+    gap: 5px;
+    justify-content: center; /* Vycentrovat pod hrou */
+    margin-top: 20px;
+}
+
+.d-pad button {
+    background-color: #444;
+    color: white;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.d-pad button:active {
+    background-color: #666; /* Zmìna barvy pøi stisku */
+}
