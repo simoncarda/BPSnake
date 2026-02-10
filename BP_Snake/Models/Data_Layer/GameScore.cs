@@ -14,5 +14,7 @@ namespace BP_Snake.Models.Data_Layer
         [Collation("NOCASE")]
         public string PlayerName { get; set; } = "";
         public int Score { get; set; }
+        public int TotalLevelsCompleted { get; set; }
+        public DateTime DateTimeAchieved { get; set; }
     }
 }

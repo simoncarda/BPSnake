@@ -14,6 +14,8 @@ namespace BP_Snake.Models.Game_Core
         private int _applesEatenInLevel = 0;
         public bool IsGameOver { get; private set; } = true;
         private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
+        public int TotalLevelsCompleted { get; private set; } = 0; // Počet úrovní dokončených během aktuální hry
+        public DateTime GameOverTime { get; private set; } = DateTime.MinValue; // Čas, kdy došlo k Game Over
 
         private Random _random = new Random();
 
@@ -36,6 +38,8 @@ namespace BP_Snake.Models.Game_Core
             CreateFoodItem();
             _applesEatenInLevel = 0;
             IsGameOver = false;
+            _growBuffer = 0;
+            TotalLevelsCompleted = 0;
             // Vyvolání události pro aktualizaci UI (načtení hry)
             OnStateChanged?.Invoke();
         }
@@ -46,8 +50,9 @@ namespace BP_Snake.Models.Game_Core
             }
             _gameLoopTimer.Change(0, 200); // Spustit hru s intervalem 200 ms
         } 
-        public void StopGame()
+        public void GameOver()
         {
+            GameOverTime = DateTime.Now;
             IsGameOver = true;
             _gameLoopTimer.Change(Timeout.Infinite, Timeout.Infinite); // Pozastavit hru
             OnStateChanged?.Invoke();
@@ -68,7 +73,7 @@ namespace BP_Snake.Models.Game_Core
 
             // podmínka pro kolizi s překážkami, zdmi či sebou samým
             if (IsCollisionDetected()) {
-                StopGame();
+                GameOver();
                 return;
             }
 
@@ -83,6 +88,7 @@ namespace BP_Snake.Models.Game_Core
         // Metoda pro načtení další úrovně
         private void LoadNextLevel()
         {
+            TotalLevelsCompleted++;
             // Pokud je aktuální úroveň 4, restartujeme na úroveň 0
             if (CurrentLevel >= 4) {
                 CurrentLevel = 1;

@@ -114,7 +114,9 @@ namespace BP_Snake.Components.Pages
 
             GameScore scoreToSave = new GameScore {
                 PlayerName = _playerName.Trim(),
-                Score = _engine.CurrentGameScore
+                Score = _engine.CurrentGameScore,
+                TotalLevelsCompleted = _engine.TotalLevelsCompleted,
+                DateTimeAchieved = _engine.GameOverTime
             };
 
             // Uložíme do databáze, zároveň získáme výsledek uložení
