@@ -13,6 +13,7 @@ namespace BP_Snake.Models.Game_Core
         public int CurrentLevel { get; set; } = 1;
         private int _applesEatenInLevel = 0;
         public bool IsGameOver { get; private set; } = true;
+        private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
 
         private Random _random = new Random();
 
@@ -58,6 +59,9 @@ namespace BP_Snake.Models.Game_Core
             // podmínka pro pohyb při kolizi s jídlem
             if (CurrentSnake.GetNextHeadPosition() == CurrentFoodItem.Position) {
                 OnFoodEaten();
+            } else if (_growBuffer > 0){
+                CurrentSnake.Move(grow: true);
+                _growBuffer--;
             } else {
                 CurrentSnake.Move();
             }
@@ -132,6 +136,7 @@ namespace BP_Snake.Models.Game_Core
 
         private void OnFoodEaten()
         {
+            _growBuffer = 4;
             CurrentSnake.Move(grow: true);
             CurrentGameScore += CurrentFoodItem.ScoreValue;
             _applesEatenInLevel++;
