@@ -50,13 +50,13 @@
 }
 
 @* CSS Grid, nebo tabulku? *@
-<div class="game-board" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
+<div tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
     @for (int y = 0; y < _engine.CurrentGameBoard.Height; y++) {
-        <div>
+        <tr>
             @for (int x = 0; x < _engine.CurrentGameBoard.Width; x++) {
-                <div class="@GetCellClass(x, y)"></div>
+                <td class="@GetCellClass(x, y)"></td>
             }
-        </div>
+        </tr>
     }
 </div>
 
