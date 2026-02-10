@@ -107,13 +107,13 @@ namespace BP_Snake.Components.Pages
                 _errorMessage = "Nulové skóre se neukládá! Zkus to znovu.";
                 return;
             }
-            if (string.IsNullOrWhiteSpace(_playerName)) {
+            if (String.IsNullOrWhiteSpace(_playerName)) {
                 _errorMessage = "Musíš zadat jméno!";
                 return;
             }
 
             GameScore scoreToSave = new GameScore {
-                PlayerName = _playerName,
+                PlayerName = _playerName.Trim(),
                 Score = _engine.CurrentGameScore
             };
 
