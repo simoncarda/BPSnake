@@ -7,7 +7,7 @@
     <div>
         <button type="button" class="btn btn-success" @onclick="StartGame">RESTART HRY</button>
         <button type="button" class="btn btn-warning" @onclick="SaveScore" disabled="@_isSaveSuccess">Uložit score</button>
-        @* <button type="button" @onclick="_dbService.DeleteDB">***Reset databáze***</button> *@
+        <button type="button" @onclick="_dbService.DeleteDB">***Reset databáze***</button>
 
 
         @if (_isSaveSuccess) {
@@ -28,12 +28,16 @@
                         <tr>
                             <td>Jméno</td>
                             <td>Score</td>
+                            <td>Počet dokončených kol</td>
+                            <td>Datum a čas</td>
                         </tr>
                     </thead>
                     @foreach (var item in _highScores) {
                         <tr>
                             <td>@item.PlayerName</td>
                             <td>@item.Score</td>
+                            <td>@item.TotalLevelsCompleted</td>
+                            <td>@item.DateTimeAchieved.ToString("g")</td>
                         </tr>
                     }
                 </table>

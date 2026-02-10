@@ -32,6 +32,8 @@ namespace BP_Snake.Models.Data_Layer
             if (existingPlayer != null) {
                 if (existingPlayer.Score < scoreData.Score) {
                     existingPlayer.Score = scoreData.Score;
+                    existingPlayer.DateTimeAchieved = scoreData.DateTimeAchieved;
+                    existingPlayer.TotalLevelsCompleted = scoreData.TotalLevelsCompleted;
                     await _database.UpdateAsync(existingPlayer);
                     return SaveResult.UpdatedHighScore;
                 }
@@ -57,11 +59,11 @@ namespace BP_Snake.Models.Data_Layer
             await Init();
             await _database.DeleteAllAsync<GameScore>();
         }
-        //public async Task DeleteDB()
-        //{
-        //    await _database.DropTableAsync<GameScore>();
-        //    _database = null; // Reset connection to force reinitialization on next access
-        //    await Init();
-        //}
+        public async Task DeleteDB()
+        {
+            await _database.DropTableAsync<GameScore>();
+            _database = null; // Reset connection to force reinitialization on next access
+            await Init();
+        }
     }
 }
