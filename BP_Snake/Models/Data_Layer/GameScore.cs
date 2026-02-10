@@ -10,6 +10,8 @@ namespace BP_Snake.Models.Data_Layer
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+
+        [Collation("NOCASE")]
         public string PlayerName { get; set; } = "";
         public int Score { get; set; }
     }

@@ -7,6 +7,8 @@
     <div>
         <button type="button" class="btn btn-success" @onclick="StartGame">RESTART HRY</button>
         <button type="button" class="btn btn-warning" @onclick="SaveScore" disabled="@_isSaveSuccess">Uložit score</button>
+        @* <button type="button" @onclick="_dbService.DeleteDB">***Reset databáze***</button> *@
+
 
         @if (_isSaveSuccess) {
             <p style="color:green">@_errorMessage</p>
