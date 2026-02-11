@@ -47,12 +47,17 @@
 }else 
 {
     <div>
-        <button type="button" class="btn btn-success" @onclick="StartNewGame">Začít novou hru</button>
         @if(_engine.CurrentGameState == Models.GameState.Playing)
         {
             <button type="button" class="btn btn-info" @onclick="PauseGame">Pause</button>
-        } else if (_engine.CurrentGameState == Models.GameState.Paused) {
+        } 
+        else if (_engine.CurrentGameState == Models.GameState.Paused) 
+        {
             <button type="button" class="btn btn-info" @onclick="ResumeGame">Resume</button>
+        } 
+        else
+        {
+            <button type="button" class="btn btn-success" @onclick="StartNewGame">Začít novou hru</button>
         }
         @if(_engine.CurrentGameState == Models.GameState.Paused)
         {

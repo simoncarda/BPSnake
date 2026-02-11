@@ -20,7 +20,6 @@ namespace BP_Snake.Models.Game_Core
         private Random _random = new Random();
 
         // Timer pro řízení rychlosti hry
-        //private Timer _gameLoopTimer;
         private PeriodicTimer? _gameLoopTimer;
         private CancellationTokenSource? _cts;
 
@@ -29,7 +28,6 @@ namespace BP_Snake.Models.Game_Core
 
         public GameEngine()
         {
-            //_gameLoopTimer = new Timer(GameLoop, null, Timeout.Infinite, Timeout.Infinite);
         }
         public void LoadNewGame()
         {
@@ -40,7 +38,7 @@ namespace BP_Snake.Models.Game_Core
             CurrentGameBoard = new GameBoard(CurrentLevel);
             CreateFoodItem();
             _applesEatenInLevel = 0;
-            CurrentGameState = GameState.Paused;
+            CurrentGameState = GameState.Menu;
             _growBuffer = 0;
             TotalLevelsCompleted = 0;
             // Vyvolání události pro aktualizaci UI (načtení hry)
@@ -49,9 +47,8 @@ namespace BP_Snake.Models.Game_Core
         public void StartNewGame()
         {
             LoadNewGame();
-            //_gameLoopTimer.Change(0, 200); // Spustit hru s intervalem 200 ms
             CurrentGameState = GameState.Playing;
-            StartGameLoop(); // Spustíme novou smyčku
+            _ = StartGameLoop(); // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
             OnStateChanged?.Invoke();
         }
         public void PauseGame()
@@ -66,8 +63,7 @@ namespace BP_Snake.Models.Game_Core
         public void ResumeGame()
         {
             if (CurrentGameState == GameState.Paused) {
-                //_gameLoopTimer.Change(0, 200); // Obnovit hru s intervalem 200 ms
-                StartGameLoop(); // Znovu vytvoříme timer a spustíme smyčku
+                _ = StartGameLoop(); // Znovu vytvoříme timer a spustíme smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
                 CurrentGameState = GameState.Playing;
                 OnStateChanged?.Invoke();
             }
@@ -77,7 +73,6 @@ namespace BP_Snake.Models.Game_Core
             StopGameLoop(); // Zastavíme smyčku
             GameOverTime = DateTime.Now;
             CurrentGameState = GameState.GameOver;
-            //_gameLoopTimer.Change(Timeout.Infinite, Timeout.Infinite); // Pozastavit hru
             OnStateChanged?.Invoke();
         }
         private async Task StartGameLoop()

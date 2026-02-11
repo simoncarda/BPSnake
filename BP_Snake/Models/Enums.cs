@@ -21,6 +21,7 @@ namespace BP_Snake.Models
     {
         Playing,
         GameOver,
-        Paused
+        Paused,
+        Menu
     }
 }
