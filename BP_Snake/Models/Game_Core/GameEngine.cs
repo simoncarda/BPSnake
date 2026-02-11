@@ -14,22 +14,26 @@ namespace BP_Snake.Models.Game_Core
         public int TotalLevelsCompleted { get; private set; } = 0; // Počet úrovní dokončených během aktuální hry
         public DateTime GameOverTime { get; private set; } = DateTime.MinValue; // Čas, kdy došlo k Game Over
         public GameState CurrentGameState { get; private set; }
+        private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
         private int _applesEatenInLevel = 0;
         private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
         private Random _random = new Random();
 
         // Timer pro řízení rychlosti hry
-        private Timer _gameLoopTimer;
+        //private Timer _gameLoopTimer;
+        private PeriodicTimer? _gameLoopTimer;
+        private CancellationTokenSource? _cts;
 
         // UDÁLOST: aktualizace UI
         public event Action? OnStateChanged;
 
         public GameEngine()
         {
-            _gameLoopTimer = new Timer(GameLoop, null, Timeout.Infinite, Timeout.Infinite);
+            //_gameLoopTimer = new Timer(GameLoop, null, Timeout.Infinite, Timeout.Infinite);
         }
         public void LoadNewGame()
         {
+            StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
             CurrentLevel = 1;
             CurrentGameScore = 0;
             CurrentSnake = new Snake();
@@ -45,14 +49,16 @@ namespace BP_Snake.Models.Game_Core
         public void StartNewGame()
         {
             LoadNewGame();
-            _gameLoopTimer.Change(0, 200); // Spustit hru s intervalem 200 ms
+            //_gameLoopTimer.Change(0, 200); // Spustit hru s intervalem 200 ms
             CurrentGameState = GameState.Playing;
+            StartGameLoop(); // Spustíme novou smyčku
             OnStateChanged?.Invoke();
         }
         public void PauseGame()
         {
             if (CurrentGameState == GameState.Playing) {
-                _gameLoopTimer.Change(Timeout.Infinite, Timeout.Infinite); // Pozastavit hru
+                StopGameLoop(); // Zastavíme timer (cancel task)
+                //_gameLoopTimer.Change(Timeout.Infinite, Timeout.Infinite); // Pozastavit hru
                 CurrentGameState = GameState.Paused;
                 OnStateChanged?.Invoke();
             }
@@ -60,23 +66,58 @@ namespace BP_Snake.Models.Game_Core
         public void ResumeGame()
         {
             if (CurrentGameState == GameState.Paused) {
-                _gameLoopTimer.Change(0, 200); // Obnovit hru s intervalem 200 ms
+                //_gameLoopTimer.Change(0, 200); // Obnovit hru s intervalem 200 ms
+                StartGameLoop(); // Znovu vytvoříme timer a spustíme smyčku
                 CurrentGameState = GameState.Playing;
                 OnStateChanged?.Invoke();
             }
         }
         public void GameOver()
         {
+            StopGameLoop(); // Zastavíme smyčku
             GameOverTime = DateTime.Now;
             CurrentGameState = GameState.GameOver;
-            _gameLoopTimer.Change(Timeout.Infinite, Timeout.Infinite); // Pozastavit hru
-            CurrentGameState = GameState.GameOver;
+            //_gameLoopTimer.Change(Timeout.Infinite, Timeout.Infinite); // Pozastavit hru
             OnStateChanged?.Invoke();
         }
-
-        // Metoda pro chod hry, musí mít proměnnou "state", i když ji nevyužíváme (vyžaduje ji Timer)
-        private void GameLoop(object? state)
+        private async Task StartGameLoop()
         {
+            StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
+
+            using CancellationTokenSource localCts = new CancellationTokenSource();
+            using PeriodicTimer localTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(200)); // Nastavíme interval 200 ms
+            _gameLoopTimer = localTimer;
+            _cts = localCts;
+
+            try 
+            {
+                while (await localTimer.WaitForNextTickAsync(localCts.Token)) {
+                    GameLogicTick();
+                }
+            }
+            catch (OperationCanceledException) 
+            {
+                // Smyčka byla zrušena, není třeba nic dělat
+            }
+        }
+        private void StopGameLoop()
+        {
+            if (_cts != null) {
+                _cts.Cancel(); // Zrušíme běžící smyčku
+                _cts.Dispose();
+                _cts = null;
+            }
+            if (_gameLoopTimer != null) {
+                _gameLoopTimer.Dispose();
+                _gameLoopTimer = null;
+            }
+        }
+
+        // Metoda pro jeden tick timeru - aktualizace stavu hry
+        private void GameLogicTick()
+        {
+            _directionChangedInCurrentTick = false;
+
             // podmínka pro pohyb při kolizi s jídlem
             if (CurrentSnake.GetNextHeadPosition() == CurrentFoodItem.Position) {
                 OnFoodEaten();
@@ -172,19 +213,24 @@ namespace BP_Snake.Models.Game_Core
 
         public void ChangeDirection(Direction newDirection)
         {
+            if (_directionChangedInCurrentTick) {
+                return; // Zabránit více změnám směru během jednoho ticku
+            }
             // Zabránit otočení hada o 180 stupňů
             if ((CurrentSnake.CurrentDirection == Direction.Up && newDirection == Direction.Down) ||
                 (CurrentSnake.CurrentDirection == Direction.Down && newDirection == Direction.Up) ||
                 (CurrentSnake.CurrentDirection == Direction.Left && newDirection == Direction.Right) ||
-                (CurrentSnake.CurrentDirection == Direction.Right && newDirection == Direction.Left)) {
+                (CurrentSnake.CurrentDirection == Direction.Right && newDirection == Direction.Left)) 
+            {
                 return; 
             }
             CurrentSnake.CurrentDirection = newDirection;
+            _directionChangedInCurrentTick = true;
         }
 
         public void Dispose()
         {
-            _gameLoopTimer?.Dispose();
+            StopGameLoop(); // Zajistíme, že smyčka bude zastavena a všechny zdroje uvolněny
         }
     }
 }
