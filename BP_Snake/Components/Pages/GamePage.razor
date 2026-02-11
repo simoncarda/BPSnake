@@ -1,7 +1,8 @@
-﻿@page "/"
+﻿@page "/page"
 
 <h3>Snake!</h3>
 
+@* gameover *@
 @if (_engine.CurrentGameState == Models.GameState.GameOver)
 {
     <div>
@@ -44,7 +45,8 @@
             }
         </div>
     </div>
-}else 
+}
+else @* gamerunning... *@
 {
     <div>
         @if(_engine.CurrentGameState == Models.GameState.Playing)
@@ -70,7 +72,7 @@
     </div>
 }
 
-@* CSS Grid, nebo tabulku? *@
+@* GameBoard *@
 <div tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
     @for (int y = 0; y < _engine.CurrentGameBoard.Height; y++) {
         <tr>
@@ -81,6 +83,7 @@
     }
 </div>
 
+@* Touch controls *@
 <div>
     @if (!_showTouchControls) {
         <div class="d-pad">

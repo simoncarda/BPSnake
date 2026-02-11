@@ -1,0 +1,48 @@
+﻿@using BP_Snake.Models.Data_Layer;
+
+
+<div>
+    <button type="button" class="btn btn-success" @onclick="OnStartNewGame">Začít novou hru</button>
+    <button type="button" class="btn btn-warning" @onclick="OnSaveScore" disabled="@IsSaveSuccess">Uložit score</button>
+    @* <button type="button" @onclick="_dbService.DeleteDB">***Reset databáze***</button> *@
+
+
+    @if (IsSaveSuccess) {
+        <p style="color:green">@ErrorMessage</p>
+    } else {
+        <p style="color:red">@ErrorMessage</p>
+    }
+    <div>
+        <p>Finální score: @Score</p>
+        <p>Finální level: @Level</p>
+        <input type="text" placeholder="Jméno hráče" @bind-value="PlayerNameProxy" />
+    </div>
+    <ScoreTable HighScores="HighScores" />
+</div>
+
+
+@code {
+    [Parameter] public int Score { get; set; }
+    [Parameter] public int Level { get; set; }
+    [Parameter] public bool IsSaveSuccess { get; set; }
+    [Parameter] public required string ErrorMessage { get; set; }
+    [Parameter] public required List<GameScore> HighScores { get; set; }
+    [Parameter] public string PlayerName { get; set; } = "";
+    [Parameter] public EventCallback<string> OnPlayerNameChanged { get; set; }
+
+    // Akce
+    [Parameter] public EventCallback OnStartNewGame { get; set; }
+    [Parameter] public EventCallback OnSaveScore { get; set; }
+
+    private async Task HandleNameChange(ChangeEventArgs e)
+    {
+        // Pošleme změnu nahoru
+        await OnPlayerNameChanged.InvokeAsync(e.Value.ToString());
+    }
+
+    private string PlayerNameProxy
+    {
+        get => PlayerName;
+        set => OnPlayerNameChanged.InvokeAsync(value);
+    }
+}

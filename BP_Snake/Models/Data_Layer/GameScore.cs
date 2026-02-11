@@ -6,7 +6,7 @@ using SQLite;
 namespace BP_Snake.Models.Data_Layer
 {
     [Table("Scores")]
-    internal class GameScore
+    public class GameScore
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }

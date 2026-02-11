@@ -1,0 +1,61 @@
+﻿@using BP_Snake.Models;
+
+<div>
+    @if (CurrentGameState == GameState.Playing) {
+        <button type="button" class="btn btn-info" @onclick="OnPauseGame">Pause</button>
+    } else if (CurrentGameState == GameState.Paused) {
+        <button type="button" class="btn btn-info" @onclick="OnResumeGame">Resume</button>
+    }
+
+    <div>
+        <p>Score: @CurrentGameScore</p>
+        <p>Aktuální level: @CurrentLevel</p>
+    </div>
+</div>
+
+<div tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
+    <table>
+        @for (int y = 0; y < Height; y++) {
+            <tr>
+                @for (int x = 0; x < Width; x++) {
+                    <td class="@CellClass(x, y)"></td>
+                }
+            </tr>
+        }
+    </table>
+</div>
+
+@code{
+    [Parameter] public int Width { get; set; }
+    [Parameter] public int Height { get; set; }
+    [Parameter] public GameState CurrentGameState { get; set; }
+    [Parameter] public int CurrentGameScore { get; set; }
+    [Parameter] public int CurrentLevel { get; set; }
+
+    [Parameter] public EventCallback OnPauseGame { get; set; }
+    [Parameter] public EventCallback OnResumeGame { get; set; }
+
+    // Předání metody pro získání CSS třídy buňky
+    [Parameter] public required Func<int, int, string> CellClass { get; set; }
+    // EventCallback pro klávesnici
+    [Parameter] public EventCallback<KeyboardEventArgs> HandleKeyboardInput { get; set; }
+
+    private ElementReference _boardElement;
+    // Metoda pro focus, kterou bude volat Rodič
+    public async Task FocusAsync()
+    {
+        await _boardElement.FocusAsync();
+    }
+
+    private async Task HandleInput(KeyboardEventArgs e)
+    {
+        await HandleKeyboardInput.InvokeAsync(e);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender) {
+            await FocusAsync();
+        }
+    }
+}

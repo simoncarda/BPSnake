@@ -1,0 +1,14 @@
+﻿@using BP_Snake.Models;
+
+<div class="d-pad">
+    <div></div>
+    <button @ontouchstart="() => OnDirectionChange.InvokeAsync(Direction.Up)">&#8593;</button>
+    <div></div>
+    <button @ontouchstart="() => OnDirectionChange.InvokeAsync(Direction.Left)">&#8592;</button>
+    <button @ontouchstart="() => OnDirectionChange.InvokeAsync(Direction.Down)">&#8595;</button>
+    <button @ontouchstart="() => OnDirectionChange.InvokeAsync(Direction.Right)">&#8594;</button>
+</div>
+
+@code {
+    [Parameter] public EventCallback<Direction> OnDirectionChange { get; set; }
+}

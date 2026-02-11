@@ -1,0 +1,12 @@
+﻿@using BP_Snake.Models.Data_Layer;
+
+<div>
+    <h1>SNAKE</h1>
+    <button type="button" class="btn btn-success" @onclick="OnStartNewGame">Začít novou hru</button>
+    <ScoreTable HighScores="HighScores" />
+</div>
+
+@code {
+    [Parameter] public EventCallback OnStartNewGame { get; set; }
+    [Parameter] public List<GameScore> HighScores { get; set; }
+}

@@ -1,0 +1,41 @@
+﻿@using BP_Snake.Models.Data_Layer;
+
+<div>
+    <h4>Síň slávy</h4>
+
+    @if (!HighScores.Any()) {
+        <p>Zatím žádné záznamy.</p>
+    } else {
+        <table>
+            <thead>
+                <tr>
+                    <th>Pozice</th>
+                    <th>Jméno</th>
+                    <th>Skóre</th>
+                    <th>Level</th>
+                    <th>Datum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int position = 1;
+                }
+                @foreach (var item in HighScores) {
+                    <tr>
+                        <td>@(position)</td>
+                        <td><strong>@item.PlayerName</strong></td>
+                        <td>@item.Score</td>
+                        <td>@item.TotalLevelsCompleted</td>
+                        <td>@item.DateTimeAchieved.ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                    position++;
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    // Seznam skóre k zobrazení
+    [Parameter] public required List<GameScore> HighScores { get; set; }
+}

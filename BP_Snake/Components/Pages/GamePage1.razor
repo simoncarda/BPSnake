@@ -1,0 +1,60 @@
+﻿@using BP_Snake.Components.GamePageComponents
+@using BP_Snake.Models
+
+@page "/"
+
+<h3>Snake!</h3>
+
+@switch (_engine.CurrentGameState) {
+    case GameState.Menu:
+        <StartMenuScreen 
+            OnStartNewGame="@StartNewGame" 
+            Highscores="@_highScores" 
+        />
+        break;
+    case GameState.Playing:
+        <GameBoardTable 
+            Width="@_engine.CurrentGameBoard.Width" 
+            Height="@_engine.CurrentGameBoard.Height" 
+            CurrentGameState="@_engine.CurrentGameState" 
+            CurrentGameScore="@_engine.CurrentGameScore"
+            CurrentLevel="@_engine.CurrentLevel"
+            OnPauseGame="@PauseGame"
+            OnResumeGame="@ResumeGame"
+            CellClass="@GetCellClass"
+            HandleKeyboardInput="@HandleInput"
+        />
+        if (_showTouchControls) {
+            <TouchControls />
+        }
+        break;
+    case GameState.Paused:
+        <GameBoardTable 
+            Width="@_engine.CurrentGameBoard.Width"
+            Height="@_engine.CurrentGameBoard.Height"
+            CurrentGameState="@_engine.CurrentGameState"
+            CurrentGameScore="@_engine.CurrentGameScore"
+            CurrentLevel="@_engine.CurrentLevel"
+            OnPauseGame="@PauseGame"
+            OnResumeGame="@ResumeGame"
+            CellClass="@GetCellClass"
+            HandleKeyboardInput="@HandleInput"
+        />
+        if (_showTouchControls) {
+            <TouchControls />
+        }
+        break;
+    case GameState.GameOver:
+        <GameOverScreen 
+            Score="@_engine.CurrentGameScore" 
+            Level="@_engine.CurrentLevel" 
+            IsSaveSuccess="@_isSaveSuccess" 
+            ErrorMessage="@_errorMessage"
+            HighScores="@_highScores" 
+            PlayerName="@_playerName" 
+            OnPlayerNameChanged="@((newName) => _playerName = newName)"
+            OnStartNewGame="@StartNewGame" 
+            OnSaveScore="SaveScore" 
+        />
+        break;
+}
