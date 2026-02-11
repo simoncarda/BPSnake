@@ -14,6 +14,13 @@ namespace BP_Snake.Models.Game_Core
         public int TotalLevelsCompleted { get; private set; } = 0; // Počet úrovní dokončených během aktuální hry
         public DateTime GameOverTime { get; private set; } = DateTime.MinValue; // Čas, kdy došlo k Game Over
         public GameState CurrentGameState { get; private set; }
+        private const int _baseGameSpeed = 200; // Základní rychlost hry v milisekundách (počet ms mezi jednotlivými aktualizacemi stavu hry)
+
+        private int _currentGameSpeed {
+            get {
+                return Math.Max(_baseGameSpeed - (20 * TotalLevelsCompleted), 50);
+            }
+        } // Aktuální rychlost hry, která se může měnit s postupem úrovní
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
         private int _applesEatenInLevel = 0;
         private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
@@ -28,6 +35,7 @@ namespace BP_Snake.Models.Game_Core
 
         public GameEngine()
         {
+
         }
         public void LoadNewGame()
         {
@@ -55,7 +63,6 @@ namespace BP_Snake.Models.Game_Core
         {
             if (CurrentGameState == GameState.Playing) {
                 StopGameLoop(); // Zastavíme timer (cancel task)
-                //_gameLoopTimer.Change(Timeout.Infinite, Timeout.Infinite); // Pozastavit hru
                 CurrentGameState = GameState.Paused;
                 OnStateChanged?.Invoke();
             }
@@ -80,7 +87,7 @@ namespace BP_Snake.Models.Game_Core
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
 
             using CancellationTokenSource localCts = new CancellationTokenSource();
-            using PeriodicTimer localTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(200)); // Nastavíme interval 200 ms
+            using PeriodicTimer localTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(_currentGameSpeed)); // Nastavíme interval 200 ms
             _gameLoopTimer = localTimer;
             _cts = localCts;
 
@@ -88,6 +95,7 @@ namespace BP_Snake.Models.Game_Core
             {
                 while (await localTimer.WaitForNextTickAsync(localCts.Token)) {
                     GameLogicTick();
+                    localTimer.Period = TimeSpan.FromMilliseconds(_currentGameSpeed); // Dynamicky upravíme interval timeru podle aktuální rychlosti hry
                 }
             }
             catch (OperationCanceledException) 
