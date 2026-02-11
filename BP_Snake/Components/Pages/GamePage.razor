@@ -2,12 +2,12 @@
 
 <h3>Snake!</h3>
 
-@if (_engine.IsGameOver)
+@if (_engine.CurrentGameState == Models.GameState.GameOver)
 {
     <div>
-        <button type="button" class="btn btn-success" @onclick="StartGame">RESTART HRY</button>
+        <button type="button" class="btn btn-success" @onclick="StartNewGame">Začít novou hru</button>
         <button type="button" class="btn btn-warning" @onclick="SaveScore" disabled="@_isSaveSuccess">Uložit score</button>
-        <button type="button" @onclick="_dbService.DeleteDB">***Reset databáze***</button>
+        @* <button type="button" @onclick="_dbService.DeleteDB">***Reset databáze***</button> *@
 
 
         @if (_isSaveSuccess) {
@@ -47,7 +47,17 @@
 }else 
 {
     <div>
-        <button type="button" class="btn btn-success" @onclick="StartGame">START HRY</button>
+        <button type="button" class="btn btn-success" @onclick="StartNewGame">Začít novou hru</button>
+        @if(_engine.CurrentGameState == Models.GameState.Playing)
+        {
+            <button type="button" class="btn btn-info" @onclick="PauseGame">Pause</button>
+        } else if (_engine.CurrentGameState == Models.GameState.Paused) {
+            <button type="button" class="btn btn-info" @onclick="ResumeGame">Resume</button>
+        }
+        @if(_engine.CurrentGameState == Models.GameState.Paused)
+        {
+            <p>PAUSED</p>    
+        }
         <div>
             <p>Score: @_engine.CurrentGameScore</p>
             <p>Aktuální level: @_engine.CurrentLevel</p>

@@ -17,4 +17,10 @@ namespace BP_Snake.Models
         UpdatedHighScore, // Existující hráč překonal rekord
         ScoreTooLow       // Skóre bylo nižší než rekord (neuloženo)
     }
+    public enum GameState
+    {
+        Playing,
+        GameOver,
+        Paused
+    }
 }

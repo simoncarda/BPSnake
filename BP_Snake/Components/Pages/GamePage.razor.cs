@@ -35,13 +35,23 @@ namespace BP_Snake.Components.Pages
             _engine.LoadNewGame();
         }
 
-        private async Task StartGame()
+        private async Task StartNewGame()
         {
             _errorMessage = "";
             _isSaveSuccess = false;
             await SetFocus();
-            _engine.StartGame();
+            _engine.StartNewGame();
             await LoadLeaderboard();
+        }
+        private async Task PauseGame()
+        {
+            await SetFocus();
+            _engine.PauseGame();
+        }
+        private async Task ResumeGame()
+        {
+            await SetFocus();
+            _engine.ResumeGame();
         }
 
         private async void RefreshUI()

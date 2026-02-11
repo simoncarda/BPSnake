@@ -11,12 +11,11 @@ namespace BP_Snake.Models.Game_Core
         public FoodItem CurrentFoodItem { get; set; } = new FoodItem();
         public int CurrentGameScore { get; set; } = 0;
         public int CurrentLevel { get; set; } = 1;
-        private int _applesEatenInLevel = 0;
-        public bool IsGameOver { get; private set; } = true;
-        private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
         public int TotalLevelsCompleted { get; private set; } = 0; // Počet úrovní dokončených během aktuální hry
         public DateTime GameOverTime { get; private set; } = DateTime.MinValue; // Čas, kdy došlo k Game Over
-
+        public GameState CurrentGameState { get; private set; }
+        private int _applesEatenInLevel = 0;
+        private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
         private Random _random = new Random();
 
         // Timer pro řízení rychlosti hry
@@ -37,24 +36,41 @@ namespace BP_Snake.Models.Game_Core
             CurrentGameBoard = new GameBoard(CurrentLevel);
             CreateFoodItem();
             _applesEatenInLevel = 0;
-            IsGameOver = false;
+            CurrentGameState = GameState.Paused;
             _growBuffer = 0;
             TotalLevelsCompleted = 0;
             // Vyvolání události pro aktualizaci UI (načtení hry)
             OnStateChanged?.Invoke();
         }
-        public void StartGame()
+        public void StartNewGame()
         {
-            if (IsGameOver) {
-                LoadNewGame();
-            }
+            LoadNewGame();
             _gameLoopTimer.Change(0, 200); // Spustit hru s intervalem 200 ms
-        } 
+            CurrentGameState = GameState.Playing;
+            OnStateChanged?.Invoke();
+        }
+        public void PauseGame()
+        {
+            if (CurrentGameState == GameState.Playing) {
+                _gameLoopTimer.Change(Timeout.Infinite, Timeout.Infinite); // Pozastavit hru
+                CurrentGameState = GameState.Paused;
+                OnStateChanged?.Invoke();
+            }
+        }
+        public void ResumeGame()
+        {
+            if (CurrentGameState == GameState.Paused) {
+                _gameLoopTimer.Change(0, 200); // Obnovit hru s intervalem 200 ms
+                CurrentGameState = GameState.Playing;
+                OnStateChanged?.Invoke();
+            }
+        }
         public void GameOver()
         {
             GameOverTime = DateTime.Now;
-            IsGameOver = true;
+            CurrentGameState = GameState.GameOver;
             _gameLoopTimer.Change(Timeout.Infinite, Timeout.Infinite); // Pozastavit hru
+            CurrentGameState = GameState.GameOver;
             OnStateChanged?.Invoke();
         }
 
