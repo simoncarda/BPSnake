@@ -3,10 +3,10 @@
 
 @page "/"
 
-<h3>Snake!</h3>
 
 @switch (_engine.CurrentGameState) {
     case GameState.Menu:
+        <h3>Snake!</h3>
         <StartMenuScreen 
             OnStartNewGame="@StartNewGame" 
             Highscores="@_highScores" 
@@ -45,6 +45,7 @@
         }
         break;
     case GameState.GameOver:
+        <h3>Snake!</h3>
         <GameOverScreen 
             Score="@_engine.CurrentGameScore" 
             Level="@_engine.CurrentLevel" 

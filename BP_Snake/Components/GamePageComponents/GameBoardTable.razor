@@ -1,24 +1,26 @@
 ﻿@using BP_Snake.Models;
 
-<div>
-    @if (CurrentGameState == GameState.Playing) {
-        <button type="button" class="btn btn-info" @onclick="OnPauseGame">Pause</button>
-    } else if (CurrentGameState == GameState.Paused) {
-        <button type="button" class="btn btn-info" @onclick="OnResumeGame">Resume</button>
-    }
-
-    <div>
-        <p>Score: @CurrentGameScore</p>
-        <p>Aktuální level: @CurrentLevel</p>
-    </div>
-</div>
-
-<div class="gameboard" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
-    @for (int y = 0; y < Height; y++) {
-        @for (int x = 0; x < Width; x++) {
-            <div class="@CellClass(x, y)"></div>
+<div class="game-container">
+    <div class="game-header">
+        @if (CurrentGameState == GameState.Playing) {
+            <button type="button" class="btn btn-info" @onclick="OnPauseGame">Pause</button>
+        } else if (CurrentGameState == GameState.Paused) {
+            <button type="button" class="btn btn-info" @onclick="OnResumeGame">Resume</button>
         }
-    }
+
+        <div class="stats">
+            <span>Score: @CurrentGameScore</span>
+            <span>Aktuální level: @CurrentLevel</span>
+        </div>
+    </div>
+
+    <div class="gameboard" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
+        @for (int y = 0; y < Height; y++) {
+            @for (int x = 0; x < Width; x++) {
+                <div class="@CellClass(x, y)"></div>
+            }
+        }
+    </div>
 </div>
 
 @code{

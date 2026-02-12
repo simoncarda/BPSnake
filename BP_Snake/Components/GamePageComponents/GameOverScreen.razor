@@ -1,7 +1,8 @@
 ﻿@using BP_Snake.Models.Data_Layer;
 
 
-<div>
+<div class="game-container game-over">
+    <h2>Game Over!</h2>
     <button type="button" class="btn btn-success" @onclick="OnStartNewGame">Začít novou hru</button>
     <button type="button" class="btn btn-warning" @onclick="OnSaveScore" disabled="@IsSaveSuccess">Uložit score</button>
     @* <button type="button" @onclick="_dbService.DeleteDB">***Reset databáze***</button> *@
@@ -13,8 +14,10 @@
         <p style="color:red">@ErrorMessage</p>
     }
     <div>
-        <p>Finální score: @Score</p>
-        <p>Finální level: @Level</p>
+        <div>
+            <p><strong>Finální score: @Score</strong></p>
+            <p><strong>Finální level: @Level</strong></p>
+        </div>
         <input type="text" placeholder="Jméno hráče" @bind-value="PlayerNameProxy" />
     </div>
     <ScoreTable HighScores="HighScores" />
