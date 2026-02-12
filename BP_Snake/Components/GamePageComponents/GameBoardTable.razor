@@ -13,16 +13,12 @@
     </div>
 </div>
 
-<div tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
-    <table>
-        @for (int y = 0; y < Height; y++) {
-            <tr>
-                @for (int x = 0; x < Width; x++) {
-                    <td class="@CellClass(x, y)"></td>
-                }
-            </tr>
+<div class="gameboard" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
+    @for (int y = 0; y < Height; y++) {
+        @for (int x = 0; x < Width; x++) {
+            <div class="@CellClass(x, y)"></div>
         }
-    </table>
+    }
 </div>
 
 @code{

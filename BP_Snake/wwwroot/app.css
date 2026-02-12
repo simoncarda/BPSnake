@@ -100,11 +100,21 @@ h1:focus {
     }
 }
 
+.gameboard {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr); /* 20 sloupců */
+    grid-template-rows: repeat(20, 1fr); /* 20 řádků */
+    gap: 0; /* Žádný mezera mezi buňkami */
+    border: 2px solid black; /* Okraj kolem celé mřížky */
+    margin: 20px auto;
+    width: 35vw;
+    aspect-ratio: 1 / 1;
+    min-width: 300px;
+    max-width: 600px;
+}
 
 /* Základní buňka - velikost a mřížka */
 .cell {
-    width: 20px; /* Velikost buňky */
-    height: 20px;
     border: 1px solid black;
     box-sizing: border-box;
 }
@@ -149,21 +159,32 @@ h1:focus {
 
 .d-pad {
     display: grid;
-    grid-template-columns: 60px 60px 60px; /* 3 sloupce */
-    grid-template-rows: 60px 60px; /* 2 řádky */
+    grid-template-columns: repeat(3, 1fr); /* 3 sloupce */
+    grid-template-rows: repeat(3, 1fr); /* 2 řádky */
+
     gap: 5px;
     justify-content: center; /* Vycentrovat pod hrou */
-    margin-top: 20px;
+    margin: 20px auto;
+    width: 200px;
+    max-width: 15vw;
+    min-width: 150px;
+    aspect-ratio: 1 / 1;
 }
 
     .d-pad button {
         background-color: #444;
         color: white;
-        font-size: 24px;
+
+        font-size: 1.5em;
         border: none;
         border-radius: 10px;
         width: 100%;
         height: 100%;
+
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
         .d-pad button:active {
