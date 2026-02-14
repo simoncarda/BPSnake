@@ -10,7 +10,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    width: 35vw;
+    width: 30vw;
     min-width: 300px;
     max-width: 600px;
     margin-bottom: 2px;
@@ -36,7 +36,7 @@
     gap: 0; /* Žádný mezera mezi buòkami */
     border: 2px solid black; /* Okraj kolem celé møížky */
     margin: 10px auto;
-    width: 35vw;
+    width: 30vw;
     aspect-ratio: 1 / 1;
     min-width: 300px;
     max-width: 600px;

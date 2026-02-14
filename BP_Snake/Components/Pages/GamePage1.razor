@@ -13,26 +13,11 @@
         />
         break;
     case GameState.Playing:
+    case GameState.Paused:
         <GameBoardTable 
             Width="@_engine.CurrentGameBoard.Width" 
             Height="@_engine.CurrentGameBoard.Height" 
             CurrentGameState="@_engine.CurrentGameState" 
-            CurrentGameScore="@_engine.CurrentGameScore"
-            CurrentLevel="@_engine.CurrentLevel"
-            OnPauseGame="@PauseGame"
-            OnResumeGame="@ResumeGame"
-            CellClass="@GetCellClass"
-            HandleKeyboardInput="@HandleInput"
-        />
-        if (_showTouchControls) {
-            <TouchControls />
-        }
-        break;
-    case GameState.Paused:
-        <GameBoardTable 
-            Width="@_engine.CurrentGameBoard.Width"
-            Height="@_engine.CurrentGameBoard.Height"
-            CurrentGameState="@_engine.CurrentGameState"
             CurrentGameScore="@_engine.CurrentGameScore"
             CurrentLevel="@_engine.CurrentLevel"
             OnPauseGame="@PauseGame"

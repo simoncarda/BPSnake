@@ -5,7 +5,7 @@
         @if (CurrentGameState == GameState.Playing) {
             <button type="button" class="btn btn-info" @onclick="OnPauseGame">Pause</button>
         } else if (CurrentGameState == GameState.Paused) {
-            <button type="button" class="btn btn-info" @onclick="OnResumeGame">Resume</button>
+            <button type="button" class="btn btn-info" @onclick="HandleResumeClick">Resume</button>
         }
 
         <div class="stats">
@@ -39,11 +39,14 @@
     [Parameter] public EventCallback<KeyboardEventArgs> HandleKeyboardInput { get; set; }
 
     private ElementReference _boardElement;
-    // Metoda pro focus, kterou bude volat Rodič
-    public async Task FocusAsync()
+
+	// Doplňková metoda pro zaměření na herní plochu po obnovení hry
+    private async Task HandleResumeClick()
     {
+        await OnResumeGame.InvokeAsync();
+		// Po obnovení hry se zaměříme zpět na herní plochu, aby bylo možné pokračovat v ovládání klávesnicí
         await _boardElement.FocusAsync();
-    }
+	}
 
     private async Task HandleInput(KeyboardEventArgs e)
     {
@@ -53,7 +56,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender) {
-            await FocusAsync();
+            await _boardElement.FocusAsync();
         }
     }
 }
