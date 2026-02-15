@@ -149,8 +149,8 @@ namespace BP_Snake.Models.Game_Core
         private void LoadNextLevel()
         {
             TotalLevelsCompleted++;
-            // Pokud je aktuální úroveň 4, restartujeme na úroveň 0
-            if (CurrentLevel >= 4) {
+            // Pokud je aktuální úroveň 12, restartujeme na úroveň 0
+            if (CurrentLevel >= 12) {
                 CurrentLevel = 1;
             } else {
                 CurrentLevel++;
