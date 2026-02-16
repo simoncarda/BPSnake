@@ -1,12 +1,9 @@
 ﻿using BP_Snake.Models;
-using BP_Snake.Models.Data_Layer;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using BP_Snake.Models.DataLayer;
 
 namespace BP_Snake.Services
 {
-    internal interface IDatabaseService
+    public interface IDatabaseService
     {
         /// <summary>
         /// Uloží nebo aktualizuje skóre hráče. Vrací informaci o tom, zda byl vytvořen nový záznam,

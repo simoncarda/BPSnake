@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BP_Snake.Models.Game_Core
+namespace BP_Snake.Models.GameCore
 {
     /// <summary>
     /// Reprezentuje konfigurační nastavení pro herní úroveň, včetně jejích rozměrů, překážek a pozice brány.

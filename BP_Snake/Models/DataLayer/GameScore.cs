@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SQLite;
+﻿using SQLite;
 
-namespace BP_Snake.Models.Data_Layer
+namespace BP_Snake.Models.DataLayer
 {
     /// <summary>
     /// Reprezentuje záznam o skóre hráče ve hře, včetně jména hráče, dosaženého skóre,
@@ -20,8 +17,9 @@ namespace BP_Snake.Models.Data_Layer
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
+        [MaxLength(50), NotNull]
         [Collation("NOCASE")]
-        public string PlayerName { get; set; } = "";
+        public string PlayerName { get; set; } = string.Empty;
         public int Score { get; set; }
         public int TotalLevelsCompleted { get; set; }
         public DateTime DateTimeAchieved { get; set; }

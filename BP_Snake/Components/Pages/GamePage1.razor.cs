@@ -1,7 +1,7 @@
 ﻿using BP_Snake.Components.GamePageComponents;
 using BP_Snake.Models;
-using BP_Snake.Models.Data_Layer;
-using BP_Snake.Models.Game_Core;
+using BP_Snake.Models.DataLayer;
+using BP_Snake.Models.GameCore;
 using BP_Snake.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -109,7 +109,7 @@ namespace BP_Snake.Components.Pages
         /// </returns>
         private string GetCellClass(int x, int y)
         {
-            var p = new Models.Game_Core.Point(x, y);
+            var p = new Models.GameCore.Point(x, y);
 
             if (_engine.CurrentSnake.Body.Count > 0 && _engine.CurrentSnake.Body[0] == p) {
                 return "cell snake-head";

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BP_Snake.Models.Game_Core
+﻿namespace BP_Snake.Models.GameCore
 {
     /// <summary>
     /// Reprezentuje položku jídla ve hře, která má specifickou pozici a hodnotu skóre přidělenou při jejím snězení.
@@ -13,16 +9,15 @@ namespace BP_Snake.Models.Game_Core
     /// </remarks>
     internal class FoodItem
     {
+        private const int DefaultScore = 5;
+        private static readonly Point DefaultPosition = new Point(10, 10);
         public FoodItem(Point position, int scoreValue)
         {
+            if (scoreValue < 0) throw new ArgumentOutOfRangeException(nameof(scoreValue), "ScoreValue musí být >= 0.");
             Position = position;
             ScoreValue = scoreValue;
         }
-        public FoodItem()
-        {
-            Position = new Point(10, 10);
-            ScoreValue = 5;
-        }
+        public FoodItem() : this(DefaultPosition, DefaultScore) { }
 
         public Point Position { get; private set; }
         public int ScoreValue { get; private set; }

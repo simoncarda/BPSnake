@@ -1,9 +1,6 @@
 ﻿using BP_Snake.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace BP_Snake.Models.Game_Core
+namespace BP_Snake.Models.GameCore
 {
     /// <summary>
     /// Poskytuje základní funkcionalitu pro správu stavu hry, včetně zpracování vstupu hráče, postupu hrou a interakcí mezi herními prvky.
@@ -15,6 +12,13 @@ namespace BP_Snake.Models.Game_Core
     /// </remarks>
     internal class GameEngine : IDisposable
     {
+        // Konstanty
+        private const int _growthPerFood = 4; // Počet kroků, o které se had zvětší po snězení jednoho jídla
+        private const int _baseGameSpeed = 200; // Základní rychlost hry v milisekundách (počet ms mezi jednotlivými aktualizacemi stavu hry)
+        private const int _speedIncreasePerLevel = 20; // O kolik se zrychlí hra s každou dokončenou úrovní (v ms)
+        private const int _minGameSpeed = 80; // Minimální rychlost hry (nejrychlejší), aby hra zůstala hratelná
+
+        // Stav hry
         public Snake CurrentSnake { get; set; } = new Snake();
         public GameBoard CurrentGameBoard { get; set; } = new GameBoard();
         public FoodItem CurrentFoodItem { get; set; } = new FoodItem();
@@ -23,16 +27,8 @@ namespace BP_Snake.Models.Game_Core
         public int TotalLevelsCompleted { get; private set; } = 0; // Počet úrovní dokončených během aktuální hry
         public DateTime GameOverTime { get; private set; } = DateTime.MinValue; // Čas, kdy došlo k Game Over
         public GameState CurrentGameState { get; private set; }
-        private const int _baseGameSpeed = 200; // Základní rychlost hry v milisekundách (počet ms mezi jednotlivými aktualizacemi stavu hry)
 
-        private int _currentGameSpeed {
-            get {
-                return Math.Max(_baseGameSpeed - (20 * TotalLevelsCompleted), 80);
-            }
-        } // Aktuální rychlost hry, která se může měnit s postupem úrovní
-        private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
-        private int _applesEatenInLevel = 0;
-        private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
+        // Služby
         private readonly GameLoopService _gameLoopService;
         private readonly CollisionService _collisionService;
         private readonly FoodService _foodService;
@@ -40,6 +36,17 @@ namespace BP_Snake.Models.Game_Core
 
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
+
+        // Pomocné proměnné pro řízení logiky hry
+        private int _currentGameSpeed
+        {
+            get {
+                return Math.Max(_baseGameSpeed - (TotalLevelsCompleted * _speedIncreasePerLevel), _minGameSpeed);
+            }
+        } // Aktuální rychlost hry, která se může měnit s postupem úrovní
+        private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
+        private int _applesEatenInLevel = 0;
+        private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
 
         public GameEngine() : this(new GameLoopService(), new CollisionService(), new FoodService(), new LevelService())
         {
@@ -213,7 +220,7 @@ namespace BP_Snake.Models.Game_Core
         /// Dále určuje a nastavuje další položku jídla, která se má objevit na herní ploše.</remarks>
         private void OnFoodEaten()
         {
-            _growBuffer = 4;
+            _growBuffer = _growthPerFood;
             CurrentSnake.Move(grow: true);
 
             FoodEatenResult result = _foodService.HandleFoodEaten(CurrentGameBoard, CurrentSnake, CurrentFoodItem, _applesEatenInLevel);

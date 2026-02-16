@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BP_Snake.Models;
-using BP_Snake.Models.Data_Layer;
+﻿using BP_Snake.Models;
+using BP_Snake.Models.DataLayer;
 using SQLite;
 
 namespace BP_Snake.Services
@@ -17,8 +14,7 @@ namespace BP_Snake.Services
         /// Asynchronní SQLite připojení používané pro všechny operace.
         /// </summary>
         private SQLiteAsyncConnection _database;
-
-
+        private const string DbName = "SnakeGame.db";
 
         /// <summary>
         /// Inicializuje SQLite připojení a vytvoří tabulku <see cref="GameScore"/>, pokud ještě neexistuje.
@@ -31,7 +27,7 @@ namespace BP_Snake.Services
             }
 
             // Cesta k databázi 
-            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "SnakeGame.db");
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, DbName);
             _database = new SQLiteAsyncConnection(dbPath);
             await _database.CreateTableAsync<GameScore>();
         }

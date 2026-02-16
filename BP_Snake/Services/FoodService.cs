@@ -1,5 +1,5 @@
-﻿using BP_Snake.Models.Game_Core;
-using Point = BP_Snake.Models.Game_Core.Point;
+﻿using BP_Snake.Models.GameCore;
+using Point = BP_Snake.Models.GameCore.Point;
 
 namespace BP_Snake.Services
 {
