@@ -1,14 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BP_Snake.Models;
+using BP_Snake.Models.Data_Layer;
 using SQLite;
 
-namespace BP_Snake.Models.Data_Layer
+namespace BP_Snake.Services
 {
-    internal class DatabaseService
+    /// <summary>
+    /// Poskytuje jednoduchou asynchronní službu pro práci s lokální SQLite databází hry Snake.
+    /// Pro výuku je služba jednoduchá, centralizuje přístup k SQLite.
+    /// </summary>
+    internal class DatabaseService : IDatabaseService
     {
+        /// <summary>
+        /// Asynchronní SQLite připojení používané pro všechny operace.
+        /// </summary>
         private SQLiteAsyncConnection _database;
 
+
+
+        /// <summary>
+        /// Inicializuje SQLite připojení a vytvoří tabulku <see cref="GameScore"/>, pokud ještě neexistuje.
+        /// Metoda je bezpečná při opakovaném volání - pokud je připojení již vytvořeno, okamžitě se vrátí.
+        /// </summary>
         private async Task Init()
         {
             if (_database != null) {
@@ -21,6 +36,18 @@ namespace BP_Snake.Models.Data_Layer
             await _database.CreateTableAsync<GameScore>();
         }
 
+        /// <summary>
+        /// Uloží skóre hráče do databáze.
+        /// </summary>
+        /// <returns>
+        /// <see cref="SaveResult"/> indikující výsledek operace:
+        /// - <c>InsertedNew</c> pokud byl vložen nový záznam,
+        /// - <c>UpdatedHighScore</c> pokud byl aktualizován stávající záznam na vyšší skóre,
+        /// - <c>ScoreTooLow</c> pokud existující skóre je vyšší nebo rovné novému skóre.
+        /// </returns>
+        /// <remarks>
+        /// Pokud již existuje záznam se stejným jménem hráče, provede se porovnání skóre a případná aktualizace.
+        /// </remarks>
         public async Task<SaveResult> SavePlayerScoreAsync(GameScore scoreData)
         {
             await Init();
@@ -44,6 +71,10 @@ namespace BP_Snake.Models.Data_Layer
             }
         }
 
+        /// <summary>
+        /// Vrací seznam nejlepších výsledků seřazených sestupně podle skóre.
+        /// </summary>
+        /// <returns>Seznam až 10 nejlepších <see cref="GameScore"/> záznamů.</returns>
         public async Task<List<GameScore>> GetScoresAsync()
         {
             await Init();
@@ -54,11 +85,15 @@ namespace BP_Snake.Models.Data_Layer
                                   .Take(10)
                                   .ToListAsync();
         }
+        /// <summary>
+        /// Odstraní všechny záznamy skóre z tabulky.
+        /// </summary>
         public async Task ClearAllScores()
         {
             await Init();
             await _database.DeleteAllAsync<GameScore>();
         }
+
         //public async Task DeleteDB()
         //{
         //    await _database.DropTableAsync<GameScore>();

@@ -2,6 +2,7 @@
 using BP_Snake.Models;
 using BP_Snake.Models.Data_Layer;
 using BP_Snake.Models.Game_Core;
+using BP_Snake.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -15,7 +16,7 @@ namespace BP_Snake.Components.Pages
         private GameEngine _engine = new GameEngine();
 
         // proměnné pro interakci s DB
-        private DatabaseService _dbService = new DatabaseService();
+        [Inject] private IDatabaseService DbService { get; set; } = default!;
         private List<GameScore> _highScores = new List<GameScore>();
         private string _playerName = "";
         private string _errorMessage = "";
@@ -123,7 +124,7 @@ namespace BP_Snake.Components.Pages
             };
 
             // Uložíme do databáze, zároveň získáme výsledek uložení
-            SaveResult result = await _dbService.SavePlayerScoreAsync(scoreToSave);
+            SaveResult result = await DbService.SavePlayerScoreAsync(scoreToSave);
             // Zpracujeme výsledek uložení
             switch (result) {
                 case SaveResult.InsertedNew:
@@ -146,7 +147,7 @@ namespace BP_Snake.Components.Pages
         }
         private async Task LoadLeaderboard()
         {
-            _highScores = await _dbService.GetScoresAsync();
+            _highScores = await DbService.GetScoresAsync();
         }
     }
 }

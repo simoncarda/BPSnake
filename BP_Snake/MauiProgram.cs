@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using BP_Snake.Services;
+using Microsoft.Extensions.Logging;
 
 namespace BP_Snake
 {
@@ -20,6 +21,8 @@ namespace BP_Snake
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
+
+            builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
 
             return builder.Build();
         }
