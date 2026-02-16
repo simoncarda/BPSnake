@@ -5,6 +5,14 @@ using System.Text;
 
 namespace BP_Snake.Models.Game_Core
 {
+    /// <summary>
+    /// Poskytuje základní funkcionalitu pro správu stavu hry, včetně zpracování vstupu hráče, postupu hrou a interakcí mezi herními prvky.
+    /// </summary>
+    /// <remarks>
+    /// Třída GameEngine je zodpovědná za inicializaci a řízení herní smyčky, správu aktuálního stavu hry a zprostředkování interakcí mezi hadem,
+    /// položkami jídla a herní plochou. Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení, obnovení a ukončení hry.
+    /// Tato třída publikuje události pro aktualizaci uživatelského rozhraní (UI) a podporuje uvolňování prostředků prostřednictvím rozhraní IDisposable.
+    /// </remarks>
     internal class GameEngine : IDisposable
     {
         public Snake CurrentSnake { get; set; } = new Snake();
@@ -44,6 +52,10 @@ namespace BP_Snake.Models.Game_Core
             _levelService = levelService;
         }
 
+        /// <summary>
+        /// Inicializuje nový herní stav pro začátek nové hry.
+        /// Resetuje všechny relevantní proměnné a připraví hru na nový start.
+        /// </summary>
         public void LoadNewGame()
         {
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
@@ -59,6 +71,10 @@ namespace BP_Snake.Models.Game_Core
             // Vyvolání události pro aktualizaci UI (načtení hry)
             _ = OnStateChangedAsync?.Invoke();
         }
+
+        /// <summary>
+        /// Načte nový herní stav a spustí herní smyčku pro začátek nové hry.
+        /// </summary>
         public void StartNewGame()
         {
             LoadNewGame();
@@ -66,6 +82,10 @@ namespace BP_Snake.Models.Game_Core
             _ = StartGameLoop(); // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
             _ = OnStateChangedAsync?.Invoke();
         }
+
+        /// <summary>
+        /// Zastaví herní smyčku a přepne stav hry na "Paused". Pokud je hra již pozastavena, nebude mít žádný efekt.
+        /// </summary>
         public void PauseGame()
         {
             if (CurrentGameState == GameState.Playing) {
@@ -74,6 +94,10 @@ namespace BP_Snake.Models.Game_Core
                 _ = OnStateChangedAsync?.Invoke();
             }
         }
+
+        /// <summary>
+        /// Spustí herní smyčku a přepne stav hry zpět na "Playing". Pokud hra není v stavu "Paused", nebude mít žádný efekt.
+        /// </summary>
         public void ResumeGame()
         {
             if (CurrentGameState == GameState.Paused) {
@@ -82,6 +106,10 @@ namespace BP_Snake.Models.Game_Core
                 _ = OnStateChangedAsync?.Invoke();
             }
         }
+
+        /// <summary>
+        /// Ukončí hru, zastaví herní smyčku a přepne stav hry na "GameOver". Uloží čas, kdy došlo k Game Over, pro pozdější zobrazení v UI.
+        /// </summary>
         public void GameOver()
         {
             StopGameLoop(); // Zastavíme smyčku
@@ -89,16 +117,29 @@ namespace BP_Snake.Models.Game_Core
             CurrentGameState = GameState.GameOver;
             _ = OnStateChangedAsync?.Invoke();
         }
+
+        /// <summary>
+        /// Spustí herní smyčku asynchronně s aktuální rychlostí hry. 
+        /// Tato metoda zajišťuje, že logika hry bude aktualizována v pravidelných intervalech, které se mohou měnit v závislosti na úrovni a počtu dokončených úrovní.
+        /// </summary>
         private Task StartGameLoop()
         {
             return _gameLoopService.StartAsync(GameLogicTickAsync, _currentGameSpeed);
         }
+
+        /// <summary>
+        /// Zastaví herní smyčku a zruší všechny plánované aktualizace stavu hry. 
+        /// Tato metoda je volána při pozastavení hry, ukončení hry nebo načtení nové hry, aby se zajistilo, že nebudou probíhat žádné další aktualizace stavu, dokud nebude explicitně znovu spuštěna.
+        /// </summary>
         private void StopGameLoop()
         {
             _gameLoopService.Stop();
         }
 
-        // Metoda pro jeden tick timeru - aktualizace stavu hry
+        /// <summary>
+        /// Metoda obsahující hlavní logiku hry, která se vykonává při každém "ticku" herní smyčky.
+        /// </summary>
+        /// <returns> Vrací Task, protože je volána asynchronně z GameLoopService, ale v současné implementaci neprovádí žádné asynchronní operace, takže vrací dokončený Task.</returns>
         private Task GameLogicTickAsync()
         {
             _directionChangedInCurrentTick = false;
@@ -128,7 +169,11 @@ namespace BP_Snake.Models.Game_Core
             return Task.CompletedTask;
         }
 
-        // Metoda pro načtení další úrovně
+        /// <summary>
+        /// Pokračuje hru na další úroveň, resetuje relevantní herní stav a inicializuje herní desku a hada pro novou úroveň.
+        /// </summary>
+        /// <remarks>Tato metoda zvyšuje počet dokončených úrovní, načítá další úroveň pomocí služby úrovní (level service), vynuluje počet snědených jablek v aktuální úrovni a restartuje herní smyčku. 
+        /// Měla by být volána ve chvíli, kdy hráč dokončí úroveň, aby bylo zajištěno, že stav hry bude správně aktualizován pro další fázi.</remarks>
         private void LoadNextLevel()
         {
             TotalLevelsCompleted++;
@@ -139,6 +184,10 @@ namespace BP_Snake.Models.Game_Core
             CreateFoodItem();
             RestartGameLoop();
         }
+
+        /// <summary>
+        /// Zastaví aktuální herní smyčku a spustí novou s aktualizovanou rychlostí, pokud je hra stále v stavu "Playing".
+        /// </summary>
         private void RestartGameLoop()
         {
             StopGameLoop();
@@ -147,12 +196,21 @@ namespace BP_Snake.Models.Game_Core
             } // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
         }
 
-        // Metoda pro vytvoření nového jídla s náhodnou pozicí a 20% šancí na bonusové jídlo
+        /// <summary>
+        /// Vytvoří a přiřadí novou položku jídla na aktuální herní plochu na základě aktuálního stavu hada.
+        /// </summary>
+        /// <remarks>Tato metoda využívá službu jídla (food service) ke generování položky jídla, která je umístěna na herní plochu.
+        /// Měla by být volána pokaždé, když je potřeba vygenerovat nové jídlo – například poté, co bylo zkonzumováno to předchozí.</remarks>
         private void CreateFoodItem()
         {
             CurrentFoodItem = _foodService.CreateFoodItem(CurrentGameBoard, CurrentSnake);
         }
 
+        /// <summary>
+        /// Zpracovává událost, kdy had sní položku jídla, a odpovídajícím způsobem aktualizuje stav hry.
+        /// </summary>
+        /// <remarks>Tato metoda zvětšuje délku hada, aktualizuje hráčovo skóre a spravuje postup hrou, jako je například otevírání bran při splnění určitých podmínek.
+        /// Dále určuje a nastavuje další položku jídla, která se má objevit na herní ploše.</remarks>
         private void OnFoodEaten()
         {
             _growBuffer = 4;
@@ -169,6 +227,12 @@ namespace BP_Snake.Models.Game_Core
             CurrentFoodItem = result.NextFoodItem;
         }
 
+        /// <summary>
+        /// Změní směr hada na zadaný směr, pokud nový směr není přímo opačný k aktuálnímu směru nebo pokud již v rámci aktuálního herního kroku nedošlo ke změně směru.
+        /// </summary>
+        /// <remarks>Tato metoda zajišťuje, že se had nemůže otočit přímo do protisměru (například nahoru a hned dolů) a že je v rámci jednoho herního kroku povolena pouze jedna změna směru.
+        /// Pokus o vícenásobnou změnu směru během stejného kroku nebo o změnu do neplatného směru nebude mít žádný vliv.</remarks>
+        /// <param name="newDirection">Směr, který se má hadovi nastavit. Tato hodnota nesmí být opačná k aktuálnímu směru.</param>
         public void ChangeDirection(Direction newDirection)
         {
             if (_directionChangedInCurrentTick) {

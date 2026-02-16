@@ -4,6 +4,14 @@ using System.Text;
 
 namespace BP_Snake.Models.Game_Core
 {
+    /// <summary>
+    /// Reprezentuje konfigurovatelnou herní plochu pro danou úroveň, včetně jejích rozměrů, překážek a stavu brány.
+    /// </summary>
+    /// <remarks>
+    /// Třída GameBoard se inicializuje se specifickou konfigurací úrovně, což umožňuje dynamické nastavení velikosti plochy, rozmístění překážek a správu brány.
+    /// Poskytuje metody pro konfiguraci plochy pro danou úroveň a pro ovládání stavu brány.
+    /// Tato třída je určena k tomu, aby sloužila jako hlavní reprezentace herní oblasti pro každou úroveň.
+    /// </remarks>
     internal class GameBoard
     {
         public GameBoard(int levelIndex = 1)

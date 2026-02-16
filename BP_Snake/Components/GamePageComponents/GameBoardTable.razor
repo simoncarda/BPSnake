@@ -40,7 +40,10 @@
 
     private ElementReference _boardElement;
 
-	// Doplňková metoda pro zaměření na herní plochu po obnovení hry
+    /// <summary>
+    /// Řeší kliknutí na tlačítko "Resume". Po obnovení hry se zaměříme zpět na herní plochu, aby bylo možné pokračovat v ovládání klávesnicí.
+    /// </summary>
+    /// <returns></returns>
     private async Task HandleResumeClick()
     {
         await OnResumeGame.InvokeAsync();

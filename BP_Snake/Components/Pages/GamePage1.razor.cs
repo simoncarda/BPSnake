@@ -38,6 +38,14 @@ namespace BP_Snake.Components.Pages
             await LoadLeaderboard();
         }
 
+        /// <summary>
+        /// Spustí novou herní relaci a resetuje stav hry.
+        /// </summary>
+        /// <remarks>
+        /// Tato metoda vymaže veškeré předchozí chybové zprávy, resetuje indikátor stavu uložení
+        /// a po inicializaci nové hry asynchronně načte žebříček nejlepších hráčů (leaderboard).
+        /// </remarks>
+        /// <returns>Úloha (task), která reprezentuje asynchronní operaci.</returns>
         private async Task StartNewGame()
         {
             _errorMessage = "";
@@ -59,7 +67,15 @@ namespace BP_Snake.Components.Pages
             // Přepne vykonávání kódu zpět do hlavního UI vlákna
             return InvokeAsync(() => StateHasChanged());
         }
-        // Řeší vstupy z klávesnice
+
+        /// <summary>
+        /// Zpracovává vstup z klávesnice a aktualizuje směr v enginu na základě stisknutí šipek.
+        /// </summary>
+        /// <remarks>
+        /// Tato metoda reaguje pouze na klávesy ArrowUp (šipka nahoru), ArrowDown (šipka dolů), ArrowLeft (šipka vlevo)
+        /// a ArrowRight (šipka vpravo). Ostatní vstupy z klávesnice jsou ignorovány.
+        /// </remarks>
+        /// <param name="e">The <see cref="KeyboardEventArgs"/> Instance obsahující informace o události klávesnice.</param>
         private void HandleInput(KeyboardEventArgs e)
         {
             switch (e.Key) {
@@ -78,6 +94,19 @@ namespace BP_Snake.Components.Pages
             }
         }
 
+        /// <summary>
+        /// Určuje název CSS třídy pro buňku na zadaných souřadnicích na základě jejího aktuálního stavu v herní mřížce.
+        /// </summary>
+        /// <remarks>
+        /// Vrácený název css třídy odráží aktuální stav herních prvků na daných souřadnicích, včetně pozice hada, položek jídla, stavu brány a překážek.
+        /// Tato metoda se obvykle používá k vykreslení herní plochy s příslušnými vizuálními prvky pro každou buňku.
+        /// </remarks>
+        /// <param name="x">Od nuly počítaná souřadnice X buňky v rámci herní mřížky.</param>
+        /// <param name="y">Od nuly počítaná souřadnice Y buňky v rámci herní mřížky.</param>
+        /// <returns>
+        /// Řetězec reprezentující název CSS třídy pro danou buňku,
+        /// který určuje, zda obsahuje hlavu hada, tělo hada, jídlo, bránu, zeď, nebo zda je prázdná.
+        /// </returns>
         private string GetCellClass(int x, int y)
         {
             var p = new Models.Game_Core.Point(x, y);
@@ -105,6 +134,15 @@ namespace BP_Snake.Components.Pages
             return "cell empty";
         }
 
+        /// <summary>
+        /// Uloží aktuální herní skóre hráče, za předpokladu, že je skóre vyšší než nula a je zadáno platné jméno hráče.
+        /// </summary>
+        /// <remarks>
+        /// Pokud je skóre nulové nebo je jméno hráče prázdné (či obsahuje pouze bílé znaky), nastaví se chybová zpráva a skóre se neuloží.
+        /// Metoda zpracovává různé výsledky ukládání a poskytuje zpětnou vazbu o tom, zda bylo
+        /// skóre úspěšně uloženo, aktualizováno, nebo vyhodnoceno jako příliš nízké pro uložení.
+        /// Po uložení načte žebříček, aby odrážel nejnovější výsledky.
+        /// </remarks>
         private async Task SaveScore()
         {
             if (_engine.CurrentGameScore == 0) {

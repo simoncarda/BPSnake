@@ -57,6 +57,13 @@ namespace BP_Snake.Services
             }
         }
 
+        /// <summary>
+        /// Zastaví herní smyčku a uvolní všechny související prostředky.
+        /// </summary>
+        /// <remarks>
+        /// Tuto metodu volejte pro zrušení veškerých probíhajících operací a pro zajištění, že prostředky,
+        /// jako jsou časovače (timers) a storno tokeny (cancellation tokens),budou řádně uvolněny.
+        /// </remarks>
         public void Stop()
         {
             _cts?.Cancel();

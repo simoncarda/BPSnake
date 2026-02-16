@@ -5,8 +5,6 @@
     <h2>Game Over!</h2>
     <button type="button" class="btn btn-success" @onclick="OnStartNewGame">Začít novou hru</button>
     <button type="button" class="btn btn-warning" @onclick="OnSaveScore" disabled="@IsSaveSuccess">Uložit score</button>
-    @* <button type="button" @onclick="_dbService.DeleteDB">***Reset databáze***</button> *@
-
 
     @if (IsSaveSuccess) {
         <p style="color:green">@ErrorMessage</p>
@@ -37,12 +35,18 @@
     [Parameter] public EventCallback OnStartNewGame { get; set; }
     [Parameter] public EventCallback OnSaveScore { get; set; }
 
+
+    /// <summary>
+    /// Řeší změnu jména hráče a posílá ji nahoru pomocí EventCallbacku OnPlayerNameChanged
+    /// </summary>
     private async Task HandleNameChange(ChangeEventArgs e)
     {
-        // Pošleme změnu nahoru
         await OnPlayerNameChanged.InvokeAsync(e.Value.ToString());
     }
 
+    /// <summary>
+    /// Proxy pro PlayerName, který umožňuje volat OnPlayerNameChanged při změně hodnoty v inputu
+    /// </summary>
     private string PlayerNameProxy
     {
         get => PlayerName;

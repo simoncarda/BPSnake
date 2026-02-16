@@ -15,18 +15,14 @@ namespace BP_Snake.Services
         public bool IsCollisionDetected(GameBoard board, Snake snake)
         {
             Point currentHead = snake.Body[0];
-            return IsCollisionWithWall(board, currentHead) || snake.IsSelfCollision() || IsCollisionWithObstacles(board, currentHead);
+            return IsCollisionWithBoundary(board, currentHead) || snake.IsSelfCollision() || IsCollisionWithObstacles(board, currentHead);
         }
 
         /// <summary>
         /// Kontrola kolize hlavy se zdí (hranice hrací plochy).
-        /// Brána je výjimka — pokud je otevřená, nepočítá se jako kolize.
         /// </summary>
-        private bool IsCollisionWithWall(GameBoard board, Point head)
+        private bool IsCollisionWithBoundary(GameBoard board, Point head)
         {
-            if (board.IsGateOpen && head == board.GatePosition) {
-                return false;
-            }
             return head.X < 0 || head.X >= board.Width ||
                    head.Y < 0 || head.Y >= board.Height;
         }
