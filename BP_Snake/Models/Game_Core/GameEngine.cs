@@ -24,11 +24,6 @@ namespace BP_Snake.Models.Game_Core
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
         private int _applesEatenInLevel = 0;
         private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
-        private Random _random = new Random();
-
-        // Timer pro řízení rychlosti hry
-        private PeriodicTimer? _gameLoopTimer;
-        private CancellationTokenSource? _cts;
 
         // UDÁLOST: aktualizace UI
         public event Action? OnStateChanged;
@@ -149,7 +144,7 @@ namespace BP_Snake.Models.Game_Core
         private void LoadNextLevel()
         {
             TotalLevelsCompleted++;
-            // Pokud je aktuální úroveň 12, restartujeme na úroveň 0
+            // Pokud je aktuální úroveň posledním levelem, restartujeme na první úroveň 
             if (CurrentLevel >= 12) {
                 CurrentLevel = 1;
             } else {
@@ -159,45 +154,6 @@ namespace BP_Snake.Models.Game_Core
             CurrentGameBoard = new(CurrentLevel);
             CurrentSnake = new Snake();
             CreateFoodItem();
-        }
-
-        // Metoda pro detekci kolize aktuální pozice hlavy hada se zdmi, překážkami nebo sebou
-        private bool IsCollisionDetected()
-        {
-            Point currentHead = CurrentSnake.Body[0];
-            return IsCollisionWithWall(currentHead) || CurrentSnake.IsSelfCollision() || IsCollisionWithObstacles(currentHead);
-        }
-
-        // Metoda pro detekci kolize pozice bodu se zdmi
-        private bool IsCollisionWithWall(Point head)
-        {
-            if (CurrentGameBoard.IsGateOpen && head == CurrentGameBoard.GatePosition) {
-                return false;
-            }
-            return head.X < 0 || head.X >= CurrentGameBoard.Width || 
-                   head.Y < 0 || head.Y >= CurrentGameBoard.Height;
-        }
-
-        // Metoda pro detekci kolize pozice bodu (hlavy hada) s překážkami
-        private bool IsCollisionWithObstacles(Point head)
-        {
-            if (CurrentGameBoard.Obstacles.Contains(head)) {
-                return true;
-            }
-            return false;
-        }
-
-        // Metoda pro vytvoření nového jídla s náhodnou pozicí a 20% šancí na bonusové jídlo
-        private void CreateFoodItem()
-        {
-            int x;
-            int y;
-            int value = (_random.Next(0, 10) < 8) ? 5 : 10; // 20% šance na bonusové jídlo s hodnotou 10
-            do {
-                x = _random.Next(0, CurrentGameBoard.Width);
-                y = _random.Next(0, CurrentGameBoard.Height);
-            } while (CurrentSnake.Body.Contains(new Point(x, y)) || CurrentGameBoard.Obstacles.Contains(new Point(x, y)));
-            CurrentFoodItem = new FoodItem(new Point(x, y), value);
         }
 
         private void OnFoodEaten()
