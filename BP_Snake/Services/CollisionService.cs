@@ -12,7 +12,7 @@ namespace BP_Snake.Services
         /// <summary>
         /// Vrátí true pokud došlo ke kolizi (se zdí, překážkou nebo tělem hada).
         /// </summary>
-        private bool IsCollisionDetected(GameBoard board, Snake snake)
+        public bool IsCollisionDetected(GameBoard board, Snake snake)
         {
             Point currentHead = snake.Body[0];
             return IsCollisionWithWall(board, currentHead) || snake.IsSelfCollision() || IsCollisionWithObstacles(board, currentHead);

@@ -32,7 +32,7 @@ namespace BP_Snake.Components.Pages
                 _showTouchControls = false;
             }
 
-            _engine.OnStateChanged += RefreshUI;
+            _engine.OnStateChangedAsync += RefreshUIAsync;
             _engine.LoadNewGame();
 
             await LoadLeaderboard();
@@ -54,10 +54,10 @@ namespace BP_Snake.Components.Pages
             _engine.ResumeGame();
         }
 
-        private async void RefreshUI()
+        private Task RefreshUIAsync()
         {
             // Přepne vykonávání kódu zpět do hlavního UI vlákna
-            await InvokeAsync(() => StateHasChanged());
+            return InvokeAsync(() => StateHasChanged());
         }
         // Řeší vstupy z klávesnice
         private void HandleInput(KeyboardEventArgs e)

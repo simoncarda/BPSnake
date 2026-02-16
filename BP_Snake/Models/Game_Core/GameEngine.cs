@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BP_Snake.Services;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,20 +19,31 @@ namespace BP_Snake.Models.Game_Core
 
         private int _currentGameSpeed {
             get {
-                return Math.Max(_baseGameSpeed - (20 * TotalLevelsCompleted), 50);
+                return Math.Max(_baseGameSpeed - (20 * TotalLevelsCompleted), 80);
             }
         } // Aktuální rychlost hry, která se může měnit s postupem úrovní
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
         private int _applesEatenInLevel = 0;
         private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
+        private readonly GameLoopService _gameLoopService;
+        private readonly CollisionService _collisionService;
+        private readonly FoodService _foodService;
+        private readonly LevelService _levelService;
 
         // UDÁLOST: aktualizace UI
-        public event Action? OnStateChanged;
+        public event Func<Task>? OnStateChangedAsync;
 
-        public GameEngine()
+        public GameEngine() : this(new GameLoopService(), new CollisionService(), new FoodService(), new LevelService())
         {
-
         }
+        internal GameEngine(GameLoopService gameLoopService, CollisionService collisionService, FoodService foodService, LevelService levelService)
+        {
+            _gameLoopService = gameLoopService;
+            _collisionService = collisionService;
+            _foodService = foodService;
+            _levelService = levelService;
+        }
+
         public void LoadNewGame()
         {
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
@@ -45,21 +57,21 @@ namespace BP_Snake.Models.Game_Core
             _growBuffer = 0;
             TotalLevelsCompleted = 0;
             // Vyvolání události pro aktualizaci UI (načtení hry)
-            OnStateChanged?.Invoke();
+            _ = OnStateChangedAsync?.Invoke();
         }
         public void StartNewGame()
         {
             LoadNewGame();
             CurrentGameState = GameState.Playing;
             _ = StartGameLoop(); // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
-            OnStateChanged?.Invoke();
+            _ = OnStateChangedAsync?.Invoke();
         }
         public void PauseGame()
         {
             if (CurrentGameState == GameState.Playing) {
                 StopGameLoop(); // Zastavíme timer (cancel task)
                 CurrentGameState = GameState.Paused;
-                OnStateChanged?.Invoke();
+                _ = OnStateChangedAsync?.Invoke();
             }
         }
         public void ResumeGame()
@@ -67,7 +79,7 @@ namespace BP_Snake.Models.Game_Core
             if (CurrentGameState == GameState.Paused) {
                 _ = StartGameLoop(); // Znovu vytvoříme timer a spustíme smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
                 CurrentGameState = GameState.Playing;
-                OnStateChanged?.Invoke();
+                _ = OnStateChangedAsync?.Invoke();
             }
         }
         public void GameOver()
@@ -75,44 +87,19 @@ namespace BP_Snake.Models.Game_Core
             StopGameLoop(); // Zastavíme smyčku
             GameOverTime = DateTime.Now;
             CurrentGameState = GameState.GameOver;
-            OnStateChanged?.Invoke();
+            _ = OnStateChangedAsync?.Invoke();
         }
-        private async Task StartGameLoop()
+        private Task StartGameLoop()
         {
-            StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
-
-            using CancellationTokenSource localCts = new CancellationTokenSource();
-            using PeriodicTimer localTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(_currentGameSpeed)); // Nastavíme interval 200 ms
-            _gameLoopTimer = localTimer;
-            _cts = localCts;
-
-            try 
-            {
-                while (await localTimer.WaitForNextTickAsync(localCts.Token)) {
-                    GameLogicTick();
-                    localTimer.Period = TimeSpan.FromMilliseconds(_currentGameSpeed); // Dynamicky upravíme interval timeru podle aktuální rychlosti hry
-                }
-            }
-            catch (OperationCanceledException) 
-            {
-                // Smyčka byla zrušena, není třeba nic dělat
-            }
+            return _gameLoopService.StartAsync(GameLogicTickAsync, _currentGameSpeed);
         }
         private void StopGameLoop()
         {
-            if (_cts != null) {
-                _cts.Cancel(); // Zrušíme běžící smyčku
-                _cts.Dispose();
-                _cts = null;
-            }
-            if (_gameLoopTimer != null) {
-                _gameLoopTimer.Dispose();
-                _gameLoopTimer = null;
-            }
+            _gameLoopService.Stop();
         }
 
         // Metoda pro jeden tick timeru - aktualizace stavu hry
-        private void GameLogicTick()
+        private Task GameLogicTickAsync()
         {
             _directionChangedInCurrentTick = false;
 
@@ -127,9 +114,9 @@ namespace BP_Snake.Models.Game_Core
             }
 
             // podmínka pro kolizi s překážkami, zdmi či sebou samým
-            if (IsCollisionDetected()) {
+            if (_collisionService.IsCollisionDetected(CurrentGameBoard, CurrentSnake)) {
                 GameOver();
-                return;
+                return Task.CompletedTask;
             }
 
             // podmínka pro dosažení brány a přechod na další úroveň
@@ -137,37 +124,49 @@ namespace BP_Snake.Models.Game_Core
                 LoadNextLevel();
             }
 
-            OnStateChanged?.Invoke();
+            _ = OnStateChangedAsync?.Invoke();
+            return Task.CompletedTask;
         }
 
         // Metoda pro načtení další úrovně
         private void LoadNextLevel()
         {
             TotalLevelsCompleted++;
-            // Pokud je aktuální úroveň posledním levelem, restartujeme na první úroveň 
-            if (CurrentLevel >= 12) {
-                CurrentLevel = 1;
-            } else {
-                CurrentLevel++;
-            }
+            CurrentLevel = _levelService.GetNextLevel(CurrentLevel);
             _applesEatenInLevel = 0;
             CurrentGameBoard = new(CurrentLevel);
             CurrentSnake = new Snake();
             CreateFoodItem();
+            RestartGameLoop();
+        }
+        private void RestartGameLoop()
+        {
+            StopGameLoop();
+            if (CurrentGameState == GameState.Playing) {
+                _ = StartGameLoop();
+            } // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
+        }
+
+        // Metoda pro vytvoření nového jídla s náhodnou pozicí a 20% šancí na bonusové jídlo
+        private void CreateFoodItem()
+        {
+            CurrentFoodItem = _foodService.CreateFoodItem(CurrentGameBoard, CurrentSnake);
         }
 
         private void OnFoodEaten()
         {
             _growBuffer = 4;
             CurrentSnake.Move(grow: true);
-            CurrentGameScore += CurrentFoodItem.ScoreValue;
-            _applesEatenInLevel++;
-            if (_applesEatenInLevel >= 5) {
+
+            FoodEatenResult result = _foodService.HandleFoodEaten(CurrentGameBoard, CurrentSnake, CurrentFoodItem, _applesEatenInLevel);
+            CurrentGameScore += result.ScoreValue;
+            _applesEatenInLevel = result.ApplesEatenInLevel;
+
+            if (result.ShouldOpenGate) {
                 CurrentGameBoard.OpenGate();
-                CurrentFoodItem = new FoodItem(new Point(-1, -1), 0); // "Skrytí" jídla
-            } else {
-                CreateFoodItem();
             }
+
+            CurrentFoodItem = result.NextFoodItem;
         }
 
         public void ChangeDirection(Direction newDirection)
@@ -190,6 +189,7 @@ namespace BP_Snake.Models.Game_Core
         public void Dispose()
         {
             StopGameLoop(); // Zajistíme, že smyčka bude zastavena a všechny zdroje uvolněny
+            _gameLoopService.Dispose();
         }
     }
 }
