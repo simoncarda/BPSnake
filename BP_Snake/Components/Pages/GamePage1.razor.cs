@@ -5,15 +5,12 @@ using BP_Snake.Models.GameCore;
 using BP_Snake.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BP_Snake.Components.Pages
 {
     public partial class GamePage1
     {
-        private GameEngine _engine = new GameEngine();
+        [Inject] private GameEngine _engine { get; set; } = default!;
 
         // proměnné pro interakci s DB
         [Inject] private IDatabaseService DbService { get; set; } = default!;

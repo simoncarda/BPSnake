@@ -1,5 +1,6 @@
 ﻿using BP_Snake.Services;
 using Microsoft.Extensions.Logging;
+using BP_Snake.Models.GameCore;
 
 namespace BP_Snake
 {
@@ -23,6 +24,12 @@ namespace BP_Snake
 #endif
 
             builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
+            builder.Services.AddSingleton<GameLoopService>();
+            builder.Services.AddSingleton<CollisionService>();
+            builder.Services.AddSingleton<FoodService>();
+            builder.Services.AddSingleton<LevelService>();
+
+            builder.Services.AddTransient<GameEngine>();
 
             return builder.Build();
         }

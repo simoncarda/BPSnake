@@ -10,7 +10,7 @@ namespace BP_Snake.Models.GameCore
     /// položkami jídla a herní plochou. Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení, obnovení a ukončení hry.
     /// Tato třída publikuje události pro aktualizaci uživatelského rozhraní (UI) a podporuje uvolňování prostředků prostřednictvím rozhraní IDisposable.
     /// </remarks>
-    internal class GameEngine : IDisposable
+    internal class GameEngine(GameLoopService gameLoopService, CollisionService collisionService, FoodService foodService, LevelService levelService) : IDisposable
     {
         // Konstanty
         private const int _growthPerFood = 4; // Počet kroků, o které se had zvětší po snězení jednoho jídla
@@ -29,10 +29,10 @@ namespace BP_Snake.Models.GameCore
         public GameState CurrentGameState { get; private set; } 
 
         // Služby
-        private readonly GameLoopService _gameLoopService;
-        private readonly CollisionService _collisionService;
-        private readonly FoodService _foodService;
-        private readonly LevelService _levelService;
+        private readonly GameLoopService _gameLoopService = gameLoopService;
+        private readonly CollisionService _collisionService = collisionService;
+        private readonly FoodService _foodService = foodService;
+        private readonly LevelService _levelService = levelService;
 
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
@@ -47,17 +47,6 @@ namespace BP_Snake.Models.GameCore
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
         private int _applesEatenInLevel = 0;
         private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
-
-        public GameEngine() : this(new GameLoopService(), new CollisionService(), new FoodService(), new LevelService())
-        {
-        }
-        internal GameEngine(GameLoopService gameLoopService, CollisionService collisionService, FoodService foodService, LevelService levelService)
-        {
-            _gameLoopService = gameLoopService;
-            _collisionService = collisionService;
-            _foodService = foodService;
-            _levelService = levelService;
-        }
 
         /// <summary>
         /// Notifikuje všechny přihlášené posluchače události OnStateChangedAsync, že došlo ke změně stavu hry, a
