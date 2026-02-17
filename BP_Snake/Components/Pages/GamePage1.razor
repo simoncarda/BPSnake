@@ -13,25 +13,28 @@
         break;
     case GameState.Playing:
     case GameState.Paused:
-        <GameBoardTable 
+        <GameBoardScreen 
             Width="@_engine.CurrentGameBoard.Width" 
             Height="@_engine.CurrentGameBoard.Height" 
             CurrentGameState="@_engine.CurrentGameState" 
             CurrentGameScore="@_engine.CurrentGameScore"
             CurrentLevel="@_engine.CurrentLevel"
+            TotalLevelsCompleted="@_engine.TotalLevelsCompleted"
             OnPauseGame="@PauseGame"
             OnResumeGame="@ResumeGame"
             CellClass="@GetCellClass"
             HandleKeyboardInput="@HandleInput"
         />
         if (_showTouchControls) {
-            <TouchControls />
+            <TouchControls 
+                OnDirectionChange="@_engine.ChangeDirection"/>
         }
         break;
     case GameState.GameOver:
         <GameOverScreen 
             Score="@_engine.CurrentGameScore" 
-            Level="@_engine.CurrentLevel" 
+            CurrentLevel="@_engine.CurrentLevel"
+            TotalLevelsCompleted="_engine.TotalLevelsCompleted"
             IsSaveSuccess="@_isSaveSuccess" 
             ErrorMessage="@_errorMessage"
             HighScores="@_highScores" 

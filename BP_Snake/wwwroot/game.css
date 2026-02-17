@@ -24,9 +24,15 @@
 
 .stats {
     display: flex;
-    gap: 15px; /* Mezera mezi Score a Level */
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 30px;
+    border: 2px solid black;
+    border-collapse: collapse;
+    padding: 5px;
     font-weight: bold;
     font-family: sans-serif;
+    cursor: default;
 }
 
 .gameboard {
