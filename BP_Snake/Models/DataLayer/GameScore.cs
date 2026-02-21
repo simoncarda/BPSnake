@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using BP_Snake.Configuration;
 
 namespace BP_Snake.Models.DataLayer
 {
@@ -17,9 +18,19 @@ namespace BP_Snake.Models.DataLayer
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        [MaxLength(50), NotNull]
+        private string _playerName = string.Empty;
+        [MaxLength(GameSettings.MaxPlayerNameLength), NotNull]
         [Collation("NOCASE")]
-        public string PlayerName { get; set; } = string.Empty;
+        public string PlayerName { 
+            get => _playerName; 
+            set {
+                ArgumentNullException.ThrowIfNull(value);
+                if (value.Length > GameSettings.MaxPlayerNameLength) {
+                    throw new ArgumentException($"PlayerName cannot exceed {GameSettings.MaxPlayerNameLength} characters.", nameof(PlayerName));
+                }
+                _playerName = value;
+            }
+        }
         public int Score { get; set; }
         public int TotalLevelsCompleted { get; set; }
         public DateTime DateTimeAchieved { get; set; }

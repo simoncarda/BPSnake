@@ -28,6 +28,9 @@ namespace BP_Snake.Services
 
             // Cesta k databázi 
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, DbName);
+
+            File.Delete(dbPath);
+
             _database = new SQLiteAsyncConnection(dbPath);
             await _database.CreateTableAsync<GameScore>();
         }
@@ -89,12 +92,5 @@ namespace BP_Snake.Services
             await Init();
             await _database.DeleteAllAsync<GameScore>();
         }
-
-        //public async Task DeleteDB()
-        //{
-        //    await _database.DropTableAsync<GameScore>();
-        //    _database = null; // Reset connection to force reinitialization on next access
-        //    await Init();
-        //}
     }
 }

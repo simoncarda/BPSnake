@@ -1,4 +1,5 @@
 ﻿@using BP_Snake.Models.DataLayer;
+@using BP_Snake.Configuration;
 
 
 <div class="game-container game-over">
@@ -17,7 +18,7 @@
             <p><strong>Úspěšně dokončeno levelů: @TotalLevelsCompleted</strong></p>
             <p><strong>Zemřel jsi na levelu @CurrentLevel</strong></p>
         </div>
-        <input type="text" placeholder="Jméno hráče" @bind-value="PlayerNameProxy" />
+        <input type="text" placeholder="Jméno hráče" maxlength="@GameSettings.MaxPlayerNameLength" @bind-value="PlayerNameProxy" />
     </div>
     <ScoreTable HighScores="HighScores" />
 </div>
