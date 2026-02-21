@@ -1,5 +1,6 @@
 ﻿@using BP_Snake.Components.GamePageComponents
 @using BP_Snake.Models
+@using BP_Snake.Configuration
 
 @page "/"
 
@@ -14,8 +15,8 @@
     case GameState.Playing:
     case GameState.Paused:
         <GameBoardScreen 
-            Width="@_engine.CurrentGameBoard.Width" 
-            Height="@_engine.CurrentGameBoard.Height" 
+            Width="@_engine.CurrentGameBoard.Width"
+            Height="@_engine.CurrentGameBoard.Height"
             CurrentGameState="@_engine.CurrentGameState" 
             CurrentGameScore="@_engine.CurrentGameScore"
             CurrentLevel="@_engine.CurrentLevel"

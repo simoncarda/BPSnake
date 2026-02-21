@@ -9,7 +9,7 @@ using GridPoint = BP_Snake.Models.GameCore.GridPoint;
 
 namespace BP_Snake.Components.Pages
 {
-    public partial class GamePage1
+    public partial class GamePage
     {
         [Inject] private GameEngine _engine { get; set; } = default!;
 

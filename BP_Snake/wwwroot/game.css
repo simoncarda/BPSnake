@@ -37,8 +37,6 @@
 
 .gameboard {
     display: grid;
-    grid-template-columns: repeat(20, 1fr); /* 20 sloupcù */
-    grid-template-rows: repeat(20, 1fr); /* 20 øádkù */
     gap: 0; /* Žádný mezera mezi buòkami */
     border: 2px solid black; /* Okraj kolem celé møížky */
     margin: 10px auto;

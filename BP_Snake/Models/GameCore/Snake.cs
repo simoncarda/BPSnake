@@ -12,6 +12,8 @@ namespace BP_Snake.Models.GameCore
     /// </remarks>
     internal class Snake
     {
+        public List<GridPoint> Body { get; set; } = new();
+        public Direction CurrentDirection { get; set; }
         public Snake()
         {
             for (int i = 0; i < GameSettings.InitialSnakeLength; i++) {
@@ -19,9 +21,6 @@ namespace BP_Snake.Models.GameCore
             }
             CurrentDirection = Direction.Right; // Výchozí směr pohybu doprava
         }
-
-        public List<GridPoint> Body { get; set; } = new();
-        public Direction CurrentDirection { get; set; }
 
         /// <summary>
         /// Vypočítá příští pozici hlavy hada na základě jeho aktuálního směru pohybu.
