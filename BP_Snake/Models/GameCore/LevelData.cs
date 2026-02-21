@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+
+using BP_Snake.Configuration;
 
 namespace BP_Snake.Models.GameCore
 {
@@ -17,10 +17,10 @@ namespace BP_Snake.Models.GameCore
         public static LevelConfig GetLevel(int levelIndex) {
             LevelConfig config = new LevelConfig {
                 LevelNumber = levelIndex,
-                GatePosition = new GridPoint(10, 1),
+                GatePosition = new GridPoint(GameSettings.GameBoardWidth/2, 1), // Brána je vždy uprostřed horní řady
                 Obstacles = new List<GridPoint>(),
-                Width = 20, // Velikost šířky herního pole
-                Height = 20
+                Width = GameSettings.GameBoardWidth,
+                Height = GameSettings.GameBoardHeight
             };
 
             // Přidání překážek podle úrovně

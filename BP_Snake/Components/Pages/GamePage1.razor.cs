@@ -1,10 +1,11 @@
-﻿using BP_Snake.Components.GamePageComponents;
-using BP_Snake.Models;
+﻿using BP_Snake.Models;
 using BP_Snake.Models.DataLayer;
 using BP_Snake.Models.GameCore;
+using BP_Snake.Configuration;
 using BP_Snake.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using GridPoint = BP_Snake.Models.GameCore.GridPoint;
 
 namespace BP_Snake.Components.Pages
 {
@@ -15,8 +16,8 @@ namespace BP_Snake.Components.Pages
         // proměnné pro interakci s DB
         [Inject] private IDatabaseService DbService { get; set; } = default!;
         private List<GameScore> _highScores = new List<GameScore>();
-        private string _playerName = "";
-        private string _errorMessage = "";
+        private string _playerName = string.Empty;
+        private string _errorMessage = string.Empty;
         private bool _isSaveSuccess = false;
         private bool _showTouchControls = false;
 
@@ -106,7 +107,7 @@ namespace BP_Snake.Components.Pages
         /// </returns>
         private string GetCellClass(int x, int y)
         {
-            var p = new Models.GameCore.GridPoint(x, y);
+            var p = new GridPoint(x, y);
 
             if (_engine.CurrentSnake.Body.Count > 0 && _engine.CurrentSnake.Body[0] == p) {
                 return "cell snake-head";
@@ -116,8 +117,8 @@ namespace BP_Snake.Components.Pages
                 return "cell snake-body";
             }
 
-            if (_engine.CurrentFoodItem.Position == p) {
-                return _engine.CurrentFoodItem.ScoreValue >= 10 ? "cell food-bonus" : "cell food";
+            if (_engine.CurrentFoodItem != null && _engine.CurrentFoodItem.Position == p) {
+                return _engine.CurrentFoodItem.ScoreValue == GameSettings.BonusFoodScoreValue ? "cell food-bonus" : "cell food";
             }
 
             if (_engine.CurrentGameBoard.GatePosition == p) {

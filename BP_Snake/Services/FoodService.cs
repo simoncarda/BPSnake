@@ -1,5 +1,6 @@
 ﻿using BP_Snake.Models.GameCore;
 using GridPoint = BP_Snake.Models.GameCore.GridPoint;
+using BP_Snake.Configuration;
 
 namespace BP_Snake.Services
 {
@@ -30,7 +31,7 @@ namespace BP_Snake.Services
         {
             int x;
             int y;
-            int value = (_random.Next(0, 10) < 8) ? 5 : 10; // 20% šance na bonusové jídlo s hodnotou 10
+            int value = (_random.Next(0, 10) < 8) ? GameSettings.NormalFoodScoreValue : GameSettings.BonusFoodScoreValue; // 20% šance na bonusové jídlo s hodnotou 10
             do {
                 x = _random.Next(0, board.Width);
                 y = _random.Next(0, board.Height);
@@ -45,9 +46,9 @@ namespace BP_Snake.Services
         public FoodEatenResult HandleFoodEaten(GameBoard board, Snake snake, FoodItem currentFoodItem, int applesEatenInLevel)
         {
             int newApplesEaten = applesEatenInLevel + 1;
-            bool shouldOpenGate = newApplesEaten >= 5;
-            FoodItem nextFoodItem = shouldOpenGate
-                ? new FoodItem(new GridPoint(-1, -1), 0)
+            bool shouldOpenGate = newApplesEaten >= GameSettings.ApplesToOpenGate;
+            FoodItem? nextFoodItem = shouldOpenGate
+                ? null
                 : CreateFoodItem(board, snake);
 
             return new FoodEatenResult(currentFoodItem.ScoreValue, newApplesEaten, shouldOpenGate, nextFoodItem);
@@ -57,5 +58,5 @@ namespace BP_Snake.Services
     /// <summary>
     /// Výsledek zpracování snědení jídla: kolik skóre bylo získáno, kolik jablek snědeno v úrovni, zda se otevírá brána a další jídlo.
     /// </summary>
-    internal readonly record struct FoodEatenResult(int ScoreValue, int ApplesEatenInLevel, bool ShouldOpenGate, FoodItem NextFoodItem);
+    internal readonly record struct FoodEatenResult(int ScoreValue, int ApplesEatenInLevel, bool ShouldOpenGate, FoodItem? NextFoodItem);
 }

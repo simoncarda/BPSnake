@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BP_Snake.Configuration;
+
 
 namespace BP_Snake.Services
 {
@@ -13,7 +12,7 @@ namespace BP_Snake.Services
     {
         public int GetNextLevel(int currentLevel)
         {
-            return currentLevel >= 12 ? 1 : currentLevel + 1;
+            return currentLevel >= GameSettings.LevelCount ? GameSettings.StartingLevel : currentLevel + 1;
         }
     }
 }

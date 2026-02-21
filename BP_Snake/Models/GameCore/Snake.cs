@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BP_Snake.Configuration;
 
 namespace BP_Snake.Models.GameCore
 {
@@ -16,9 +14,9 @@ namespace BP_Snake.Models.GameCore
     {
         public Snake()
         {
-            Body.Add(new GridPoint(3, 1)); // Hlava hada
-            Body.Add(new GridPoint(2, 1));
-            Body.Add(new GridPoint(1, 1));
+            for (int i = 0; i < GameSettings.InitialSnakeLength; i++) {
+                Body.Add(new GridPoint(3 - i, 1)); // Vytvoření počátečního těla hada, vždy na pozici (3,1) až (0,1)
+            }
             CurrentDirection = Direction.Right; // Výchozí směr pohybu doprava
         }
 

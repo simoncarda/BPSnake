@@ -1,4 +1,5 @@
-﻿using BP_Snake.Services;
+﻿using BP_Snake.Configuration;
+using BP_Snake.Services;
 
 namespace BP_Snake.Models.GameCore
 {
@@ -13,10 +14,6 @@ namespace BP_Snake.Models.GameCore
     internal class GameEngine(GameLoopService gameLoopService, CollisionService collisionService, FoodService foodService, LevelService levelService) : IDisposable
     {
         // Konstanty
-        private const int _growthPerFood = 4; // Počet kroků, o které se had zvětší po snězení jednoho jídla
-        private const int _baseGameSpeed = 200; // Základní rychlost hry v milisekundách (počet ms mezi jednotlivými aktualizacemi stavu hry)
-        private const int _speedIncreasePerLevel = 20; // O kolik se zrychlí hra s každou dokončenou úrovní (v ms)
-        private const int _minGameSpeed = 80; // Minimální rychlost hry (nejrychlejší), aby hra zůstala hratelná
 
         // Stav hry
         public Snake CurrentSnake { get; set; } = null!;
@@ -41,7 +38,7 @@ namespace BP_Snake.Models.GameCore
         private int _currentGameSpeed
         {
             get {
-                return Math.Max(_baseGameSpeed - (TotalLevelsCompleted * _speedIncreasePerLevel), _minGameSpeed);
+                return Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
             }
         } // Aktuální rychlost hry, která se může měnit s postupem úrovní
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
@@ -150,7 +147,7 @@ namespace BP_Snake.Models.GameCore
             _directionChangedInCurrentTick = false;
 
             // podmínka pro pohyb při kolizi s jídlem
-            if (CurrentSnake.GetNextHeadPosition() == CurrentFoodItem.Position) {
+            if (CurrentFoodItem != null && CurrentSnake.GetNextHeadPosition() == CurrentFoodItem.Position) {
                 OnFoodEaten();
             } else if (_growBuffer > 0){
                 CurrentSnake.Move(grow: true);
@@ -218,7 +215,7 @@ namespace BP_Snake.Models.GameCore
         /// Dále určuje a nastavuje další položku jídla, která se má objevit na herní ploše.</remarks>
         private void OnFoodEaten()
         {
-            _growBuffer = _growthPerFood;
+            _growBuffer = GameSettings.GrowthPerFood;
             CurrentSnake.Move(grow: true);
 
             FoodEatenResult result = _foodService.HandleFoodEaten(CurrentGameBoard, CurrentSnake, CurrentFoodItem, _applesEatenInLevel);

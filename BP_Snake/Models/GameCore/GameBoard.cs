@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
 namespace BP_Snake.Models.GameCore
 {
@@ -14,7 +12,7 @@ namespace BP_Snake.Models.GameCore
     /// </remarks>
     internal class GameBoard
     {
-        public GameBoard(int levelIndex = 1)
+        public GameBoard(int levelIndex)
         {
             SetupLevel(LevelData.GetLevel(levelIndex)); // Načtení specifické úrovně podle indexu
         }
