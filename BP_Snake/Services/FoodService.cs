@@ -19,7 +19,6 @@ namespace BP_Snake.Services
             _random = random;
         }
 
-        // Metoda pro vytvoření nového jídla s náhodnou pozicí a 20% šancí na bonusové jídlo
         /// <summary>
         /// Vytvoří nové jídlo na náhodné pozici na herní desce, přičemž zajišťuje, že se nenachází na pozici obsazené hadem nebo překážkami.
         /// Má 20% šanci na vytvoření bonusového jídla s hodnotou 10, jinak vytvoří standardní jídlo s hodnotou 5.
