@@ -10,8 +10,8 @@
     internal class FoodItem
     {
         private const int DefaultScore = 5;
-        private static readonly Point DefaultPosition = new Point(10, 10);
-        public FoodItem(Point position, int scoreValue)
+        private static readonly GridPoint DefaultPosition = new GridPoint(10, 10);
+        public FoodItem(GridPoint position, int scoreValue)
         {
             if (scoreValue < 0) throw new ArgumentOutOfRangeException(nameof(scoreValue), "ScoreValue musí být >= 0.");
             Position = position;
@@ -19,7 +19,7 @@
         }
         public FoodItem() : this(DefaultPosition, DefaultScore) { }
 
-        public Point Position { get; private set; }
+        public GridPoint Position { get; private set; }
         public int ScoreValue { get; private set; }
     }
 }

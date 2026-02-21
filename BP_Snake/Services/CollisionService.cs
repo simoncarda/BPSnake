@@ -1,5 +1,5 @@
 ﻿using BP_Snake.Models.GameCore;
-using Point = BP_Snake.Models.GameCore.Point;
+using GridPoint = BP_Snake.Models.GameCore.GridPoint;
 
 namespace BP_Snake.Services
 {
@@ -14,14 +14,14 @@ namespace BP_Snake.Services
         /// </summary>
         public bool IsCollisionDetected(GameBoard board, Snake snake)
         {
-            Point currentHead = snake.Body[0];
+            GridPoint currentHead = snake.Body[0];
             return IsCollisionWithBoundary(board, currentHead) || snake.IsSelfCollision() || IsCollisionWithObstacles(board, currentHead);
         }
 
         /// <summary>
         /// Kontrola kolize hlavy se zdí (hranice hrací plochy).
         /// </summary>
-        private bool IsCollisionWithBoundary(GameBoard board, Point head)
+        private bool IsCollisionWithBoundary(GameBoard board, GridPoint head)
         {
             return head.X < 0 || head.X >= board.Width ||
                    head.Y < 0 || head.Y >= board.Height;
@@ -30,7 +30,7 @@ namespace BP_Snake.Services
         /// <summary>
         /// Kontrola kolize se statickými překážkami na mapě.
         /// </summary>
-        private bool IsCollisionWithObstacles(GameBoard board, Point head)
+        private bool IsCollisionWithObstacles(GameBoard board, GridPoint head)
         {
             return board.Obstacles.Contains(head);
         }

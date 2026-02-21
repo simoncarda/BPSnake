@@ -14,8 +14,8 @@ namespace BP_Snake.Models.GameCore
     internal class LevelConfig
     {
         public int LevelNumber { get; set; }
-        public List<Point> Obstacles { get; set; } = new List<Point>();
-        public Point GatePosition { get; set; }
+        public List<GridPoint> Obstacles { get; set; } = new List<GridPoint>();
+        public GridPoint GatePosition { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
     }

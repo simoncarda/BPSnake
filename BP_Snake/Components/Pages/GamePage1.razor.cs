@@ -106,7 +106,7 @@ namespace BP_Snake.Components.Pages
         /// </returns>
         private string GetCellClass(int x, int y)
         {
-            var p = new Models.GameCore.Point(x, y);
+            var p = new Models.GameCore.GridPoint(x, y);
 
             if (_engine.CurrentSnake.Body.Count > 0 && _engine.CurrentSnake.Body[0] == p) {
                 return "cell snake-head";

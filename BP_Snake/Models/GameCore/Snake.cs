@@ -16,13 +16,13 @@ namespace BP_Snake.Models.GameCore
     {
         public Snake()
         {
-            Body.Add(new Point(3, 1)); // Hlava hada
-            Body.Add(new Point(2, 1));
-            Body.Add(new Point(1, 1));
+            Body.Add(new GridPoint(3, 1)); // Hlava hada
+            Body.Add(new GridPoint(2, 1));
+            Body.Add(new GridPoint(1, 1));
             CurrentDirection = Direction.Right; // Výchozí směr pohybu doprava
         }
 
-        public List<Point> Body { get; set; } = new();
+        public List<GridPoint> Body { get; set; } = new();
         public Direction CurrentDirection { get; set; }
 
         /// <summary>
@@ -32,25 +32,25 @@ namespace BP_Snake.Models.GameCore
         /// Tato metoda slouží k určení, kam se hlava hada posune při příští aktualizaci, aniž byste měnili stav hada.
         /// Vrácená pozice závisí na aktuálním směru a nebere v úvahu kolize ani hranice herní plochy.
         /// </remarks>
-        /// <returns>A Bod <see cref="Point"/> reprezentující pozici o jednu jednotku před aktuální hlavou ve směru určeném vlastností <see cref="CurrentDirection"/>.</returns>
-        public Point GetNextHeadPosition()
+        /// <returns>A Bod <see cref="GridPoint"/> reprezentující pozici o jednu jednotku před aktuální hlavou ve směru určeném vlastností <see cref="CurrentDirection"/>.</returns>
+        public GridPoint GetNextHeadPosition()
         {
-            Point head = Body[0]; // Aktuální pozice hlavy hada
-            Point nextPosition = head; // Proměnná pro uložení další pozice hlavy, výchozí hodnota je aktuální pozice hlavy
+            GridPoint head = Body[0]; // Aktuální pozice hlavy hada
+            GridPoint nextPosition = head; // Proměnná pro uložení další pozice hlavy, výchozí hodnota je aktuální pozice hlavy
 
             switch (CurrentDirection)
             {
                 case Direction.Up:
-                    nextPosition = new Point(head.X, head.Y - 1);
+                    nextPosition = new GridPoint(head.X, head.Y - 1);
                     break;
                 case Direction.Down:
-                    nextPosition = new Point(head.X, head.Y + 1);
+                    nextPosition = new GridPoint(head.X, head.Y + 1);
                     break;
                 case Direction.Left:
-                    nextPosition = new Point(head.X - 1, head.Y);
+                    nextPosition = new GridPoint(head.X - 1, head.Y);
                     break;
                 case Direction.Right:
-                    nextPosition = new Point(head.X + 1, head.Y);
+                    nextPosition = new GridPoint(head.X + 1, head.Y);
                     break;
             }
 
@@ -67,7 +67,7 @@ namespace BP_Snake.Models.GameCore
         /// <param name="grow"> true pro zvětšení délky hada přidáním nového článku u hlavy; v opačném případě false pro zachování aktuální délky.</param>
         public void Move(bool grow = false)
         {
-            Point nextHeadPosition = GetNextHeadPosition();
+            GridPoint nextHeadPosition = GetNextHeadPosition();
             Body.Insert(0, nextHeadPosition); // Přidání nové hlavy na začátek seznamu těla
             if (!grow)
             {
@@ -85,7 +85,7 @@ namespace BP_Snake.Models.GameCore
         /// <returns>true, pokud hlava koliduje s jakoukoli jinou částí těla; v opačném případě false.</returns>
         public bool IsSelfCollision()
         {
-            Point head = Body[0];
+            GridPoint head = Body[0];
             for (int i = 1; i < Body.Count; i++) // Přeskočí hlavu v seznamu
             {
                 if (Body[i] == head)

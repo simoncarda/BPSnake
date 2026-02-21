@@ -17,8 +17,8 @@ namespace BP_Snake.Models.GameCore
         public static LevelConfig GetLevel(int levelIndex) {
             LevelConfig config = new LevelConfig {
                 LevelNumber = levelIndex,
-                GatePosition = new Point(10, 1),
-                Obstacles = new List<Point>(),
+                GatePosition = new GridPoint(10, 1),
+                Obstacles = new List<GridPoint>(),
                 Width = 20, // Velikost šířky herního pole
                 Height = 20
             };
@@ -112,28 +112,28 @@ namespace BP_Snake.Models.GameCore
         }
 
         // Pomocné metody pro vytváření překážek
-        private static List<Point> CreateHorizontalLine(int startX, int startY, int length)
+        private static List<GridPoint> CreateHorizontalLine(int startX, int startY, int length)
         {
-            var walls = new List<Point>();
+            var walls = new List<GridPoint>();
             for (int i = 0; i < length; i++) {
-                walls.Add(new Point(startX + i, startY));
+                walls.Add(new GridPoint(startX + i, startY));
             }
             return walls;
         }
-         private static List<Point> CreateVerticalLine(int startX, int startY, int length)
+         private static List<GridPoint> CreateVerticalLine(int startX, int startY, int length)
         {
-            var walls = new List<Point>();
+            var walls = new List<GridPoint>();
             for (int i = 0; i < length; i++) {
-                walls.Add(new Point(startX, startY + i));
+                walls.Add(new GridPoint(startX, startY + i));
             }
             return walls;
         }
-        private static List<Point> CreateRectangle(int startX, int startY, int width, int height)
+        private static List<GridPoint> CreateRectangle(int startX, int startY, int width, int height)
         {
-            var walls = new List<Point>();
+            var walls = new List<GridPoint>();
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    walls.Add(new Point(startX + x, startY + y));
+                    walls.Add(new GridPoint(startX + x, startY + y));
                 }
             }
             return walls;

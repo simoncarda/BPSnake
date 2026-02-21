@@ -1,5 +1,5 @@
 ﻿using BP_Snake.Models.GameCore;
-using Point = BP_Snake.Models.GameCore.Point;
+using GridPoint = BP_Snake.Models.GameCore.GridPoint;
 
 namespace BP_Snake.Services
 {
@@ -34,8 +34,8 @@ namespace BP_Snake.Services
             do {
                 x = _random.Next(0, board.Width);
                 y = _random.Next(0, board.Height);
-            } while (snake.Body.Contains(new Point(x, y)) || board.Obstacles.Contains(new Point(x, y)));
-            return new FoodItem(new Point(x, y), value);
+            } while (snake.Body.Contains(new GridPoint(x, y)) || board.Obstacles.Contains(new GridPoint(x, y)));
+            return new FoodItem(new GridPoint(x, y), value);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace BP_Snake.Services
             int newApplesEaten = applesEatenInLevel + 1;
             bool shouldOpenGate = newApplesEaten >= 5;
             FoodItem nextFoodItem = shouldOpenGate
-                ? new FoodItem(new Point(-1, -1), 0)
+                ? new FoodItem(new GridPoint(-1, -1), 0)
                 : CreateFoodItem(board, snake);
 
             return new FoodEatenResult(currentFoodItem.ScoreValue, newApplesEaten, shouldOpenGate, nextFoodItem);
