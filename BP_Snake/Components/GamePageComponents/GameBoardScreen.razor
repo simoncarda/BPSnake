@@ -1,7 +1,7 @@
 ﻿@using BPSnake.Models;
 
 <div class="game-container">
-    <div class="gameboard" style="grid-template-columns: repeat(@Width, 1fr); grid-template-rows: repeat(@Height, 1fr);" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
+    <div class="gameboard" style="grid-template-columns: repeat(@Width, 1fr); grid-template-rows: repeat(@Height, 1fr);" tabindex="0" @ref="_boardElement">
         @for (int y = 0; y < Height; y++) {
             @for (int x = 0; x < Width; x++) {
                 <div class="@CellClass(x, y)"></div>
