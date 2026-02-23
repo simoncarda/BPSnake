@@ -29,8 +29,6 @@ namespace BPSnake.Services
             // Cesta k databázi 
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, DbName);
 
-            File.Delete(dbPath);
-
             _database = new SQLiteAsyncConnection(dbPath);
             await _database.CreateTableAsync<GameScore>();
         }
