@@ -71,26 +71,5 @@ namespace BPSnake.Models.GameCore
                 Body.RemoveAt(Body.Count - 1);
             }
         }
-
-        /// <summary>
-        /// Určuje, zda hlava hada zaujímá stejnou pozici jako kterýkoli jiný článek jeho těla.
-        /// </summary>
-        /// <remarks>
-        /// Tato metoda kontroluje kolizi hada se sebou samým porovnáním pozice hlavy s každým dalším článkem v těle.
-        /// Samotná hlava je z tohoto porovnání vyloučena.
-        /// </remarks>
-        /// <returns>true, pokud hlava koliduje s jakoukoli jinou částí těla; v opačném případě false.</returns>
-        public bool IsSelfCollision()
-        {
-            GridPoint head = Body[0];
-            for (int i = 1; i < Body.Count; i++) // Přeskočí hlavu v seznamu
-            {
-                if (Body[i] == head)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 }
