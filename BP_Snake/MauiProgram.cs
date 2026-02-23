@@ -1,5 +1,4 @@
-﻿using BPSnake.Services;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using BPSnake.Models.GameCore;
 
 namespace BPSnake
@@ -22,8 +21,6 @@ namespace BPSnake
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
-
-            builder.Services.AddSingleton<GameLoopService>();
 
             builder.Services.AddTransient<GameEngine>();
 

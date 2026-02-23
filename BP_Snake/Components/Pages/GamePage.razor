@@ -10,18 +10,10 @@
             OnStartNewGame="@StartNewGame"/>
         break;
     case GameState.Playing:
-    case GameState.Paused:
         <GameBoardScreen 
             Width="@_engine.CurrentGameBoard.Width"
             Height="@_engine.CurrentGameBoard.Height"
             CurrentGameState="@_engine.CurrentGameState" 
-            OnPauseGame="@PauseGame"
-            OnResumeGame="@ResumeGame"
-            CellClass="@GetCellClass"
-            HandleKeyboardInput="@HandleInput"/>
-        if (_showTouchControls) {
-            <TouchControls 
-                OnDirectionChange="@_engine.ChangeDirection"/>
-        }
+            CellClass="@GetCellClass"/>
         break;
 }

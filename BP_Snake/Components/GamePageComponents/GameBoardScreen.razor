@@ -1,14 +1,6 @@
 ﻿@using BPSnake.Models;
 
 <div class="game-container">
-    <div class="game-header">
-        @if (CurrentGameState == GameState.Playing) {
-            <button type="button" class="btn btn-info" @onclick="OnPauseGame">Pause</button>
-        } else if (CurrentGameState == GameState.Paused) {
-            <button type="button" class="btn btn-info" @onclick="HandleResumeClick">Resume</button>
-        }
-    </div>
-
     <div class="gameboard" style="grid-template-columns: repeat(@Width, 1fr); grid-template-rows: repeat(@Height, 1fr);" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
         @for (int y = 0; y < Height; y++) {
             @for (int x = 0; x < Width; x++) {
@@ -23,31 +15,10 @@
     [Parameter] public int Height { get; set; }
     [Parameter] public GameState CurrentGameState { get; set; }
 
-    [Parameter] public EventCallback OnPauseGame { get; set; }
-    [Parameter] public EventCallback OnResumeGame { get; set; }
-
     // Předání metody pro získání CSS třídy buňky
     [Parameter] public required Func<int, int, string> CellClass { get; set; }
-    // EventCallback pro klávesnici
-    [Parameter] public EventCallback<KeyboardEventArgs> HandleKeyboardInput { get; set; }
 
     private ElementReference _boardElement;
-
-    /// <summary>
-    /// Řeší kliknutí na tlačítko "Resume". Po obnovení hry se zaměříme zpět na herní plochu, aby bylo možné pokračovat v ovládání klávesnicí.
-    /// </summary>
-    /// <returns></returns>
-    private async Task HandleResumeClick()
-    {
-        await OnResumeGame.InvokeAsync();
-		// Po obnovení hry se zaměříme zpět na herní plochu, aby bylo možné pokračovat v ovládání klávesnicí
-        await _boardElement.FocusAsync();
-	}
-
-    private async Task HandleInput(KeyboardEventArgs e)
-    {
-        await HandleKeyboardInput.InvokeAsync(e);
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
