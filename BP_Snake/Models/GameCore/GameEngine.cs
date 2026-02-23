@@ -20,8 +20,6 @@ namespace BPSnake.Models.GameCore
         public GameBoard CurrentGameBoard { get; set; } = null!;
         public FoodItem CurrentFoodItem { get; set; } = null!;
         public int CurrentGameScore { get; set; } = 0;
-        public int CurrentLevel { get; set; } = 1;
-        public int TotalLevelsCompleted { get; private set; } = 0; // Počet úrovní dokončených během aktuální hry
         public GameState CurrentGameState { get; private set; } 
 
         // Služby
@@ -52,7 +50,6 @@ namespace BPSnake.Models.GameCore
         public void LoadNewGame()
         {
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
-            CurrentLevel = 1;
             CurrentGameScore = 0;
             CurrentSnake = new Snake();
             CurrentGameBoard = new GameBoard();
@@ -152,30 +149,6 @@ namespace BPSnake.Models.GameCore
 
             NotifyStateChanged();
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Pokračuje hru na další úroveň, resetuje relevantní herní stav a inicializuje herní desku a hada pro novou úroveň.
-        /// </summary>
-        /// <remarks>Tato metoda zvyšuje počet dokončených úrovní, načítá další úroveň pomocí služby úrovní (level service), vynuluje počet snědených jablek v aktuální úrovni a restartuje herní smyčku. 
-        /// Měla by být volána ve chvíli, kdy hráč dokončí úroveň, aby bylo zajištěno, že stav hry bude správně aktualizován pro další fázi.</remarks>
-        private void LoadNextLevel()
-        {
-            CurrentGameBoard = new();
-            CurrentSnake = new Snake();
-            CreateFoodItem();
-            RestartGameLoop();
-        }
-
-        /// <summary>
-        /// Zastaví aktuální herní smyčku a spustí novou s aktualizovanou rychlostí, pokud je hra stále v stavu "Playing".
-        /// </summary>
-        private void RestartGameLoop()
-        {
-            StopGameLoop();
-            if (CurrentGameState == GameState.Playing) {
-                _ = StartGameLoop();
-            } // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
         }
 
         /// <summary>

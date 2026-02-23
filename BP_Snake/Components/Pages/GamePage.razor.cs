@@ -14,7 +14,7 @@ namespace BPSnake.Components.Pages
 
         private bool _showTouchControls = false;
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             // Zobrazí ovládací tlačítka, pokud jsme na iOS nebo Android 
             if (DeviceInfo.Platform == DevicePlatform.Android || DeviceInfo.Platform == DevicePlatform.iOS) {
