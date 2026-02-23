@@ -11,7 +11,7 @@ namespace BPSnake.Models.GameCore
     /// položkami jídla a herní plochou. Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení, obnovení a ukončení hry.
     /// Tato třída publikuje události pro aktualizaci uživatelského rozhraní (UI) a podporuje uvolňování prostředků prostřednictvím rozhraní IDisposable.
     /// </remarks>
-    internal class GameEngine(GameLoopService gameLoopService, CollisionService collisionService, FoodService foodService) : IDisposable
+    internal class GameEngine(GameLoopService gameLoopService, FoodService foodService) : IDisposable
     {
         // Konstanty
 
@@ -20,13 +20,10 @@ namespace BPSnake.Models.GameCore
         public GameBoard CurrentGameBoard { get; set; } = null!;
         public FoodItem CurrentFoodItem { get; set; } = null!;
         public int CurrentGameScore { get; set; } = 0;
-        public int CurrentLevel { get; set; } = 1;
-        public int TotalLevelsCompleted { get; private set; } = 0; // Počet úrovní dokončených během aktuální hry
         public GameState CurrentGameState { get; private set; } 
 
         // Služby
         private readonly GameLoopService _gameLoopService = gameLoopService;
-        private readonly CollisionService _collisionService = collisionService;
         private readonly FoodService _foodService = foodService;
 
         // UDÁLOST: aktualizace UI
@@ -52,7 +49,6 @@ namespace BPSnake.Models.GameCore
         public void LoadNewGame()
         {
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
-            CurrentLevel = 1;
             CurrentGameScore = 0;
             CurrentSnake = new Snake();
             CurrentGameBoard = new GameBoard();
@@ -99,16 +95,6 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Ukončí hru, zastaví herní smyčku a přepne stav hry na "GameOver". Uloží čas, kdy došlo k Game Over, pro pozdější zobrazení v UI.
-        /// </summary>
-        public void GameOver()
-        {
-            StopGameLoop(); // Zastavíme smyčku
-            CurrentGameState = GameState.GameOver;
-            NotifyStateChanged();
-        }
-
-        /// <summary>
         /// Spustí herní smyčku asynchronně s aktuální rychlostí hry. 
         /// Tato metoda zajišťuje, že logika hry bude aktualizována v pravidelných intervalech, které se mohou měnit v závislosti na úrovni a počtu dokončených úrovní.
         /// </summary>
@@ -144,38 +130,8 @@ namespace BPSnake.Models.GameCore
                 CurrentSnake.Move();
             }
 
-            // podmínka pro kolizi s překážkami, zdmi či sebou samým
-            if (_collisionService.IsCollisionDetected(CurrentGameBoard, CurrentSnake)) {
-                GameOver();
-                return Task.CompletedTask;
-            }
-
             NotifyStateChanged();
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Pokračuje hru na další úroveň, resetuje relevantní herní stav a inicializuje herní desku a hada pro novou úroveň.
-        /// </summary>
-        /// <remarks>Tato metoda zvyšuje počet dokončených úrovní, načítá další úroveň pomocí služby úrovní (level service), vynuluje počet snědených jablek v aktuální úrovni a restartuje herní smyčku. 
-        /// Měla by být volána ve chvíli, kdy hráč dokončí úroveň, aby bylo zajištěno, že stav hry bude správně aktualizován pro další fázi.</remarks>
-        private void LoadNextLevel()
-        {
-            CurrentGameBoard = new();
-            CurrentSnake = new Snake();
-            CreateFoodItem();
-            RestartGameLoop();
-        }
-
-        /// <summary>
-        /// Zastaví aktuální herní smyčku a spustí novou s aktualizovanou rychlostí, pokud je hra stále v stavu "Playing".
-        /// </summary>
-        private void RestartGameLoop()
-        {
-            StopGameLoop();
-            if (CurrentGameState == GameState.Playing) {
-                _ = StartGameLoop();
-            } // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
         }
 
         /// <summary>

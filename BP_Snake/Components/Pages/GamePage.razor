@@ -25,9 +25,4 @@
                 OnDirectionChange="@_engine.ChangeDirection"/>
         }
         break;
-    case GameState.GameOver:
-        <GameOverScreen 
-            Score="@_engine.CurrentGameScore" 
-            OnStartNewGame="@StartNewGame"/>
-        break;
 }
