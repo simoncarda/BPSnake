@@ -11,7 +11,7 @@ namespace BPSnake.Models.GameCore
     /// položkami jídla a herní plochou. Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení, obnovení a ukončení hry.
     /// Tato třída publikuje události pro aktualizaci uživatelského rozhraní (UI) a podporuje uvolňování prostředků prostřednictvím rozhraní IDisposable.
     /// </remarks>
-    internal class GameEngine(GameLoopService gameLoopService, CollisionService collisionService, FoodService foodService, LevelService levelService) : IDisposable
+    internal class GameEngine(GameLoopService gameLoopService, CollisionService collisionService, FoodService foodService) : IDisposable
     {
         // Konstanty
 
@@ -28,20 +28,12 @@ namespace BPSnake.Models.GameCore
         private readonly GameLoopService _gameLoopService = gameLoopService;
         private readonly CollisionService _collisionService = collisionService;
         private readonly FoodService _foodService = foodService;
-        private readonly LevelService _levelService = levelService;
 
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
 
         // Pomocné proměnné pro řízení logiky hry
-        private int _currentGameSpeed
-        {
-            get {
-                return Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
-            }
-        } // Aktuální rychlost hry, která se může měnit s postupem úrovní
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
-        private int _applesEatenInLevel = 0;
         private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
 
         /// <summary>
@@ -63,12 +55,10 @@ namespace BPSnake.Models.GameCore
             CurrentLevel = 1;
             CurrentGameScore = 0;
             CurrentSnake = new Snake();
-            CurrentGameBoard = new GameBoard(CurrentLevel);
+            CurrentGameBoard = new GameBoard();
             CreateFoodItem();
-            _applesEatenInLevel = 0;
             CurrentGameState = GameState.Menu;
             _growBuffer = 0;
-            TotalLevelsCompleted = 0;
             // Vyvolání události pro aktualizaci UI (načtení hry)
             NotifyStateChanged();
         }
@@ -124,7 +114,7 @@ namespace BPSnake.Models.GameCore
         /// </summary>
         private Task StartGameLoop()
         {
-            return _gameLoopService.StartAsync(GameLogicTickAsync, _currentGameSpeed);
+            return _gameLoopService.StartAsync(GameLogicTickAsync, GameSettings.BaseGameSpeed);
         }
 
         /// <summary>
@@ -160,11 +150,6 @@ namespace BPSnake.Models.GameCore
                 return Task.CompletedTask;
             }
 
-            // podmínka pro dosažení brány a přechod na další úroveň
-            if (CurrentGameBoard.IsGateOpen && CurrentSnake.Body[0] == CurrentGameBoard.GatePosition) {
-                LoadNextLevel();
-            }
-
             NotifyStateChanged();
             return Task.CompletedTask;
         }
@@ -176,10 +161,7 @@ namespace BPSnake.Models.GameCore
         /// Měla by být volána ve chvíli, kdy hráč dokončí úroveň, aby bylo zajištěno, že stav hry bude správně aktualizován pro další fázi.</remarks>
         private void LoadNextLevel()
         {
-            TotalLevelsCompleted++;
-            CurrentLevel = _levelService.GetNextLevel(CurrentLevel);
-            _applesEatenInLevel = 0;
-            CurrentGameBoard = new(CurrentLevel);
+            CurrentGameBoard = new();
             CurrentSnake = new Snake();
             CreateFoodItem();
             RestartGameLoop();
@@ -216,13 +198,8 @@ namespace BPSnake.Models.GameCore
             _growBuffer = GameSettings.GrowthPerFood;
             CurrentSnake.Move(grow: true);
 
-            FoodEatenResult result = _foodService.HandleFoodEaten(CurrentGameBoard, CurrentSnake, CurrentFoodItem, _applesEatenInLevel);
+            FoodEatenResult result = _foodService.HandleFoodEaten(CurrentGameBoard, CurrentSnake, CurrentFoodItem);
             CurrentGameScore += result.ScoreValue;
-            _applesEatenInLevel = result.ApplesEatenInLevel;
-
-            if (result.ShouldOpenGate) {
-                CurrentGameBoard.OpenGate();
-            }
 
             CurrentFoodItem = result.NextFoodItem;
         }

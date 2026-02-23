@@ -15,7 +15,7 @@ namespace BPSnake.Services
         public bool IsCollisionDetected(GameBoard board, Snake snake)
         {
             GridPoint currentHead = snake.Body[0];
-            return IsCollisionWithBoundary(board, currentHead) || snake.IsSelfCollision() || IsCollisionWithObstacles(board, currentHead);
+            return IsCollisionWithBoundary(board, currentHead) || snake.IsSelfCollision();
         }
 
         /// <summary>
@@ -25,14 +25,6 @@ namespace BPSnake.Services
         {
             return head.X < 0 || head.X >= board.Width ||
                    head.Y < 0 || head.Y >= board.Height;
-        }
-
-        /// <summary>
-        /// Kontrola kolize se statickými překážkami na mapě.
-        /// </summary>
-        private bool IsCollisionWithObstacles(GameBoard board, GridPoint head)
-        {
-            return board.Obstacles.Contains(head);
         }
     }
 }

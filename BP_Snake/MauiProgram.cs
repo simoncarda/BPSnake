@@ -26,7 +26,6 @@ namespace BPSnake
             builder.Services.AddSingleton<GameLoopService>();
             builder.Services.AddSingleton<CollisionService>();
             builder.Services.AddSingleton<FoodService>();
-            builder.Services.AddSingleton<LevelService>();
 
             builder.Services.AddTransient<GameEngine>();
 

@@ -34,7 +34,7 @@ namespace BPSnake.Services
             do {
                 x = _random.Next(0, board.Width);
                 y = _random.Next(0, board.Height);
-            } while (snake.Body.Contains(new GridPoint(x, y)) || board.Obstacles.Contains(new GridPoint(x, y)));
+            } while (snake.Body.Contains(new GridPoint(x, y)));
             return new FoodItem(new GridPoint(x, y), value);
         }
 
@@ -42,20 +42,16 @@ namespace BPSnake.Services
         /// Zpracuje efekty po snědení jídla: zvýší počítadlo, rozhodne se, zda se otevře brána,
         /// a vrátí následující jídlo (nebo prázdné jídlo pokud se má brána otevřít).
         /// </summary>
-        public FoodEatenResult HandleFoodEaten(GameBoard board, Snake snake, FoodItem currentFoodItem, int applesEatenInLevel)
+        public FoodEatenResult HandleFoodEaten(GameBoard board, Snake snake, FoodItem currentFoodItem)
         {
-            int newApplesEaten = applesEatenInLevel + 1;
-            bool shouldOpenGate = newApplesEaten >= GameSettings.ApplesToOpenGate;
-            FoodItem? nextFoodItem = shouldOpenGate
-                ? null
-                : CreateFoodItem(board, snake);
+            FoodItem nextFoodItem = CreateFoodItem(board, snake);
 
-            return new FoodEatenResult(currentFoodItem.ScoreValue, newApplesEaten, shouldOpenGate, nextFoodItem);
+            return new FoodEatenResult(currentFoodItem.ScoreValue, nextFoodItem);
         }
     }
 
     /// <summary>
     /// Výsledek zpracování snědení jídla: kolik skóre bylo získáno, kolik jablek snědeno v úrovni, zda se otevírá brána a další jídlo.
     /// </summary>
-    internal readonly record struct FoodEatenResult(int ScoreValue, int ApplesEatenInLevel, bool ShouldOpenGate, FoodItem? NextFoodItem);
+    internal readonly record struct FoodEatenResult(int ScoreValue, FoodItem? NextFoodItem);
 }

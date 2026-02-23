@@ -1,5 +1,7 @@
 ﻿
 
+using BPSnake.Configuration;
+
 namespace BPSnake.Models.GameCore
 {
     /// <summary>
@@ -15,22 +17,15 @@ namespace BPSnake.Models.GameCore
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        public GameBoard(int levelIndex)
+        public GameBoard()
         {
-            SetupLevel(LevelData.GetLevel(levelIndex)); // Načtení specifické úrovně podle indexu
+            SetupLevel(); // Načtení specifické úrovně podle indexu
         }
 
-        public void SetupLevel(LevelConfig data)
+        public void SetupLevel()
         {
-            Obstacles.Clear();
-            Width = data.Width;
-            Height = data.Height;
-            Obstacles.AddRange(data.Obstacles);
-            GatePosition = data.GatePosition;
-        }
-        public void OpenGate()
-        {
-            IsGateOpen = true;
+            Width = GameSettings.GameBoardWidth;
+            Height = GameSettings.GameBoardHeight;
         }
     }
 }
