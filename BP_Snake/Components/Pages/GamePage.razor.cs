@@ -1,13 +1,13 @@
-﻿using BP_Snake.Models;
-using BP_Snake.Models.DataLayer;
-using BP_Snake.Models.GameCore;
-using BP_Snake.Configuration;
-using BP_Snake.Services;
+﻿using BPSnake.Models;
+using BPSnake.Models.DataLayer;
+using BPSnake.Models.GameCore;
+using BPSnake.Configuration;
+using BPSnake.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using GridPoint = BP_Snake.Models.GameCore.GridPoint;
+using GridPoint = BPSnake.Models.GameCore.GridPoint;
 
-namespace BP_Snake.Components.Pages
+namespace BPSnake.Components.Pages
 {
     public partial class GamePage
     {

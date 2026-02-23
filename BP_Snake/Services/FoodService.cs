@@ -1,8 +1,8 @@
-﻿using BP_Snake.Models.GameCore;
-using GridPoint = BP_Snake.Models.GameCore.GridPoint;
-using BP_Snake.Configuration;
+﻿using BPSnake.Models.GameCore;
+using GridPoint = BPSnake.Models.GameCore.GridPoint;
+using BPSnake.Configuration;
 
-namespace BP_Snake.Services
+namespace BPSnake.Services
 {
     internal sealed class FoodService
     {

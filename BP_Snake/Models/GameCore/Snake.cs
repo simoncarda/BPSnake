@@ -1,6 +1,6 @@
-﻿using BP_Snake.Configuration;
+﻿using BPSnake.Configuration;
 
-namespace BP_Snake.Models.GameCore
+namespace BPSnake.Models.GameCore
 {
     /// <summary>
     /// Reprezentuje hada v klasické hře „had“, spravuje segmenty jeho těla a směr pohybu.

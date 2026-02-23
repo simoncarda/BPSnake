@@ -1,7 +1,7 @@
 ﻿using SQLite;
-using BP_Snake.Configuration;
+using BPSnake.Configuration;
 
-namespace BP_Snake.Models.DataLayer
+namespace BPSnake.Models.DataLayer
 {
     /// <summary>
     /// Reprezentuje záznam o skóre hráče ve hře, včetně jména hráče, dosaženého skóre,

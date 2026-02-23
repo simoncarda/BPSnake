@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace BP_Snake
+namespace BPSnake
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

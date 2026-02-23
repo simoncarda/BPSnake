@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="BP_Snake/BP_Snake.csproj">
+  <Project Path="BP_Snake/BPSnake.csproj">
     <Deploy Solution="Debug|*" />
   </Project>
 </Solution>

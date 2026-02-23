@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace BP_Snake
+namespace BPSnake
 {
     [Application]
     public class MainApplication : MauiApplication

@@ -1,7 +1,7 @@
-﻿using BP_Snake.Models.GameCore;
-using GridPoint = BP_Snake.Models.GameCore.GridPoint;
+﻿using BPSnake.Models.GameCore;
+using GridPoint = BPSnake.Models.GameCore.GridPoint;
 
-namespace BP_Snake.Services
+namespace BPSnake.Services
 {
     /// <summary>
     /// Služba detekující kolize (zeď, překážka, self-collision).

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BP_Snake.Services
+namespace BPSnake.Services
 {
     internal sealed class GameLoopService: IDisposable
     {

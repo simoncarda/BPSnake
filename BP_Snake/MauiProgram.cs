@@ -1,8 +1,8 @@
-﻿using BP_Snake.Services;
+﻿using BPSnake.Services;
 using Microsoft.Extensions.Logging;
-using BP_Snake.Models.GameCore;
+using BPSnake.Models.GameCore;
 
-namespace BP_Snake
+namespace BPSnake
 {
     public static class MauiProgram
     {

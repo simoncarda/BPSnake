@@ -1,5 +1,5 @@
 ﻿
-namespace BP_Snake.Models.GameCore
+namespace BPSnake.Models.GameCore
 {
     /// <summary>
     /// Struktura pro reprezentaci bodu v 2D prostoru, která obsahuje souřadnice X a Y.

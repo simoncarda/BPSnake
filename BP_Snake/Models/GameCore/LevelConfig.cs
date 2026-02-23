@@ -1,6 +1,6 @@
 ﻿
 
-namespace BP_Snake.Models.GameCore
+namespace BPSnake.Models.GameCore
 {
     /// <summary>
     /// Reprezentuje konfigurační nastavení pro herní úroveň, včetně jejích rozměrů, překážek a pozice brány.

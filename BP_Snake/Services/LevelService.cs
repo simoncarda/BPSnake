@@ -1,7 +1,7 @@
-﻿using BP_Snake.Configuration;
+﻿using BPSnake.Configuration;
 
 
-namespace BP_Snake.Services
+namespace BPSnake.Services
 {
     /// <summary>
     /// Jednoduchá služba spravující logiku přechodu mezi úrovněmi.

@@ -1,4 +1,4 @@
-﻿namespace BP_Snake
+﻿namespace BPSnake
 {
     public partial class MainPage : ContentPage
     {

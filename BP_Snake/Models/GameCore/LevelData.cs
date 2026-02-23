@@ -1,8 +1,8 @@
 ﻿
 
-using BP_Snake.Configuration;
+using BPSnake.Configuration;
 
-namespace BP_Snake.Models.GameCore
+namespace BPSnake.Models.GameCore
 {
     ///<summary>
     /// Třída pro získávání konfigurace úrovní hry. Obsahuje metodu GetLevel, která vrací LevelConfig pro danou úroveň.

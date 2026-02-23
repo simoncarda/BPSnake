@@ -1,7 +1,7 @@
-﻿using BP_Snake.Models;
-using BP_Snake.Models.DataLayer;
+﻿using BPSnake.Models;
+using BPSnake.Models.DataLayer;
 
-namespace BP_Snake.Services
+namespace BPSnake.Services
 {
     public interface IDatabaseService
     {

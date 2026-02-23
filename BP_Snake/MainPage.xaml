@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:BP_Snake"
-             xmlns:components="clr-namespace:BP_Snake.Components"
-             x:Class="BP_Snake.MainPage">
+             xmlns:local="clr-namespace:BPSnake"
+             xmlns:components="clr-namespace:BPSnake.Components"
+             x:Class="BPSnake.MainPage">
 
     <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
         <BlazorWebView.RootComponents>

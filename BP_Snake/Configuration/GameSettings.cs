@@ -1,5 +1,5 @@
 ﻿
-namespace BP_Snake.Configuration
+namespace BPSnake.Configuration
 {
     internal static class GameSettings
     {

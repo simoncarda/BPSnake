@@ -1,6 +1,6 @@
-﻿using BP_Snake.Configuration;
+﻿using BPSnake.Configuration;
 
-namespace BP_Snake.Models.GameCore
+namespace BPSnake.Models.GameCore
 {
     /// <summary>
     /// Reprezentuje položku jídla ve hře, která má specifickou pozici a hodnotu skóre přidělenou při jejím snězení.

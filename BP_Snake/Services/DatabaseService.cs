@@ -1,8 +1,8 @@
-﻿using BP_Snake.Models;
-using BP_Snake.Models.DataLayer;
+﻿using BPSnake.Models;
+using BPSnake.Models.DataLayer;
 using SQLite;
 
-namespace BP_Snake.Services
+namespace BPSnake.Services
 {
     /// <summary>
     /// Poskytuje jednoduchou asynchronní službu pro práci s lokální SQLite databází hry Snake.

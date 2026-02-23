@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace BP_Snake
+namespace BPSnake
 {
     public class Program
     {

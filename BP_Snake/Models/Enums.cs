@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BP_Snake.Models
+namespace BPSnake.Models
 {
     public enum Direction
     {

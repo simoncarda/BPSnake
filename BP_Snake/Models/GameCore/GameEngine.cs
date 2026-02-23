@@ -1,7 +1,7 @@
-﻿using BP_Snake.Configuration;
-using BP_Snake.Services;
+﻿using BPSnake.Configuration;
+using BPSnake.Services;
 
-namespace BP_Snake.Models.GameCore
+namespace BPSnake.Models.GameCore
 {
     /// <summary>
     /// Poskytuje základní funkcionalitu pro správu stavu hry, včetně zpracování vstupu hráče, postupu hrou a interakcí mezi herními prvky.
