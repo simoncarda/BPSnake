@@ -14,7 +14,6 @@ namespace BPSnake.Models
     public enum GameState
     {
         Playing,
-        GameOver,
         Paused,
         Menu
     }
