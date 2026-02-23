@@ -121,39 +121,3 @@
         .d-pad button:active {
             background-color: #666; /* Zmìna barvy pøi stisku */
         }
-
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-    margin-top: 20px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: sans-serif;
-    background-color: white;
-    border: 1px solid #ddd;
-}
-
-th {
-    background-color: #f4f4f4;
-    color: #333;
-    font-weight: bold;
-    text-align: left;
-    padding: 12px 15px;
-    border-bottom: 2px solid #333;
-    text-align: center;
-}
-
-td {
-    padding: 10px 15px;
-    border-bottom: 1px solid #ddd;
-    color: #555;
-    text-align: center;
-}
-
-/* Každý sudý øádek bude mít šedé pozadí */
-tr:nth-child(even) {
-    background-color: #fafafa;
-}

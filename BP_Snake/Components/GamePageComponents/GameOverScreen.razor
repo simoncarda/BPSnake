@@ -1,26 +1,17 @@
-﻿@using BPSnake.Models.DataLayer;
-@using BPSnake.Configuration;
+﻿@using BPSnake.Configuration;
 
 
 <div class="game-container game-over">
     <h2>Game Over!</h2>
     <button type="button" class="btn btn-success" @onclick="OnStartNewGame">Začít novou hru</button>
-    <button type="button" class="btn btn-warning" @onclick="OnSaveScore" disabled="@IsSaveSuccess">Uložit score</button>
 
-    @if (IsSaveSuccess) {
-        <p style="color:green">@ErrorMessage</p>
-    } else {
-        <p style="color:red">@ErrorMessage</p>
-    }
     <div>
         <div>
             <p><strong>Finální score: @Score</strong></p>
             <p><strong>Úspěšně dokončeno levelů: @TotalLevelsCompleted</strong></p>
             <p><strong>Zemřel jsi na levelu @CurrentLevel</strong></p>
         </div>
-        <input type="text" placeholder="Jméno hráče" maxlength="@GameSettings.MaxPlayerNameLength" @bind-value="PlayerNameProxy" />
     </div>
-    <ScoreTable HighScores="HighScores" />
 </div>
 
 
@@ -28,31 +19,7 @@
     [Parameter] public int Score { get; set; }
     [Parameter] public int CurrentLevel { get; set; }
     [Parameter] public int TotalLevelsCompleted { get; set; }
-    [Parameter] public bool IsSaveSuccess { get; set; }
-    [Parameter] public required string ErrorMessage { get; set; }
-    [Parameter] public required List<GameScore> HighScores { get; set; }
-    [Parameter] public string PlayerName { get; set; } = "";
-    [Parameter] public EventCallback<string> OnPlayerNameChanged { get; set; }
 
     // Akce
     [Parameter] public EventCallback OnStartNewGame { get; set; }
-    [Parameter] public EventCallback OnSaveScore { get; set; }
-
-
-    /// <summary>
-    /// Řeší změnu jména hráče a posílá ji nahoru pomocí EventCallbacku OnPlayerNameChanged
-    /// </summary>
-    private async Task HandleNameChange(ChangeEventArgs e)
-    {
-        await OnPlayerNameChanged.InvokeAsync(e.Value.ToString());
-    }
-
-    /// <summary>
-    /// Proxy pro PlayerName, který umožňuje volat OnPlayerNameChanged při změně hodnoty v inputu
-    /// </summary>
-    private string PlayerNameProxy
-    {
-        get => PlayerName;
-        set => OnPlayerNameChanged.InvokeAsync(value);
-    }
 }

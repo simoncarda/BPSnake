@@ -22,7 +22,6 @@ namespace BPSnake.Models.GameCore
         public int CurrentGameScore { get; set; } = 0;
         public int CurrentLevel { get; set; } = 1;
         public int TotalLevelsCompleted { get; private set; } = 0; // Počet úrovní dokončených během aktuální hry
-        public DateTime GameOverTime { get; private set; } = DateTime.MinValue; // Čas, kdy došlo k Game Over
         public GameState CurrentGameState { get; private set; } 
 
         // Služby
@@ -115,7 +114,6 @@ namespace BPSnake.Models.GameCore
         public void GameOver()
         {
             StopGameLoop(); // Zastavíme smyčku
-            GameOverTime = DateTime.Now;
             CurrentGameState = GameState.GameOver;
             NotifyStateChanged();
         }

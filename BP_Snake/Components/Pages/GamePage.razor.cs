@@ -1,5 +1,4 @@
 ﻿using BPSnake.Models;
-using BPSnake.Models.DataLayer;
 using BPSnake.Models.GameCore;
 using BPSnake.Configuration;
 using BPSnake.Services;
@@ -13,15 +12,9 @@ namespace BPSnake.Components.Pages
     {
         [Inject] private GameEngine _engine { get; set; } = default!;
 
-        // proměnné pro interakci s DB
-        [Inject] private IDatabaseService DbService { get; set; } = default!;
-        private List<GameScore> _highScores = new List<GameScore>();
-        private string _playerName = string.Empty;
-        private string _errorMessage = string.Empty;
-        private bool _isSaveSuccess = false;
         private bool _showTouchControls = false;
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             // Zobrazí ovládací tlačítka, pokud jsme na iOS nebo Android 
             if (DeviceInfo.Platform == DevicePlatform.Android || DeviceInfo.Platform == DevicePlatform.iOS) {
@@ -32,8 +25,6 @@ namespace BPSnake.Components.Pages
 
             _engine.OnStateChangedAsync += RefreshUIAsync;
             _engine.LoadNewGame();
-
-            await LoadLeaderboard();
         }
 
         /// <summary>
@@ -44,18 +35,15 @@ namespace BPSnake.Components.Pages
         /// a po inicializaci nové hry asynchronně načte žebříček nejlepších hráčů (leaderboard).
         /// </remarks>
         /// <returns>Úloha (task), která reprezentuje asynchronní operaci.</returns>
-        private async Task StartNewGame()
+        private void StartNewGame()
         {
-            _errorMessage = "";
-            _isSaveSuccess = false;
             _engine.StartNewGame();
-            await LoadLeaderboard();
         }
-        private async Task PauseGame()
+        private void PauseGame()
         {
             _engine.PauseGame();
         }
-        private async Task ResumeGame()
+        private void ResumeGame()
         {
             _engine.ResumeGame();
         }
@@ -130,60 +118,6 @@ namespace BPSnake.Components.Pages
             }
 
             return "cell empty";
-        }
-
-        /// <summary>
-        /// Uloží aktuální herní skóre hráče, za předpokladu, že je skóre vyšší než nula a je zadáno platné jméno hráče.
-        /// </summary>
-        /// <remarks>
-        /// Pokud je skóre nulové nebo je jméno hráče prázdné (či obsahuje pouze bílé znaky), nastaví se chybová zpráva a skóre se neuloží.
-        /// Metoda zpracovává různé výsledky ukládání a poskytuje zpětnou vazbu o tom, zda bylo
-        /// skóre úspěšně uloženo, aktualizováno, nebo vyhodnoceno jako příliš nízké pro uložení.
-        /// Po uložení načte žebříček, aby odrážel nejnovější výsledky.
-        /// </remarks>
-        private async Task SaveScore()
-        {
-            if (_engine.CurrentGameScore == 0) {
-                _errorMessage = "Nulové skóre se neukládá! Zkus to znovu.";
-                return;
-            }
-            if (String.IsNullOrWhiteSpace(_playerName)) {
-                _errorMessage = "Musíš zadat jméno!";
-                return;
-            }
-
-            GameScore scoreToSave = new GameScore {
-                PlayerName = _playerName.Trim(),
-                Score = _engine.CurrentGameScore,
-                TotalLevelsCompleted = _engine.TotalLevelsCompleted,
-                DateTimeAchieved = _engine.GameOverTime
-            };
-
-            // Uložíme do databáze, zároveň získáme výsledek uložení
-            SaveResult result = await DbService.SavePlayerScoreAsync(scoreToSave);
-            // Zpracujeme výsledek uložení
-            switch (result) {
-                case SaveResult.InsertedNew:
-                    _errorMessage = "Vítej! Jsi zapsán v tabulce.";
-                    _isSaveSuccess = true;
-                    break;
-
-                case SaveResult.UpdatedHighScore:
-                    _errorMessage = "Gratulace! Překonal jsi svůj rekord!";
-                    _isSaveSuccess = true;
-                    break;
-
-                case SaveResult.ScoreTooLow:
-                    _errorMessage = "Bohužel, tvůj starý rekord byl lepší. Neuloženo.";
-                    _isSaveSuccess = false;
-                    break;
-            }
-
-            await LoadLeaderboard();
-        }
-        private async Task LoadLeaderboard()
-        {
-            _highScores = await DbService.GetScoresAsync();
         }
     }
 }

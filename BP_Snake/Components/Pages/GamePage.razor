@@ -7,9 +7,7 @@
 @switch (_engine.CurrentGameState) {
     case GameState.Menu:
         <StartMenuScreen 
-            OnStartNewGame="@StartNewGame" 
-            Highscores="@_highScores" 
-        />
+            OnStartNewGame="@StartNewGame"/>
         break;
     case GameState.Playing:
     case GameState.Paused:
@@ -23,8 +21,7 @@
             OnPauseGame="@PauseGame"
             OnResumeGame="@ResumeGame"
             CellClass="@GetCellClass"
-            HandleKeyboardInput="@HandleInput"
-        />
+            HandleKeyboardInput="@HandleInput"/>
         if (_showTouchControls) {
             <TouchControls 
                 OnDirectionChange="@_engine.ChangeDirection"/>
@@ -35,13 +32,6 @@
             Score="@_engine.CurrentGameScore" 
             CurrentLevel="@_engine.CurrentLevel"
             TotalLevelsCompleted="_engine.TotalLevelsCompleted"
-            IsSaveSuccess="@_isSaveSuccess" 
-            ErrorMessage="@_errorMessage"
-            HighScores="@_highScores" 
-            PlayerName="@_playerName" 
-            OnPlayerNameChanged="@((newName) => _playerName = newName)"
-            OnStartNewGame="@StartNewGame" 
-            OnSaveScore="SaveScore" 
-        />
+            OnStartNewGame="@StartNewGame"/>
         break;
 }

@@ -23,7 +23,6 @@ namespace BPSnake
     		builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
             builder.Services.AddSingleton<GameLoopService>();
             builder.Services.AddSingleton<CollisionService>();
             builder.Services.AddSingleton<FoodService>();
