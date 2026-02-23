@@ -105,10 +105,6 @@ namespace BPSnake.Components.Pages
                 return "cell snake-body";
             }
 
-            if (_engine.CurrentFoodItem != null && _engine.CurrentFoodItem.Position == p) {
-                return _engine.CurrentFoodItem.ScoreValue == GameSettings.BonusFoodScoreValue ? "cell food-bonus" : "cell food";
-            }
-
             return "cell empty";
         }
     }

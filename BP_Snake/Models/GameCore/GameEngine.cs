@@ -11,27 +11,23 @@ namespace BPSnake.Models.GameCore
     /// položkami jídla a herní plochou. Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení, obnovení a ukončení hry.
     /// Tato třída publikuje události pro aktualizaci uživatelského rozhraní (UI) a podporuje uvolňování prostředků prostřednictvím rozhraní IDisposable.
     /// </remarks>
-    internal class GameEngine(GameLoopService gameLoopService, FoodService foodService) : IDisposable
+    internal class GameEngine(GameLoopService gameLoopService) : IDisposable
     {
         // Konstanty
 
         // Stav hry
         public Snake CurrentSnake { get; set; } = null!;
         public GameBoard CurrentGameBoard { get; set; } = null!;
-        public FoodItem CurrentFoodItem { get; set; } = null!;
-        public int CurrentGameScore { get; set; } = 0;
         public GameState CurrentGameState { get; private set; } 
 
         // Služby
         private readonly GameLoopService _gameLoopService = gameLoopService;
-        private readonly FoodService _foodService = foodService;
 
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
 
         // Pomocné proměnné pro řízení logiky hry
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
-        private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
 
         /// <summary>
         /// Notifikuje všechny přihlášené posluchače události OnStateChangedAsync, že došlo ke změně stavu hry, a
@@ -49,12 +45,9 @@ namespace BPSnake.Models.GameCore
         public void LoadNewGame()
         {
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
-            CurrentGameScore = 0;
             CurrentSnake = new Snake();
             CurrentGameBoard = new GameBoard();
-            CreateFoodItem();
             CurrentGameState = GameState.Menu;
-            _growBuffer = 0;
             // Vyvolání události pro aktualizaci UI (načtení hry)
             NotifyStateChanged();
         }
@@ -120,44 +113,10 @@ namespace BPSnake.Models.GameCore
         {
             _directionChangedInCurrentTick = false;
 
-            // podmínka pro pohyb při kolizi s jídlem
-            if (CurrentFoodItem != null && CurrentSnake.GetNextHeadPosition() == CurrentFoodItem.Position) {
-                OnFoodEaten();
-            } else if (_growBuffer > 0){
-                CurrentSnake.Move(grow: true);
-                _growBuffer--;
-            } else {
-                CurrentSnake.Move();
-            }
-
+            CurrentSnake.Move();
+            
             NotifyStateChanged();
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Vytvoří a přiřadí novou položku jídla na aktuální herní plochu na základě aktuálního stavu hada.
-        /// </summary>
-        /// <remarks>Tato metoda využívá službu jídla (food service) ke generování položky jídla, která je umístěna na herní plochu.
-        /// Měla by být volána pokaždé, když je potřeba vygenerovat nové jídlo – například poté, co bylo zkonzumováno to předchozí.</remarks>
-        private void CreateFoodItem()
-        {
-            CurrentFoodItem = _foodService.CreateFoodItem(CurrentGameBoard, CurrentSnake);
-        }
-
-        /// <summary>
-        /// Zpracovává událost, kdy had sní položku jídla, a odpovídajícím způsobem aktualizuje stav hry.
-        /// </summary>
-        /// <remarks>Tato metoda zvětšuje délku hada, aktualizuje hráčovo skóre a spravuje postup hrou, jako je například otevírání bran při splnění určitých podmínek.
-        /// Dále určuje a nastavuje další položku jídla, která se má objevit na herní ploše.</remarks>
-        private void OnFoodEaten()
-        {
-            _growBuffer = GameSettings.GrowthPerFood;
-            CurrentSnake.Move(grow: true);
-
-            FoodEatenResult result = _foodService.HandleFoodEaten(CurrentGameBoard, CurrentSnake, CurrentFoodItem);
-            CurrentGameScore += result.ScoreValue;
-
-            CurrentFoodItem = result.NextFoodItem;
         }
 
         /// <summary>

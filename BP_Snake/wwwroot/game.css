@@ -16,21 +16,6 @@
     margin-bottom: 2px;
 }
 
-.game-over {
-    max-width: 600px;
-    margin: 0 auto;
-    gap: 15px;
-}
-
-.stats {
-    border: 2px solid black;
-    border-collapse: collapse;
-    padding: 5px;
-    font-weight: bold;
-    font-family: sans-serif;
-    cursor: default;
-}
-
 .gameboard {
     display: grid;
     gap: 0; /* Žádný mezera mezi buòkami */
@@ -62,14 +47,6 @@
 .snake-head {
     background-color: #2E7D32; /* Tmavší zelená */
     border-radius: 4px;
-}
-
-.food {
-    background-color: #F44336; /* Èervená */
-}
-
-.food-bonus {
-    background-color: #FFD700; /* Zlatá */
 }
 
 .d-pad {

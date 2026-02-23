@@ -7,10 +7,6 @@
         } else if (CurrentGameState == GameState.Paused) {
             <button type="button" class="btn btn-info" @onclick="HandleResumeClick">Resume</button>
         }
-
-        <div class="stats">
-            <span>Score: @CurrentGameScore</span>
-        </div>
     </div>
 
     <div class="gameboard" style="grid-template-columns: repeat(@Width, 1fr); grid-template-rows: repeat(@Height, 1fr);" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
@@ -26,7 +22,6 @@
     [Parameter] public int Width { get; set; }
     [Parameter] public int Height { get; set; }
     [Parameter] public GameState CurrentGameState { get; set; }
-    [Parameter] public int CurrentGameScore { get; set; }
 
     [Parameter] public EventCallback OnPauseGame { get; set; }
     [Parameter] public EventCallback OnResumeGame { get; set; }

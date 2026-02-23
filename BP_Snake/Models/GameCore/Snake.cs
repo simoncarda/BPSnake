@@ -62,35 +62,11 @@ namespace BPSnake.Models.GameCore
         /// Parametr grow použijte v případě, že se má had prodloužit, například po snědení jídla.
         /// </remarks>
         /// <param name="grow"> true pro zvětšení délky hada přidáním nového článku u hlavy; v opačném případě false pro zachování aktuální délky.</param>
-        public void Move(bool grow = false)
+        public void Move()
         {
             GridPoint nextHeadPosition = GetNextHeadPosition();
             Body.Insert(0, nextHeadPosition); // Přidání nové hlavy na začátek seznamu těla
-            if (!grow)
-            {
-                Body.RemoveAt(Body.Count - 1);
-            }
-        }
-
-        /// <summary>
-        /// Určuje, zda hlava hada zaujímá stejnou pozici jako kterýkoli jiný článek jeho těla.
-        /// </summary>
-        /// <remarks>
-        /// Tato metoda kontroluje kolizi hada se sebou samým porovnáním pozice hlavy s každým dalším článkem v těle.
-        /// Samotná hlava je z tohoto porovnání vyloučena.
-        /// </remarks>
-        /// <returns>true, pokud hlava koliduje s jakoukoli jinou částí těla; v opačném případě false.</returns>
-        public bool IsSelfCollision()
-        {
-            GridPoint head = Body[0];
-            for (int i = 1; i < Body.Count; i++) // Přeskočí hlavu v seznamu
-            {
-                if (Body[i] == head)
-                {
-                    return true;
-                }
-            }
-            return false;
+            Body.RemoveAt(Body.Count - 1);
         }
     }
 }
