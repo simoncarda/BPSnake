@@ -16,8 +16,6 @@
             Height="@_engine.CurrentGameBoard.Height"
             CurrentGameState="@_engine.CurrentGameState" 
             CurrentGameScore="@_engine.CurrentGameScore"
-            CurrentLevel="@_engine.CurrentLevel"
-            TotalLevelsCompleted="@_engine.TotalLevelsCompleted"
             OnPauseGame="@PauseGame"
             OnResumeGame="@ResumeGame"
             CellClass="@GetCellClass"
@@ -30,8 +28,6 @@
     case GameState.GameOver:
         <GameOverScreen 
             Score="@_engine.CurrentGameScore" 
-            CurrentLevel="@_engine.CurrentLevel"
-            TotalLevelsCompleted="_engine.TotalLevelsCompleted"
             OnStartNewGame="@StartNewGame"/>
         break;
 }

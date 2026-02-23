@@ -23,10 +23,6 @@
 }
 
 .stats {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 30px;
     border: 2px solid black;
     border-collapse: collapse;
     padding: 5px;
@@ -74,20 +70,6 @@
 
 .food-bonus {
     background-color: #FFD700; /* Zlatá */
-}
-
-.wall {
-    background-color: #424242; /* Tmavì šedá */
-}
-
-/* BRÁNA */
-.gate-closed {
-    background-color: #9E9E9E; /* Šedá (vypadá jako zeï) */
-}
-
-.gate-open {
-    background-color: #00BFFF; /* Svìtle modrá */
-    box-shadow: 0 0 10px #00BFFF; /* "Záøe" */
 }
 
 .d-pad {

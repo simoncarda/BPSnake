@@ -8,8 +8,6 @@
     <div>
         <div>
             <p><strong>Finální score: @Score</strong></p>
-            <p><strong>Úspěšně dokončeno levelů: @TotalLevelsCompleted</strong></p>
-            <p><strong>Zemřel jsi na levelu @CurrentLevel</strong></p>
         </div>
     </div>
 </div>
@@ -17,8 +15,6 @@
 
 @code {
     [Parameter] public int Score { get; set; }
-    [Parameter] public int CurrentLevel { get; set; }
-    [Parameter] public int TotalLevelsCompleted { get; set; }
 
     // Akce
     [Parameter] public EventCallback OnStartNewGame { get; set; }

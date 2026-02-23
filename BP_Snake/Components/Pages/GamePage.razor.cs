@@ -14,7 +14,7 @@ namespace BPSnake.Components.Pages
 
         private bool _showTouchControls = false;
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             // Zobrazí ovládací tlačítka, pokud jsme na iOS nebo Android 
             if (DeviceInfo.Platform == DevicePlatform.Android || DeviceInfo.Platform == DevicePlatform.iOS) {
@@ -107,14 +107,6 @@ namespace BPSnake.Components.Pages
 
             if (_engine.CurrentFoodItem != null && _engine.CurrentFoodItem.Position == p) {
                 return _engine.CurrentFoodItem.ScoreValue == GameSettings.BonusFoodScoreValue ? "cell food-bonus" : "cell food";
-            }
-
-            if (_engine.CurrentGameBoard.GatePosition == p) {
-                return _engine.CurrentGameBoard.IsGateOpen ? "cell gate-open" : "cell gate-closed";
-            }
-
-            if (_engine.CurrentGameBoard.Obstacles.Contains(p)) {
-                return "cell wall";
             }
 
             return "cell empty";

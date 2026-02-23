@@ -10,9 +10,6 @@
 
         <div class="stats">
             <span>Score: @CurrentGameScore</span>
-            <span>
-                Level: @CurrentLevel <span title="Úspěšně dokončené levely">(@TotalLevelsCompleted)</span>
-            </span>
         </div>
     </div>
 
@@ -30,8 +27,6 @@
     [Parameter] public int Height { get; set; }
     [Parameter] public GameState CurrentGameState { get; set; }
     [Parameter] public int CurrentGameScore { get; set; }
-    [Parameter] public int CurrentLevel { get; set; }
-	[Parameter] public int TotalLevelsCompleted { get; set; }
 
     [Parameter] public EventCallback OnPauseGame { get; set; }
     [Parameter] public EventCallback OnResumeGame { get; set; }
