@@ -1,4 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using BPSnake.Models;
 using BPSnake.Models.DataLayer;
 using SQLite;
@@ -16,24 +19,38 @@ namespace BPSnake.Services
         /// <summary>
         /// Asynchronní SQLite připojení používané pro všechny operace.
         /// </summary>
-        private SQLiteAsyncConnection _database;
+        private SQLiteAsyncConnection? _database;
         private const string DbName = "SnakeGame.db";
 
+        // Synchronizace inicializace
+        private readonly SemaphoreSlim _initSemaphore = new(1, 1);
+        private bool _initialized;
+
         /// <summary>
-        /// Inicializuje SQLite připojení a vytvoří tabulku <see cref="GameScore"/>, pokud ještě neexistuje.
-        /// Metoda je bezpečná při opakovaném volání - pokud je připojení již vytvořeno, okamžitě se vrátí.
+        /// Asynchronně inicializuje SQLite připojení a vytvoří tabulku <see cref="GameScore"/>, pokud ještě neexistuje.
+        /// Bezpečné pro opakované a současné volání.
         /// </summary>
-        private async Task Init()
+        private async Task InitAsync()
         {
-            if (_database != null) {
+            if (_initialized) {
                 return;
             }
 
-            // Cesta k databázi 
-            string dbPath = Path.Combine(FileSystem.AppDataDirectory, DbName);
+            await _initSemaphore.WaitAsync().ConfigureAwait(false);
+            try {
+                if (_initialized) {
+                    return;
+                }
 
-            _database = new SQLiteAsyncConnection(dbPath);
-            await _database.CreateTableAsync<GameScore>();
+                string dbPath = Path.Combine(FileSystem.AppDataDirectory, DbName);
+                _database = new SQLiteAsyncConnection(dbPath);
+                await _database.CreateTableAsync<GameScore>().ConfigureAwait(false);
+
+                _initialized = true;
+            }
+            finally {
+                _initSemaphore.Release();
+            }
         }
 
         /// <summary>
@@ -50,24 +67,27 @@ namespace BPSnake.Services
         /// </remarks>
         public async Task<SaveResult> SavePlayerScoreAsync(GameScore scoreData)
         {
-            await Init();
-            GameScore existingPlayer = await _database.Table<GameScore>()
-                                                      .Where(s => s.PlayerName == scoreData.PlayerName)
-                                                      .FirstOrDefaultAsync();
+            await InitAsync().ConfigureAwait(false);
 
-            // Pokud hráč se zadaným jménem existuje, update jeho score (pokud je vyšší, než předchozí), jinak vytvoř nového hráče v tabulce
+            // Vyhledání existujícího hráče
+            var existingPlayer = await _database!
+                                       .Table<GameScore>()
+                                       .Where(s => s.PlayerName == scoreData.PlayerName)
+                                       .FirstOrDefaultAsync()
+                                       .ConfigureAwait(false);
+
             if (existingPlayer != null) {
                 if (existingPlayer.Score < scoreData.Score) {
                     existingPlayer.Score = scoreData.Score;
                     existingPlayer.DateTimeAchieved = scoreData.DateTimeAchieved;
                     existingPlayer.TotalLevelsCompleted = scoreData.TotalLevelsCompleted;
-                    await _database.UpdateAsync(existingPlayer);
+                    await _database!.UpdateAsync(existingPlayer).ConfigureAwait(false);
                     ScoresChanged?.Invoke();
                     return SaveResult.UpdatedHighScore;
                 }
                 return SaveResult.ScoreTooLow;
             } else {
-                await _database.InsertAsync(scoreData);
+                await _database!.InsertAsync(scoreData).ConfigureAwait(false);
                 ScoresChanged?.Invoke();
                 return SaveResult.InsertedNew;
             }
@@ -79,21 +99,23 @@ namespace BPSnake.Services
         /// <returns>Seznam až 10 nejlepších <see cref="GameScore"/> záznamů.</returns>
         public async Task<List<GameScore>> GetScoresAsync()
         {
-            await Init();
+            await InitAsync().ConfigureAwait(false);
 
-            // SQL: SELECT * FROM Scores ORDER BY Score DESC LIMIT 10
-            return await _database.Table<GameScore>()
-                                  .OrderByDescending(s => s.Score)
-                                  .Take(10)
-                                  .ToListAsync();
+            return await _database!
+                         .Table<GameScore>()
+                         .OrderByDescending(s => s.Score)
+                         .Take(10)
+                         .ToListAsync()
+                         .ConfigureAwait(false);
         }
+
         /// <summary>
         /// Odstraní všechny záznamy skóre z tabulky.
         /// </summary>
         public async Task ClearAllScores()
         {
-            await Init();
-            await _database.DeleteAllAsync<GameScore>();
+            await InitAsync().ConfigureAwait(false);
+            await _database!.DeleteAllAsync<GameScore>().ConfigureAwait(false);
             ScoresChanged?.Invoke();
         }
     }
