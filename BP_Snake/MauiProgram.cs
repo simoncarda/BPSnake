@@ -23,8 +23,7 @@ namespace BPSnake
     		builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<IDatabaseService, DatabaseService>(); // Databáze může zůstat Singleton (sdílený přístup k souboru), případně by mohla být též Scoped podle zvoleného ORM (např. EF Core).
-            // Database service exposes ScoresChanged event; no separate leaderboard wrapper required.
+            builder.Services.AddSingleton<IDatabaseService, DatabaseService>(); // Databáze může zůstat Singleton (sdílený přístup k souboru)
             
             // Herní služby převedené na Scoped (každý hráč/session dostane vlastní instanci služeb i vlastní herní smyčku)
             builder.Services.AddScoped<GameLoopService>();
