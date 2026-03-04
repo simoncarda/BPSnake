@@ -11,48 +11,48 @@ namespace BPSnake.Models.GameCore
     /// položkami jídla a herní plochou. Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení, obnovení a ukončení hry.
     /// Tato třída publikuje události pro aktualizaci uživatelského rozhraní (UI) a podporuje uvolňování prostředků prostřednictvím rozhraní IDisposable.
     /// </remarks>
-    internal class GameEngine(GameLoopService gameLoopService, CollisionService collisionService, FoodService foodService, LevelService levelService) : IDisposable
+    internal class GameEngine(
+        GameLoopService gameLoopService, 
+        CollisionService collisionService, 
+        FoodService foodService, 
+        LevelService levelService,
+        GameStateService gameStateService,
+        ScoreService scoreService) : IGameEngine, IDisposable
     {
         // Konstanty
 
-        // Stav hry
-        public Snake CurrentSnake { get; set; } = null!;
-        public GameBoard CurrentGameBoard { get; set; } = null!;
-        public FoodItem CurrentFoodItem { get; set; } = null!;
-        public int CurrentGameScore { get; set; } = 0;
-        public int CurrentLevel { get; set; } = 1;
-        public int TotalLevelsCompleted { get; private set; } = 0; // Počet úrovní dokončených během aktuální hry
-        public DateTime GameOverTime { get; private set; } = DateTime.MinValue; // Čas, kdy došlo k Game Over
-        public GameState CurrentGameState { get; private set; } 
+        // Stav hry (zvenčí pouze pro čtení díky get; a private set;)
+        public Snake CurrentSnake { get; private set; } = null!;
+        public GameBoard CurrentGameBoard { get; private set; } = null!;
+        public FoodItem CurrentFoodItem => _foodService.CurrentFoodItem;
+        public int CurrentGameScore => _scoreService.CurrentScore;
+        public int CurrentLevel => _levelService.CurrentLevel;
+        public int TotalLevelsCompleted => _levelService.TotalLevelsCompleted; // Počet úrovní dokončených během aktuální hry
+        public DateTime GameOverTime => _gameStateService.GameOverTime; // Čas, kdy došlo k Game Over
+        public GameState CurrentGameState => _gameStateService.CurrentState; 
 
         // Služby
         private readonly GameLoopService _gameLoopService = gameLoopService;
         private readonly CollisionService _collisionService = collisionService;
         private readonly FoodService _foodService = foodService;
         private readonly LevelService _levelService = levelService;
+        private readonly GameStateService _gameStateService = gameStateService;
+        private readonly ScoreService _scoreService = scoreService;
 
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
 
         // Pomocné proměnné pro řízení logiky hry
-        private int _currentGameSpeed
-        {
-            get {
-                return Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
-            }
-        } // Aktuální rychlost hry, která se může měnit s postupem úrovní
+        // Aktuální rychlost hry, která se může měnit s postupem úrovní
+        private int _currentGameSpeed => Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
-        private int _applesEatenInLevel = 0;
         private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
 
         /// <summary>
         /// Notifikuje všechny přihlášené posluchače události OnStateChangedAsync, že došlo ke změně stavu hry, a
         /// umožňuje jim reagovat na tuto změnu (například aktualizací uživatelského rozhraní).
         /// </summary>
-        private void NotifyStateChanged()
-        {
-            _ = OnStateChangedAsync?.Invoke();
-        }
+        private void NotifyStateChanged() => _ = OnStateChangedAsync?.Invoke();
 
         /// <summary>
         /// Inicializuje nový herní stav pro začátek nové hry.
@@ -61,15 +61,17 @@ namespace BPSnake.Models.GameCore
         public void LoadNewGame()
         {
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
-            CurrentLevel = 1;
-            CurrentGameScore = 0;
+            _levelService.Reset();
+            _foodService.Reset();
+            _scoreService.Reset();
+            
             CurrentSnake = new Snake();
             CurrentGameBoard = new GameBoard(CurrentLevel);
-            CreateFoodItem();
-            _applesEatenInLevel = 0;
-            CurrentGameState = GameState.Menu;
+            _foodService.SpawnFood(CurrentGameBoard, CurrentSnake);
+            
+            _gameStateService.SetMenu();
             _growBuffer = 0;
-            TotalLevelsCompleted = 0;
+            
             // Vyvolání události pro aktualizaci UI (načtení hry)
             NotifyStateChanged();
         }
@@ -80,7 +82,7 @@ namespace BPSnake.Models.GameCore
         public void StartNewGame()
         {
             LoadNewGame();
-            CurrentGameState = GameState.Playing;
+            _gameStateService.SetPlaying();
             _ = StartGameLoop(); // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
             NotifyStateChanged();
         }
@@ -90,9 +92,9 @@ namespace BPSnake.Models.GameCore
         /// </summary>
         public void PauseGame()
         {
-            if (CurrentGameState == GameState.Playing) {
+            if (_gameStateService.IsPlaying()) {
                 StopGameLoop(); // Zastavíme timer (cancel task)
-                CurrentGameState = GameState.Paused;
+                _gameStateService.SetPaused();
                 NotifyStateChanged();
             }
         }
@@ -102,9 +104,9 @@ namespace BPSnake.Models.GameCore
         /// </summary>
         public void ResumeGame()
         {
-            if (CurrentGameState == GameState.Paused) {
+            if (_gameStateService.IsPaused()) {
                 _ = StartGameLoop(); // Znovu vytvoříme timer a spustíme smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
-                CurrentGameState = GameState.Playing;
+                _gameStateService.SetPlaying();
                 NotifyStateChanged();
             }
         }
@@ -115,8 +117,7 @@ namespace BPSnake.Models.GameCore
         public void GameOver()
         {
             StopGameLoop(); // Zastavíme smyčku
-            GameOverTime = DateTime.Now;
-            CurrentGameState = GameState.GameOver;
+            _gameStateService.SetGameOver();
             NotifyStateChanged();
         }
 
@@ -124,19 +125,13 @@ namespace BPSnake.Models.GameCore
         /// Spustí herní smyčku asynchronně s aktuální rychlostí hry. 
         /// Tato metoda zajišťuje, že logika hry bude aktualizována v pravidelných intervalech, které se mohou měnit v závislosti na úrovni a počtu dokončených úrovní.
         /// </summary>
-        private Task StartGameLoop()
-        {
-            return _gameLoopService.StartAsync(GameLogicTickAsync, _currentGameSpeed);
-        }
+        private Task StartGameLoop() => _gameLoopService.StartAsync(GameLogicTickAsync, _currentGameSpeed);
 
         /// <summary>
         /// Zastaví herní smyčku a zruší všechny plánované aktualizace stavu hry. 
         /// Tato metoda je volána při pozastavení hry, ukončení hry nebo načtení nové hry, aby se zajistilo, že nebudou probíhat žádné další aktualizace stavu, dokud nebude explicitně znovu spuštěna.
         /// </summary>
-        private void StopGameLoop()
-        {
-            _gameLoopService.Stop();
-        }
+        private void StopGameLoop() => _gameLoopService.Stop();
 
         /// <summary>
         /// Metoda obsahující hlavní logiku hry, která se vykonává při každém "ticku" herní smyčky.
@@ -178,12 +173,11 @@ namespace BPSnake.Models.GameCore
         /// Měla by být volána ve chvíli, kdy hráč dokončí úroveň, aby bylo zajištěno, že stav hry bude správně aktualizován pro další fázi.</remarks>
         private void LoadNextLevel()
         {
-            TotalLevelsCompleted++;
-            CurrentLevel = _levelService.GetNextLevel(CurrentLevel);
-            _applesEatenInLevel = 0;
-            CurrentGameBoard = new(CurrentLevel);
+            _levelService.MoveToNextLevel();
+            CurrentGameBoard = new GameBoard(CurrentLevel);
             CurrentSnake = new Snake();
-            CreateFoodItem();
+            _foodService.Reset();
+            _foodService.SpawnFood(CurrentGameBoard, CurrentSnake);
             RestartGameLoop();
         }
 
@@ -193,40 +187,26 @@ namespace BPSnake.Models.GameCore
         private void RestartGameLoop()
         {
             StopGameLoop();
-            if (CurrentGameState == GameState.Playing) {
+            if (_gameStateService.IsPlaying()) {
                 _ = StartGameLoop();
             } // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
         }
 
         /// <summary>
-        /// Vytvoří a přiřadí novou položku jídla na aktuální herní plochu na základě aktuálního stavu hada.
-        /// </summary>
-        /// <remarks>Tato metoda využívá službu jídla (food service) ke generování položky jídla, která je umístěna na herní plochu.
-        /// Měla by být volána pokaždé, když je potřeba vygenerovat nové jídlo – například poté, co bylo zkonzumováno to předchozí.</remarks>
-        private void CreateFoodItem()
-        {
-            CurrentFoodItem = _foodService.CreateFoodItem(CurrentGameBoard, CurrentSnake);
-        }
-
-        /// <summary>
         /// Zpracovává událost, kdy had sní položku jídla, a odpovídajícím způsobem aktualizuje stav hry.
         /// </summary>
-        /// <remarks>Tato metoda zvětšuje délku hada, aktualizuje hráčovo skóre a spravuje postup hrou, jako je například otevírání bran při splnění určitých podmínek.
-        /// Dále určuje a nastavuje další položku jídla, která se má objevit na herní ploše.</remarks>
+        /// <remarks>Tato metoda zvětšuje délku hada, aktualizuje hráčovo skóre a spravuje postup hrou, jako je například otevírání bran při splnění určitých podmínek.</remarks>
         private void OnFoodEaten()
         {
             _growBuffer = GameSettings.GrowthPerFood;
             CurrentSnake.Move(grow: true);
 
-            FoodEatenResult result = _foodService.HandleFoodEaten(CurrentGameBoard, CurrentSnake, CurrentFoodItem, _applesEatenInLevel);
-            CurrentGameScore += result.ScoreValue;
-            _applesEatenInLevel = result.ApplesEatenInLevel;
+            var (score, openGate) = _foodService.EatCurrentFood(CurrentGameBoard, CurrentSnake);
+            _scoreService.Increase(score);
 
-            if (result.ShouldOpenGate) {
+            if (openGate) {
                 CurrentGameBoard.OpenGate();
             }
-
-            CurrentFoodItem = result.NextFoodItem;
         }
 
         /// <summary>
@@ -260,6 +240,38 @@ namespace BPSnake.Models.GameCore
                    (dir1 == Direction.Down && dir2 == Direction.Up) ||
                    (dir1 == Direction.Left && dir2 == Direction.Right) ||
                    (dir1 == Direction.Right && dir2 == Direction.Left);
+        }
+
+        /// <summary>
+        /// Zjistí CSS třídu pro konkrétní buňku herní plochy na základě aktuálního stavu hry.
+        /// Přesunutí této logiky do GameEngine ukazuje studentům správné zapouzdření, kde UI
+        /// už nezkoumá složité detaily v ostatních objektech, ale jen se zeptá "co je tady?".
+        /// </summary>
+        public string GetCellCssClass(int x, int y)
+        {
+            var p = new GridPoint(x, y);
+
+            if (CurrentSnake?.Body.Count > 0 && CurrentSnake.Body[0] == p) {
+                return "cell snake-head";
+            }
+
+            if (CurrentSnake?.Body.Contains(p) == true) {
+                return "cell snake-body";
+            }
+
+            if (CurrentFoodItem != null && CurrentFoodItem.Position == p) {
+                return CurrentFoodItem.ScoreValue == GameSettings.BonusFoodScoreValue ? "cell food-bonus" : "cell food";
+            }
+
+            if (CurrentGameBoard != null && CurrentGameBoard.GatePosition == p) {
+                return CurrentGameBoard.IsGateOpen ? "cell gate-open" : "cell gate-closed";
+            }
+
+            if (CurrentGameBoard != null && CurrentGameBoard.Obstacles.Contains(p)) {
+                return "cell wall";
+            }
+
+            return "cell empty";
         }
 
         public void Dispose()

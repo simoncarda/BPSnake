@@ -33,25 +33,15 @@ namespace BPSnake.Models.GameCore
         public GridPoint GetNextHeadPosition()
         {
             GridPoint head = Body[0]; // Aktuální pozice hlavy hada
-            GridPoint nextPosition = head; // Proměnná pro uložení další pozice hlavy, výchozí hodnota je aktuální pozice hlavy
-
-            switch (CurrentDirection)
+            
+            return CurrentDirection switch
             {
-                case Direction.Up:
-                    nextPosition = new GridPoint(head.X, head.Y - 1);
-                    break;
-                case Direction.Down:
-                    nextPosition = new GridPoint(head.X, head.Y + 1);
-                    break;
-                case Direction.Left:
-                    nextPosition = new GridPoint(head.X - 1, head.Y);
-                    break;
-                case Direction.Right:
-                    nextPosition = new GridPoint(head.X + 1, head.Y);
-                    break;
-            }
-
-            return nextPosition;
+                Direction.Up => new GridPoint(head.X, head.Y - 1),
+                Direction.Down => new GridPoint(head.X, head.Y + 1),
+                Direction.Left => new GridPoint(head.X - 1, head.Y),
+                Direction.Right => new GridPoint(head.X + 1, head.Y),
+                _ => head
+            };
         }
 
         /// <summary>

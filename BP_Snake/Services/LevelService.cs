@@ -10,9 +10,19 @@ namespace BPSnake.Services
     /// </summary>
     internal sealed class LevelService
     {
-        public int GetNextLevel(int currentLevel)
+        public int CurrentLevel { get; private set; } = 1;
+        public int TotalLevelsCompleted { get; private set; } = 0;
+
+        public void Reset()
         {
-            return currentLevel >= GameSettings.LevelCount ? GameSettings.StartingLevel : currentLevel + 1;
+            CurrentLevel = 1;
+            TotalLevelsCompleted = 0;
+        }
+
+        public void MoveToNextLevel()
+        {
+            TotalLevelsCompleted++;
+            CurrentLevel = CurrentLevel >= GameSettings.LevelCount ? GameSettings.StartingLevel : CurrentLevel + 1;
         }
     }
 }

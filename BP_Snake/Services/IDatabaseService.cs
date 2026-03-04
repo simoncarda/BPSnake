@@ -1,10 +1,16 @@
-﻿using BPSnake.Models;
+﻿using System;
+using BPSnake.Models;
 using BPSnake.Models.DataLayer;
 
 namespace BPSnake.Services
 {
     public interface IDatabaseService
     {
+        /// <summary>
+        /// Event raised when leaderboard data changes (insert/update/clear).
+        /// Subscribers should reload cached data when this fires.
+        /// </summary>
+        event Action? ScoresChanged;
         /// <summary>
         /// Uloží nebo aktualizuje skóre hráče. Vrací informaci o tom, zda byl vytvořen nový záznam,
         /// aktualizován rekord nebo nebylo skóre dostatečně vysoké.

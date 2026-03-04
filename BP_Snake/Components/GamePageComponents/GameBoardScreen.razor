@@ -1,43 +1,37 @@
 ﻿@using BPSnake.Models;
+@using BPSnake.Models.GameCore;
+@inject IGameEngine Engine
+@implements IDisposable
 
 <div class="game-container">
     <div class="game-header">
-        @if (CurrentGameState == GameState.Playing) {
+        @if (Engine.CurrentGameState == GameState.Playing) {
             <button type="button" class="btn btn-info" @onclick="OnPauseGame">Pause</button>
-        } else if (CurrentGameState == GameState.Paused) {
+        } else if (Engine.CurrentGameState == GameState.Paused) {
             <button type="button" class="btn btn-info" @onclick="HandleResumeClick">Resume</button>
         }
 
         <div class="stats">
-            <span>Score: @CurrentGameScore</span>
+            <span>Score: @Engine.CurrentGameScore</span>
             <span>
-                Level: @CurrentLevel <span title="Úspěšně dokončené levely">(@TotalLevelsCompleted)</span>
+                Level: @Engine.CurrentLevel <span title="Úspěšně dokončené levely">(@Engine.TotalLevelsCompleted)</span>
             </span>
         </div>
     </div>
 
-    <div class="gameboard" style="grid-template-columns: repeat(@Width, 1fr); grid-template-rows: repeat(@Height, 1fr);" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
-        @for (int y = 0; y < Height; y++) {
-            @for (int x = 0; x < Width; x++) {
-                <div class="@CellClass(x, y)"></div>
+    <div class="gameboard" style="grid-template-columns: repeat(@Engine.CurrentGameBoard.Width, 1fr); grid-template-rows: repeat(@Engine.CurrentGameBoard.Height, 1fr);" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
+        @for (int y = 0; y < Engine.CurrentGameBoard.Height; y++) {
+            @for (int x = 0; x < Engine.CurrentGameBoard.Width; x++) {
+                <div class="@Engine.GetCellCssClass(x, y)"></div>
             }
         }
     </div>
 </div>
 
 @code{
-    [Parameter] public int Width { get; set; }
-    [Parameter] public int Height { get; set; }
-    [Parameter] public GameState CurrentGameState { get; set; }
-    [Parameter] public int CurrentGameScore { get; set; }
-    [Parameter] public int CurrentLevel { get; set; }
-	[Parameter] public int TotalLevelsCompleted { get; set; }
-
     [Parameter] public EventCallback OnPauseGame { get; set; }
     [Parameter] public EventCallback OnResumeGame { get; set; }
 
-    // Předání metody pro získání CSS třídy buňky
-    [Parameter] public required Func<int, int, string> CellClass { get; set; }
     // EventCallback pro klávesnici
     [Parameter] public EventCallback<KeyboardEventArgs> HandleKeyboardInput { get; set; }
 
@@ -63,6 +57,20 @@
     {
         if(firstRender) {
             await _boardElement.FocusAsync();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        Engine.OnStateChangedAsync += RefreshUIAsync;
+    }
+
+    private Task RefreshUIAsync() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        if (Engine != null) {
+            Engine.OnStateChangedAsync -= RefreshUIAsync;
         }
     }
 }

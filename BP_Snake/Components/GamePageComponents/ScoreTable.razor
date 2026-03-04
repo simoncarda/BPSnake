@@ -1,7 +1,9 @@
 ﻿@using BPSnake.Models.DataLayer;
+@using BPSnake.Services;
+@inject IDatabaseService DbService
 
 <div>
-    @if (!HighScores.Any()) {
+    @if (!_highScores.Any()) {
         <p>Zatím žádné záznamy.</p>
     } else {
         <div class="table-container">
@@ -26,7 +28,7 @@
                     @{
                         int position = 1;
                     }
-                    @foreach (var item in HighScores) {
+                    @foreach (var item in _highScores) {
                         <tr>
                             <td>@(position)</td>
                             <td><strong>@item.PlayerName</strong></td>
@@ -43,5 +45,25 @@
 </div>
 
 @code {
-    [Parameter] public required List<GameScore> HighScores { get; set; }
+    private List<GameScore> _highScores = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // initial load
+        _highScores = await DbService.GetScoresAsync();
+        // subscribe to changes so UI reloads automatically
+        DbService.ScoresChanged += OnScoresChanged;
+    }
+
+    private async void OnScoresChanged()
+    {
+        // Avoid blocking the event; reload and refresh UI
+        _highScores = await DbService.GetScoresAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        DbService.ScoresChanged -= OnScoresChanged;
+    }
 }

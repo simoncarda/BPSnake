@@ -1,4 +1,5 @@
-﻿using BPSnake.Models;
+﻿using System;
+using BPSnake.Models;
 using BPSnake.Models.DataLayer;
 using SQLite;
 
@@ -10,6 +11,8 @@ namespace BPSnake.Services
     /// </summary>
     internal class DatabaseService : IDatabaseService
     {
+        public event Action? ScoresChanged;
+
         /// <summary>
         /// Asynchronní SQLite připojení používané pro všechny operace.
         /// </summary>
@@ -59,11 +62,13 @@ namespace BPSnake.Services
                     existingPlayer.DateTimeAchieved = scoreData.DateTimeAchieved;
                     existingPlayer.TotalLevelsCompleted = scoreData.TotalLevelsCompleted;
                     await _database.UpdateAsync(existingPlayer);
+                    ScoresChanged?.Invoke();
                     return SaveResult.UpdatedHighScore;
                 }
                 return SaveResult.ScoreTooLow;
             } else {
                 await _database.InsertAsync(scoreData);
+                ScoresChanged?.Invoke();
                 return SaveResult.InsertedNew;
             }
         }
@@ -89,6 +94,7 @@ namespace BPSnake.Services
         {
             await Init();
             await _database.DeleteAllAsync<GameScore>();
+            ScoresChanged?.Invoke();
         }
     }
 }

@@ -3,45 +3,24 @@
 @using BPSnake.Configuration
 
 @page "/"
+@implements IDisposable
 
 @switch (_engine.CurrentGameState) {
     case GameState.Menu:
-        <StartMenuScreen 
-            OnStartNewGame="@StartNewGame" 
-            Highscores="@_highScores" 
-        />
+        <StartMenuScreen OnStartNewGame="@StartNewGame" />
         break;
     case GameState.Playing:
     case GameState.Paused:
         <GameBoardScreen 
-            Width="@_engine.CurrentGameBoard.Width"
-            Height="@_engine.CurrentGameBoard.Height"
-            CurrentGameState="@_engine.CurrentGameState" 
-            CurrentGameScore="@_engine.CurrentGameScore"
-            CurrentLevel="@_engine.CurrentLevel"
-            TotalLevelsCompleted="@_engine.TotalLevelsCompleted"
             OnPauseGame="@PauseGame"
             OnResumeGame="@ResumeGame"
-            CellClass="@GetCellClass"
             HandleKeyboardInput="@HandleInput"
         />
         if (_showTouchControls) {
-            <TouchControls 
-                OnDirectionChange="@_engine.ChangeDirection"/>
+            <TouchControls />
         }
         break;
     case GameState.GameOver:
-        <GameOverScreen 
-            Score="@_engine.CurrentGameScore" 
-            CurrentLevel="@_engine.CurrentLevel"
-            TotalLevelsCompleted="_engine.TotalLevelsCompleted"
-            IsSaveSuccess="@_isSaveSuccess" 
-            ErrorMessage="@_errorMessage"
-            HighScores="@_highScores" 
-            PlayerName="@_playerName" 
-            OnPlayerNameChanged="@((newName) => _playerName = newName)"
-            OnStartNewGame="@StartNewGame" 
-            OnSaveScore="SaveScore" 
-        />
+        <GameOverScreen OnStartNewGame="@StartNewGame" />
         break;
 }
