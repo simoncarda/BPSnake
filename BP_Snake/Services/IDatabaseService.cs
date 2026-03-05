@@ -25,6 +25,6 @@ namespace BPSnake.Services
         /// <summary>
         /// Odstraní všechny záznamy skóre z databáze. Uživatelsky bezpečné pro výuku.
         /// </summary>
-        Task ClearAllScores();
+        Task ClearAllScoresAsync();
     }
 }

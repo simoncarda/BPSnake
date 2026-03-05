@@ -12,8 +12,8 @@
     case GameState.Playing:
     case GameState.Paused:
         <GameBoardScreen 
-            OnPauseGame="@PauseGame"
-            OnResumeGame="@ResumeGame"
+            OnPauseGame="@PauseGameAsync"
+            OnResumeGame="@ResumeGameAsync"
             HandleKeyboardInput="@HandleInput"
         />
         if (_showTouchControls) {

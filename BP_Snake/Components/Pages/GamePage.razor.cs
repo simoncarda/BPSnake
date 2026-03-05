@@ -33,11 +33,11 @@ namespace BPSnake.Components.Pages
         /// </remarks>
         /// <returns>Úloha (task), která reprezentuje asynchronní operaci.</returns>
         private void StartNewGame() => _engine.StartNewGame();
-        private async Task PauseGame()
+        private async Task PauseGameAsync()
         {
             _engine.PauseGame();
         }
-        private async Task ResumeGame()
+        private async Task ResumeGameAsync()
         {
             _engine.ResumeGame();
         }

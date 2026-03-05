@@ -112,7 +112,7 @@ namespace BPSnake.Services
         /// <summary>
         /// Odstraní všechny záznamy skóre z tabulky.
         /// </summary>
-        public async Task ClearAllScores()
+        public async Task ClearAllScoresAsync()
         {
             await InitAsync().ConfigureAwait(false);
             await _database!.DeleteAllAsync<GameScore>().ConfigureAwait(false);
