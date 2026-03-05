@@ -21,6 +21,6 @@ namespace BPSnake.Configuration
 
         public const int InitialSnakeLength = 10; // Počáteční délka hada na začátku každé úrovně
 
-        public const int ApplesToOpenGate = 5; // Počet snědených jablek potřebných k otevření brány do další úrovně
+        public const int FoodItemsToOpenGate = 5; // Počet snědených jídel potřebných k otevření brány do další úrovně
     }
 }

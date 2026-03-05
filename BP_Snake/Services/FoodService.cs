@@ -9,7 +9,7 @@ namespace BPSnake.Services
         private readonly Random _random;
 
         public FoodItem CurrentFoodItem { get; private set; } = null!;
-        public int ApplesEatenInLevel { get; private set; } = 0;
+        public int FoodEatenInLevel { get; private set; } = 0;
 
         // Konstruktor pro výchozí inicializaci s novou instancí Random
         public FoodService() : this(new Random()) { }
@@ -22,7 +22,7 @@ namespace BPSnake.Services
 
         public void Reset()
         {
-            ApplesEatenInLevel = 0;
+            FoodEatenInLevel = 0;
             CurrentFoodItem = null!; // Bude vzápětí vytvořen pomocí SpawnFood
         }
 
@@ -51,8 +51,8 @@ namespace BPSnake.Services
             if (CurrentFoodItem == null) return (0, false);
 
             int score = CurrentFoodItem.ScoreValue;
-            ApplesEatenInLevel++;
-            bool shouldOpenGate = ApplesEatenInLevel >= GameSettings.ApplesToOpenGate;
+            FoodEatenInLevel++;
+            bool shouldOpenGate = FoodEatenInLevel >= GameSettings.FoodItemsToOpenGate;
             
             if (!shouldOpenGate) {
                 SpawnFood(board, snake);
