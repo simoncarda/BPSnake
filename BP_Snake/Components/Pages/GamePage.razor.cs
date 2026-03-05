@@ -68,24 +68,6 @@ namespace BPSnake.Components.Pages
             }
         }
 
-        /// <summary>
-        /// Určuje název CSS třídy pro buňku na zadaných souřadnicích na základě jejího aktuálního stavu v herní mřížce.
-        /// </summary>
-        /// <remarks>
-        /// Vrácený název css třídy odráží aktuální stav herních prvků na daných souřadnicích, včetně pozice hada, položek jídla, stavu brány a překážek.
-        /// Tato metoda se obvykle používá k vykreslení herní plochy s příslušnými vizuálními prvky pro každou buňku.
-        /// </remarks>
-        /// <param name="x">Od nuly počítaná souřadnice X buňky v rámci herní mřížky.</param>
-        /// <param name="y">Od nuly počítaná souřadnice Y buňky v rámci herní mřížky.</param>
-        /// <returns>
-        /// Řetězec reprezentující název CSS třídy pro danou buňku,
-        /// který určuje, zda obsahuje hlavu hada, tělo hada, jídlo, bránu, zeď, nebo zda je prázdná.
-        /// </returns>
-        private string GetCellClass(int x, int y)
-        {
-            return _engine.GetCellCssClass(x, y);
-        }
-
         public void Dispose()
         {
             // Ochrana před Memory Leakem: odhlášení události, když je komponenta zničena
