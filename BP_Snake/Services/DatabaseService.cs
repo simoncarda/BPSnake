@@ -36,7 +36,7 @@ namespace BPSnake.Services
                 return;
             }
 
-            await _initSemaphore.WaitAsync().ConfigureAwait(false);
+            await _initSemaphore.WaitAsync();
             try {
                 if (_initialized) {
                     return;
@@ -44,7 +44,7 @@ namespace BPSnake.Services
 
                 string dbPath = Path.Combine(FileSystem.AppDataDirectory, DbName);
                 _database = new SQLiteAsyncConnection(dbPath);
-                await _database.CreateTableAsync<GameScore>().ConfigureAwait(false);
+                await _database.CreateTableAsync<GameScore>();
 
                 _initialized = true;
             }
@@ -73,21 +73,20 @@ namespace BPSnake.Services
             var existingPlayer = await _database!
                                        .Table<GameScore>()
                                        .Where(s => s.PlayerName == scoreData.PlayerName)
-                                       .FirstOrDefaultAsync()
-                                       .ConfigureAwait(false);
+                                       .FirstOrDefaultAsync();
 
             if (existingPlayer != null) {
                 if (existingPlayer.Score < scoreData.Score) {
                     existingPlayer.Score = scoreData.Score;
                     existingPlayer.DateTimeAchieved = scoreData.DateTimeAchieved;
                     existingPlayer.TotalLevelsCompleted = scoreData.TotalLevelsCompleted;
-                    await _database!.UpdateAsync(existingPlayer).ConfigureAwait(false);
+                    await _database!.UpdateAsync(existingPlayer);
                     ScoresChanged?.Invoke();
                     return SaveResult.UpdatedHighScore;
                 }
                 return SaveResult.ScoreTooLow;
             } else {
-                await _database!.InsertAsync(scoreData).ConfigureAwait(false);
+                await _database!.InsertAsync(scoreData);
                 ScoresChanged?.Invoke();
                 return SaveResult.InsertedNew;
             }
@@ -105,8 +104,7 @@ namespace BPSnake.Services
                          .Table<GameScore>()
                          .OrderByDescending(s => s.Score)
                          .Take(10)
-                         .ToListAsync()
-                         .ConfigureAwait(false);
+                         .ToListAsync();
         }
 
         /// <summary>
@@ -114,8 +112,8 @@ namespace BPSnake.Services
         /// </summary>
         public async Task ClearAllScoresAsync()
         {
-            await InitAsync().ConfigureAwait(false);
-            await _database!.DeleteAllAsync<GameScore>().ConfigureAwait(false);
+            await InitAsync();
+            await _database!.DeleteAllAsync<GameScore>();
             ScoresChanged?.Invoke();
         }
     }
