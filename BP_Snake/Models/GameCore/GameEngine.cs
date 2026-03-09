@@ -19,16 +19,14 @@ namespace BPSnake.Models.GameCore
         GameStateService gameStateService,
         ScoreService scoreService) : IGameEngine, IDisposable
     {
-        // Konstanty
-
         // Stav hry (zvenčí pouze pro čtení díky get; a private set;)
         public Snake CurrentSnake { get; private set; } = null!;
         public GameBoard CurrentGameBoard { get; private set; } = null!;
         public FoodItem CurrentFoodItem => _foodService.CurrentFoodItem;
         public int CurrentGameScore => _scoreService.CurrentScore;
         public int CurrentLevel => _levelService.CurrentLevel;
-        public int TotalLevelsCompleted => _levelService.TotalLevelsCompleted; // Počet úrovní dokončených během aktuální hry
-        public DateTime GameOverTime => _gameStateService.GameOverTime; // Čas, kdy došlo k Game Over
+        public int TotalLevelsCompleted => _levelService.TotalLevelsCompleted;
+        public DateTime GameOverTime => _gameStateService.GameOverTime;
         public GameState CurrentGameState => _gameStateService.CurrentState; 
 
         // Služby
@@ -42,11 +40,9 @@ namespace BPSnake.Models.GameCore
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
 
-        // Pomocné proměnné pro řízení logiky hry
-        // Aktuální rychlost hry, která se může měnit s postupem úrovní
         private int _currentGameSpeed => Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
-        private int _growBuffer = 0; // Počet kroků, po které se had bude zvětšovat (po snězení jídla)
+        private int _growBuffer = 0;
 
         /// <summary>
         /// Notifikuje všechny přihlášené posluchače události OnStateChangedAsync, že došlo ke změně stavu hry, a
@@ -83,7 +79,7 @@ namespace BPSnake.Models.GameCore
         {
             LoadNewGame();
             _gameStateService.SetPlaying();
-            _ = StartGameLoop(); // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
+            _ = StartGameLoop();
             NotifyStateChanged();
         }
 
@@ -93,7 +89,7 @@ namespace BPSnake.Models.GameCore
         public void PauseGame()
         {
             if (_gameStateService.IsPlaying()) {
-                StopGameLoop(); // Zastavíme timer (cancel task)
+                StopGameLoop();
                 _gameStateService.SetPaused();
                 NotifyStateChanged();
             }
@@ -105,7 +101,7 @@ namespace BPSnake.Models.GameCore
         public void ResumeGame()
         {
             if (_gameStateService.IsPaused()) {
-                _ = StartGameLoop(); // Znovu vytvoříme timer a spustíme smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
+                _ = StartGameLoop();
                 _gameStateService.SetPlaying();
                 NotifyStateChanged();
             }
@@ -116,7 +112,7 @@ namespace BPSnake.Models.GameCore
         /// </summary>
         public void GameOver()
         {
-            StopGameLoop(); // Zastavíme smyčku
+            StopGameLoop();
             _gameStateService.SetGameOver();
             NotifyStateChanged();
         }
@@ -218,11 +214,9 @@ namespace BPSnake.Models.GameCore
         public void ChangeDirection(Direction newDirection)
         {
             if (_directionChangedInCurrentTick) {
-                return; // Zabránit více změnám směru během jednoho ticku
+                    return;
             }
-            // Zabránit otočení hada o 180 stupňů
-            if (IsOppositeDirection(CurrentSnake.CurrentDirection, newDirection)) 
-            {
+                if (IsOppositeDirection(CurrentSnake.CurrentDirection, newDirection)) {
                 return; 
             }
             CurrentSnake.CurrentDirection = newDirection;
@@ -233,7 +227,7 @@ namespace BPSnake.Models.GameCore
         /// Vrátí true, pokud jsou dva zadané směry (Enum.Direction) opačné
         /// (například Up a Down nebo Left a Right), jinak vrací false.
         /// </summary>
-        /// <returns>True, pokud jsou směry stejné, jinak false.</returns>
+        /// <returns>True, pokud jsou směry opačné, jinak false.</returns>
         private static bool IsOppositeDirection(Direction dir1, Direction dir2)
         {
             return (dir1 == Direction.Up && dir2 == Direction.Down) ||
@@ -276,7 +270,7 @@ namespace BPSnake.Models.GameCore
 
         public void Dispose()
         {
-            StopGameLoop(); // Zajistíme, že smyčka bude zastavena a všechny zdroje uvolněny
+            StopGameLoop();
             _gameLoopService.Dispose();
         }
     }

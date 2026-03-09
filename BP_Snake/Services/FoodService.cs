@@ -11,10 +11,9 @@ namespace BPSnake.Services
         public FoodItem CurrentFoodItem { get; private set; } = null!;
         public int FoodEatenInLevel { get; private set; } = 0;
 
-        // Konstruktor pro výchozí inicializaci s novou instancí Random
         public FoodService() : this(new Random()) { }
 
-        // Konstruktor pro injektování vlastní instance Random (pro testování nebo specifické scénáře) - contructor chaining pro Dependency Injection
+        // Konstruktor pro dependency injection (s vlastní Random instancí)
         public FoodService(Random random)
         {
             _random = random;
@@ -34,7 +33,7 @@ namespace BPSnake.Services
         {
             int x;
             int y;
-            int value = (_random.Next(0, 10) < 8) ? GameSettings.NormalFoodScoreValue : GameSettings.BonusFoodScoreValue; // 20% šance na bonusové jídlo s hodnotou 10
+            int value = (_random.Next(0, 10) < 8) ? GameSettings.NormalFoodScoreValue : GameSettings.BonusFoodScoreValue;
             do {
                 x = _random.Next(0, board.Width);
                 y = _random.Next(0, board.Height);

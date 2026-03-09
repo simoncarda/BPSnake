@@ -17,9 +17,9 @@ namespace BPSnake.Models.GameCore
         public Snake()
         {
             for (int i = 0; i < GameSettings.InitialSnakeLength; i++) {
-                Body.Add(new GridPoint(3 - i, 1)); // Vytvoření počátečního těla hada, vždy na pozici (3,1) až (0,1)
+                Body.Add(new GridPoint(GameSettings.InitialSnakeStartX - i, GameSettings.InitialSnakeStartY));
             }
-            CurrentDirection = Direction.Right; // Výchozí směr pohybu doprava
+            CurrentDirection = Direction.Right;
         }
 
         /// <summary>
@@ -32,8 +32,8 @@ namespace BPSnake.Models.GameCore
         /// <returns>A Bod <see cref="GridPoint"/> reprezentující pozici o jednu jednotku před aktuální hlavou ve směru určeném vlastností <see cref="CurrentDirection"/>.</returns>
         public GridPoint GetNextHeadPosition()
         {
-            GridPoint head = Body[0]; // Aktuální pozice hlavy hada
-            
+            GridPoint head = Body[0];
+
             return CurrentDirection switch
             {
                 Direction.Up => new GridPoint(head.X, head.Y - 1),

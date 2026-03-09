@@ -20,6 +20,8 @@ namespace BPSnake.Configuration
         public const int StartingLevel = 1; // Počáteční úroveň, na které hráč začíná
 
         public const int InitialSnakeLength = 10; // Počáteční délka hada na začátku každé úrovně
+        public const int InitialSnakeStartX = 3; // Počáteční X pozice hlavy hada
+        public const int InitialSnakeStartY = 1; // Počáteční Y pozice hlavy hada
 
         public const int FoodItemsToOpenGate = 5; // Počet snědených jídel potřebných k otevření brány do další úrovně
     }
