@@ -23,7 +23,7 @@ namespace BPSnake
     		builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<IDatabaseService, DatabaseService>(); // Databáze může zůstat Singleton (sdílený přístup k souboru)
+            
             
             // Herní služby převedené na Scoped (každý hráč/session dostane vlastní instanci služeb i vlastní herní smyčku)
             builder.Services.AddScoped<GameLoopService>();

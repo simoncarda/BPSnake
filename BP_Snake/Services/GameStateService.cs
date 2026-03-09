@@ -11,7 +11,6 @@ namespace BPSnake.Services
     internal sealed class GameStateService
     {
         public GameState CurrentState { get; private set; } = GameState.Menu;
-        public DateTime GameOverTime { get; private set; } = DateTime.MinValue;
 
         public void SetMenu()
         {
@@ -31,7 +30,6 @@ namespace BPSnake.Services
         public void SetGameOver()
         {
             CurrentState = GameState.GameOver;
-            GameOverTime = DateTime.Now;
         }
 
         public bool IsPlaying() => CurrentState == GameState.Playing;

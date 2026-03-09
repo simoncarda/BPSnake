@@ -11,12 +11,6 @@ namespace BPSnake.Models
         Left,
         Right
     }
-    public enum SaveResult
-    {
-        InsertedNew,      // Nový hráč
-        UpdatedHighScore, // Existující hráč překonal rekord
-        ScoreTooLow       // Skóre bylo nižší než rekord (neuloženo)
-    }
     public enum GameState
     {
         Playing,

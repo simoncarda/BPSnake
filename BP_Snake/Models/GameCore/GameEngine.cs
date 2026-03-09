@@ -26,7 +26,6 @@ namespace BPSnake.Models.GameCore
         public int CurrentGameScore => _scoreService.CurrentScore;
         public int CurrentLevel => _levelService.CurrentLevel;
         public int TotalLevelsCompleted => _levelService.TotalLevelsCompleted;
-        public DateTime GameOverTime => _gameStateService.GameOverTime;
         public GameState CurrentGameState => _gameStateService.CurrentState; 
 
         // Služby

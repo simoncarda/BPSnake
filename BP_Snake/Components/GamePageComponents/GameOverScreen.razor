@@ -1,77 +1,22 @@
-﻿@using BPSnake.Models.DataLayer;
-@using BPSnake.Models;
+﻿@using BPSnake.Models;
 @using BPSnake.Configuration;
 @using BPSnake.Models.GameCore;
-@using BPSnake.Services;
-
 @inject IGameEngine Engine
-@inject IDatabaseService DbService
-
 
 <div class="game-container game-over">
     <h2>Game Over!</h2>
     <button type="button" class="btn btn-success" @onclick="OnStartNewGame">Začít novou hru</button>
-    <button type="button" class="btn btn-warning" @onclick="OnSaveScore" disabled="@_isSaveSuccess">Uložit score</button>
 
-    @if (_isSaveSuccess) {
-        <p style="color:green">@_errorMessage</p>
-    } else {
-        <p style="color:red">@_errorMessage</p>
-    }
     <div>
         <div>
             <p><strong>Finální score: @Engine.CurrentGameScore</strong></p>
             <p><strong>Úspěšně dokončeno levelů: @Engine.TotalLevelsCompleted</strong></p>
             <p><strong>Zemřel jsi na levelu @Engine.CurrentLevel</strong></p>
         </div>
-        <input type="text" placeholder="Jméno hráče" maxlength="@GameSettings.MaxPlayerNameLength" @bind-value="_playerName" />
     </div>
-    <ScoreTable />
 </div>
-
 
 @code {
     [Parameter] public EventCallback OnStartNewGame { get; set; }
 
-    private string _playerName = "";
-    private string _errorMessage = "";
-    private bool _isSaveSuccess = false;
-
-    private async Task OnSaveScore()
-    {
-        if (Engine.CurrentGameScore == 0) {
-            _errorMessage = "Nulové skóre se neukládá! Zkus to znovu.";
-            return;
-        }
-        if (String.IsNullOrWhiteSpace(_playerName)) {
-            _errorMessage = "Musíš zadat jméno!";
-            return;
-        }
-
-        GameScore scoreToSave = new GameScore {
-            PlayerName = _playerName.Trim(),
-            Score = Engine.CurrentGameScore,
-            TotalLevelsCompleted = Engine.TotalLevelsCompleted,
-            DateTimeAchieved = Engine.GameOverTime
-        };
-
-        SaveResult result = await DbService.SavePlayerScoreAsync(scoreToSave);
-        
-        switch (result) {
-            case SaveResult.InsertedNew:
-                _errorMessage = "Vítej! Jsi zapsán v tabulce.";
-                _isSaveSuccess = true;
-                break;
-            case SaveResult.UpdatedHighScore:
-                _errorMessage = "Gratulace! Překonal jsi svůj rekord!";
-                _isSaveSuccess = true;
-                break;
-            case SaveResult.ScoreTooLow:
-                _errorMessage = "Bohužel, tvůj starý rekord byl lepší. Neuloženo.";
-                _isSaveSuccess = false;
-                break;
-        }
-        // DatabaseService will notify subscribers (ScoreTable) to reload when appropriate.
-        await InvokeAsync(StateHasChanged);
-    }
 }

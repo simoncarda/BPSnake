@@ -17,7 +17,6 @@ namespace BPSnake.Models.GameCore
         int CurrentGameScore { get; }
         int CurrentLevel { get; }
         int TotalLevelsCompleted { get; }
-        DateTime GameOverTime { get; }
         GameState CurrentGameState { get; }
 
         event Func<Task>? OnStateChangedAsync;

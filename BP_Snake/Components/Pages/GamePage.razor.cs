@@ -1,5 +1,4 @@
 ﻿using BPSnake.Models;
-using BPSnake.Models.DataLayer;
 using BPSnake.Models.GameCore;
 using BPSnake.Configuration;
 using BPSnake.Services;
