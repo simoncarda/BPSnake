@@ -1,8 +1,8 @@
 ﻿@using BPSnake.Models;
 @using BPSnake.Models.GameCore;
 
-@* Nutné pro zavolání metody Dispose() a prevenci memory leaku *@
 @inject IGameEngine Engine
+@* Nutné pro zavolání metody Dispose() a prevenci memory leaku *@
 @implements IDisposable
 
 <div class="game-container">
@@ -31,25 +31,22 @@
     </div>
 </div>
 
-@code{
+@code {
     [Parameter] public EventCallback OnPauseGame { get; set; }
     [Parameter] public EventCallback OnResumeGame { get; set; }
-
-    // EventCallback pro klávesnici
     [Parameter] public EventCallback<KeyboardEventArgs> HandleKeyboardInput { get; set; }
 
     private ElementReference _boardElement;
 
     /// <summary>
-    /// Řeší kliknutí na tlačítko "Resume". Po obnovení hry se zaměříme zpět na herní plochu, aby bylo možné pokračovat v ovládání klávesnicí.
+    /// Řeší kliknutí na tlačítko "Resume". Po obnovení hry z pauzy je nutné vrátit focus
+    /// zpět na herní plochu, jinak by uživatel musel znovu kliknout myší pro funkčnost klávesnice.
     /// </summary>
-    /// <returns></returns>
     private async Task HandleResumeClick()
     {
         await OnResumeGame.InvokeAsync();
-		// Po obnovení hry se zaměříme zpět na herní plochu, aby bylo možné pokračovat v ovládání klávesnicí
         await _boardElement.FocusAsync();
-	}
+    }
 
     private async Task HandleInput(KeyboardEventArgs e)
     {
@@ -58,7 +55,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender) {
+        if (firstRender) {
             // Automatický focus pro okamžité ovládání z klávesnice bez klikání myší
             await _boardElement.FocusAsync();
         }
@@ -69,6 +66,7 @@
         Engine.OnStateChangedAsync += RefreshUIAsync;
     }
 
+    // InvokeAsync je nutné, protože event z enginu může přijít z jiného (než UI) vlákna
     private Task RefreshUIAsync() => InvokeAsync(StateHasChanged);
 
     public void Dispose()

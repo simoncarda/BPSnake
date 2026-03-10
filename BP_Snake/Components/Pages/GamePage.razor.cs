@@ -17,7 +17,8 @@ namespace BPSnake.Components.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            // Zobrazí ovládací tlačítka pouze pro mobilní platformy
+            // Ukázka síly Blazor Hybrid: Přístup k nativním vlastnostem zařízení (DeviceInfo z .NET MAUI) 
+            // přímo z UI logiky pro podmíněné zobrazení dotykového ovládání na mobilech.
             _showTouchControls = DeviceInfo.Platform == DevicePlatform.Android || DeviceInfo.Platform == DevicePlatform.iOS;
 
             _engine.OnStateChangedAsync += RefreshUIAsync;
@@ -25,18 +26,15 @@ namespace BPSnake.Components.Pages
         }
 
         /// <summary>
-        /// Spustí novou herní relaci a resetuje stav hry.
+        /// Předání povelu ke startu hry enginu.
         /// </summary>
-        /// <remarks>
-        /// Tato metoda vymaže veškeré předchozí chybové zprávy, resetuje indikátor stavu uložení
-        /// a po inicializaci nové hry asynchronně načte žebříček nejlepších hráčů (leaderboard).
-        /// </remarks>
-        /// <returns>Úloha (task), která reprezentuje asynchronní operaci.</returns>
         private void StartNewGame() => _engine.StartNewGame();
+
         private async Task PauseGameAsync()
         {
             _engine.PauseGame();
         }
+
         private async Task ResumeGameAsync()
         {
             _engine.ResumeGame();
@@ -46,13 +44,9 @@ namespace BPSnake.Components.Pages
         private Task RefreshUIAsync() => InvokeAsync(StateHasChanged);
 
         /// <summary>
-        /// Zpracovává vstup z klávesnice a aktualizuje směr v enginu na základě stisknutí šipek.
+        /// Zpracovává vstup z klávesnice.
+        /// Využívá moderní C# "switch expression" k mapování kláves na herní směry.
         /// </summary>
-        /// <remarks>
-        /// Tato metoda reaguje pouze na klávesy ArrowUp (šipka nahoru), ArrowDown (šipka dolů), ArrowLeft (šipka vlevo)
-        /// a ArrowRight (šipka vpravo). Ostatní vstupy z klávesnice jsou ignorovány.
-        /// </remarks>
-        /// <param name="e">The <see cref="KeyboardEventArgs"/> Instance obsahující informace o události klávesnice.</param>
         private void HandleInput(KeyboardEventArgs e)
         {
             Direction? newDir = e.Key switch {
