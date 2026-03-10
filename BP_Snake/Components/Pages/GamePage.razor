@@ -5,17 +5,24 @@
 @page "/"
 @implements IDisposable
 
-@switch (_engine.CurrentGameState) {
+@* Hlavní směrovač (Router) pohledů. 
+  Místo navigace na různé URL adresy dynamicky měníme vykreslené komponenty na jedné stránce 
+  na základě aktuálního stavu hry (State Machine). Typický přístup pro Single Page Aplikace (SPA). 
+*@
+@switch (_engine.CurrentGameState)
+{
     case GameState.Menu:
         <StartMenuScreen OnStartNewGame="@StartNewGame" />
         break;
+
     case GameState.Playing:
     case GameState.Paused:
-        <GameBoardScreen 
-            OnPauseGame="@PauseGameAsync"
-            OnResumeGame="@ResumeGameAsync"
-            HandleKeyboardInput="@HandleInput"
-        />
+        @* Předáváme delegáty (EventCallbacks) pro komunikaci dceřiné komponenty s rodičem *@
+        <GameBoardScreen OnPauseGame="@PauseGameAsync"
+                         OnResumeGame="@ResumeGameAsync"
+                         HandleKeyboardInput="@HandleInput" />
+
+        @* Vykreslení UI na základě detekce zařízení (skryto na desktopu) *@
         if (_showTouchControls) {
             <TouchControls />
         }
