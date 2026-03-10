@@ -5,7 +5,7 @@ namespace BPSnake.Models.GameCore
     /// <summary>
     /// Rozhraní (Interface) definující kontrakt pro herní engine.
     /// Použití rozhraní pomáhá ve výuce vysvětlit principy "Inversion of Control" a usnadňuje testování
-    /// nebo budoucí výměnu za jinou implementaci (např. MultiplayerGameEngine).
+    /// nebo budoucí výměnu za jinou implementaci.
     /// </summary>
     internal interface IGameEngine
     {
@@ -20,6 +20,7 @@ namespace BPSnake.Models.GameCore
         DateTime GameOverTime { get; }
         GameState CurrentGameState { get; }
 
+        // Událost pro asynchronní překreslení Blazor komponent při změně stavu.
         event Func<Task>? OnStateChangedAsync;
 
         void LoadNewGame();
