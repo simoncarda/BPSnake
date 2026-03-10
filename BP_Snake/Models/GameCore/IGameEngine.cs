@@ -19,9 +19,6 @@ namespace BPSnake.Models.GameCore
 
         void LoadNewGame();
         void StartNewGame();
-        void PauseGame();
-        void ResumeGame();
-        void ChangeDirection(Direction newDirection);
 
         /// <summary>
         /// Zjistí CSS třídu pro konkrétní buňku herní plochy na základě aktuálního stavu.

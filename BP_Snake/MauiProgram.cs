@@ -26,7 +26,6 @@ namespace BPSnake
             
             
             // Herní služby převedené na Scoped (každý hráč/session dostane vlastní instanci služeb i vlastní herní smyčku)
-            builder.Services.AddScoped<GameLoopService>();
             builder.Services.AddScoped<GameStateService>();
 
             // Přidáno jako Scoped, kde jeden uživatel (nebo jedna instance MAUI aplikace) má jednu svou instanci hry.

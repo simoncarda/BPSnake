@@ -3,55 +3,16 @@
 namespace BPSnake.Models.GameCore
 {
     /// <summary>
-    /// Reprezentuje hada v klasické hře „had“, spravuje segmenty jeho těla a směr pohybu.
+    /// Reprezentuje hada v klasické hře „had“.
     /// </summary>
-    /// <remarks>
-    /// Třída Snake poskytuje metody pro pohyb hada, zvětšování jeho délky a detekci kolizí se sebou samým.
-    /// Tělo hada je reprezentováno jako seznam bodů, přičemž první bod odpovídá hlavě. Směr pohybu lze ovládat pomocí vlastnosti CurrentDirection.
-    /// Tato třída je určena k použití jako jádro logiky hry a nezajišťuje přímo vykreslování ani uživatelský vstup.
-    /// </remarks>
     internal class Snake
     {
         public List<GridPoint> Body { get; set; } = new();
-        public Direction CurrentDirection { get; set; }
         public Snake()
         {
             for (int i = 0; i < GameSettings.InitialSnakeLength; i++) {
                 Body.Add(new GridPoint(GameSettings.InitialSnakeStartX - i, GameSettings.InitialSnakeStartY));
             }
-            CurrentDirection = Direction.Right;
-        }
-
-        /// <summary>
-        /// Vypočítá příští pozici hlavy hada na základě jeho aktuálního směru pohybu.
-        /// </summary>
-        /// <remarks>
-        /// Tato metoda slouží k určení, kam se hlava hada posune při příští aktualizaci, aniž byste měnili stav hada.
-        /// Vrácená pozice závisí na aktuálním směru a nebere v úvahu kolize ani hranice herní plochy.
-        /// </remarks>
-        /// <returns>A Bod <see cref="GridPoint"/> reprezentující pozici o jednu jednotku před aktuální hlavou ve směru určeném vlastností <see cref="CurrentDirection"/>.</returns>
-        public GridPoint GetNextHeadPosition()
-        {
-            GridPoint head = Body[0];
-
-            return CurrentDirection switch
-            {
-                Direction.Up => new GridPoint(head.X, head.Y - 1),
-                Direction.Down => new GridPoint(head.X, head.Y + 1),
-                Direction.Left => new GridPoint(head.X - 1, head.Y),
-                Direction.Right => new GridPoint(head.X + 1, head.Y),
-                _ => head
-            };
-        }
-
-        /// <summary>
-        /// Posune hada o jeden krok vpřed v jeho aktuálním směru.
-        /// </summary>
-        public void Move()
-        {
-            GridPoint nextHeadPosition = GetNextHeadPosition();
-            Body.Insert(0, nextHeadPosition); // Přidání nové hlavy na začátek seznamu těla
-            Body.RemoveAt(Body.Count - 1);
         }
     }
 }

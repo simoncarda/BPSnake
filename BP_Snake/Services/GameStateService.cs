@@ -5,7 +5,7 @@ namespace BPSnake.Services
 {
     /// <summary>
     /// Služba pro správu celkového stavu herní instance.
-    /// Demonstruje návrhový vzor State Machine - drží informaci o tom, co se s hrou aktuálně děje (Menu, Hraní, Pozastaveno, Konec)
+    /// Demonstruje návrhový vzor State Machine - drží informaci o tom, co se s hrou aktuálně děje (Menu, Hraní, ...)
     /// a umožňuje čisté oddělení stavu od herní logiky (Enginu).
     /// </summary>
     internal sealed class GameStateService
@@ -22,12 +22,6 @@ namespace BPSnake.Services
             CurrentState = GameState.Playing;
         }
 
-        public void SetPaused()
-        {
-            CurrentState = GameState.Paused;
-        }
-
         public bool IsPlaying() => CurrentState == GameState.Playing;
-        public bool IsPaused() => CurrentState == GameState.Paused;
     }
 }

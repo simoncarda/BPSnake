@@ -10,14 +10,6 @@
         <StartMenuScreen OnStartNewGame="@StartNewGame" />
         break;
     case GameState.Playing:
-    case GameState.Paused:
-        <GameBoardScreen 
-            OnPauseGame="@PauseGameAsync"
-            OnResumeGame="@ResumeGameAsync"
-            HandleKeyboardInput="@HandleInput"
-        />
-        if (_showTouchControls) {
-            <TouchControls />
-        }
+        <GameBoardScreen />
         break;
 }
