@@ -7,8 +7,8 @@ namespace BPSnake.Models.GameCore
     /// Poskytuje základní funkcionalitu pro správu stavu hry, včetně zpracování vstupu hráče, postupu hrou a interakcí mezi herními prvky.
     /// </summary>
     /// <remarks>
-    /// Třída GameEngine je zodpovědná za inicializaci a řízení herní smyčky, správu aktuálního stavu hry a zprostředkování interakcí mezi hadem,
-    /// položkami jídla a herní plochou. Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení, obnovení a ukončení hry.
+    /// Třída GameEngine je zodpovědná za inicializaci a řízení herní smyčky a správu aktuálního stavu hry. 
+    /// Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení a obnovení hry.
     /// Tato třída publikuje události pro aktualizaci uživatelského rozhraní (UI) a podporuje uvolňování prostředků prostřednictvím rozhraní IDisposable.
     /// </remarks>
     internal class GameEngine(
@@ -34,7 +34,9 @@ namespace BPSnake.Models.GameCore
         public event Func<Task>? OnStateChangedAsync;
 
         private int _currentGameSpeed => GameSettings.BaseGameSpeed;
-        private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
+        // Kritická proměnná chránící před tzv. "fast-click bugem", kdy uživatel stiskne 
+        // 2 klávesy rychle za sebou a had by se mohl otočit do sebe dřív, než dojde k vykreslení.
+        private bool _directionChangedInCurrentTick = false;
         private int _growBuffer = 0;
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Zastaví herní smyčku a přepne stav hry na "Paused". Pokud je hra již pozastavena, nebude mít žádný efekt.
+        /// Pozastaví hru. Zastaví Timer běžící na pozadí a přepne stav hry na "Paused". Pokud je hra již pozastavena, nebude mít žádný efekt.
         /// </summary>
         public void PauseGame()
         {
@@ -87,7 +89,7 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Spustí herní smyčku a přepne stav hry zpět na "Playing". Pokud hra není v stavu "Paused", nebude mít žádný efekt.
+        /// Spustí herní smyčku a přepne stav hry zpět na "Playing". Pokud hra není ve stavu "Paused", nebude mít žádný efekt.
         /// </summary>
         public void ResumeGame()
         {
@@ -113,7 +115,6 @@ namespace BPSnake.Models.GameCore
         /// <summary>
         /// Metoda obsahující hlavní logiku hry, která se vykonává při každém "ticku" herní smyčky.
         /// </summary>
-        /// <returns> Vrací Task, protože je volána asynchronně z GameLoopService, ale v současné implementaci neprovádí žádné asynchronní operace, takže vrací dokončený Task.</returns>
         private Task GameLogicTickAsync()
         {
             _directionChangedInCurrentTick = false;
@@ -150,7 +151,6 @@ namespace BPSnake.Models.GameCore
         /// </summary>
         /// <remarks>Tato metoda zajišťuje, že se had nemůže otočit přímo do protisměru (například nahoru a hned dolů) a že je v rámci jednoho herního kroku povolena pouze jedna změna směru.
         /// Pokus o vícenásobnou změnu směru během stejného kroku nebo o změnu do neplatného směru nebude mít žádný vliv.</remarks>
-        /// <param name="newDirection">Směr, který se má hadovi nastavit. Tato hodnota nesmí být opačná k aktuálnímu směru.</param>
         public void ChangeDirection(Direction newDirection)
         {
             if (_directionChangedInCurrentTick) {
@@ -200,6 +200,10 @@ namespace BPSnake.Models.GameCore
             return "cell empty";
         }
 
+        /// <summary>
+        /// Uvolnění prostředků. Zásadní je zastavit běžící smyčku, 
+        /// jinak by na pozadí pokračoval "zombie proces" i po opuštění hry.
+        /// </summary>
         public void Dispose()
         {
             StopGameLoop();
