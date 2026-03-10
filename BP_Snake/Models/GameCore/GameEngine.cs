@@ -30,8 +30,7 @@ namespace BPSnake.Models.GameCore
         private void NotifyStateChanged() => _ = OnStateChangedAsync?.Invoke();
 
         /// <summary>
-        /// Inicializuje nový herní stav pro začátek nové hry.
-        /// Resetuje všechny relevantní proměnné a připraví hru na nový start.
+        /// Inicializuje herní objekty a připraví hru ve stavu Menu.
         /// </summary>
         public void LoadNewGame()
         {
