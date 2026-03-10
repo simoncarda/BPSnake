@@ -14,8 +14,7 @@ namespace BPSnake.Models.GameCore
     internal class GameEngine(
         GameLoopService gameLoopService, 
         CollisionService collisionService, 
-        FoodService foodService, 
-        LevelService levelService,
+        FoodService foodService,
         GameStateService gameStateService,
         ScoreService scoreService) : IGameEngine, IDisposable
     {
@@ -24,22 +23,19 @@ namespace BPSnake.Models.GameCore
         public GameBoard CurrentGameBoard { get; private set; } = null!;
         public FoodItem CurrentFoodItem => _foodService.CurrentFoodItem;
         public int CurrentGameScore => _scoreService.CurrentScore;
-        public int CurrentLevel => _levelService.CurrentLevel;
-        public int TotalLevelsCompleted => _levelService.TotalLevelsCompleted;
         public GameState CurrentGameState => _gameStateService.CurrentState; 
 
         // Služby
         private readonly GameLoopService _gameLoopService = gameLoopService;
         private readonly CollisionService _collisionService = collisionService;
         private readonly FoodService _foodService = foodService;
-        private readonly LevelService _levelService = levelService;
         private readonly GameStateService _gameStateService = gameStateService;
         private readonly ScoreService _scoreService = scoreService;
 
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
 
-        private int _currentGameSpeed => Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
+        private int _currentGameSpeed => GameSettings.BaseGameSpeed;
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
         private int _growBuffer = 0;
 
@@ -56,12 +52,11 @@ namespace BPSnake.Models.GameCore
         public void LoadNewGame()
         {
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
-            _levelService.Reset();
             _foodService.Reset();
             _scoreService.Reset();
             
             CurrentSnake = new Snake();
-            CurrentGameBoard = new GameBoard(CurrentLevel);
+            CurrentGameBoard = new GameBoard();
             _foodService.SpawnFood(CurrentGameBoard, CurrentSnake);
             
             _gameStateService.SetMenu();
@@ -152,11 +147,6 @@ namespace BPSnake.Models.GameCore
                 return Task.CompletedTask;
             }
 
-            // podmínka pro dosažení brány a přechod na další úroveň
-            if (CurrentGameBoard.IsGateOpen && CurrentSnake.Body[0] == CurrentGameBoard.GatePosition) {
-                LoadNextLevel();
-            }
-
             NotifyStateChanged();
             return Task.CompletedTask;
         }
@@ -168,8 +158,7 @@ namespace BPSnake.Models.GameCore
         /// Měla by být volána ve chvíli, kdy hráč dokončí úroveň, aby bylo zajištěno, že stav hry bude správně aktualizován pro další fázi.</remarks>
         private void LoadNextLevel()
         {
-            _levelService.MoveToNextLevel();
-            CurrentGameBoard = new GameBoard(CurrentLevel);
+            CurrentGameBoard = new GameBoard();
             CurrentSnake = new Snake();
             _foodService.Reset();
             _foodService.SpawnFood(CurrentGameBoard, CurrentSnake);
@@ -196,12 +185,8 @@ namespace BPSnake.Models.GameCore
             _growBuffer = GameSettings.GrowthPerFood;
             CurrentSnake.Move(grow: true);
 
-            var (score, openGate) = _foodService.EatCurrentFood(CurrentGameBoard, CurrentSnake);
+            var score = _foodService.EatCurrentFood(CurrentGameBoard, CurrentSnake);
             _scoreService.Increase(score);
-
-            if (openGate) {
-                CurrentGameBoard.OpenGate();
-            }
         }
 
         /// <summary>
@@ -254,14 +239,6 @@ namespace BPSnake.Models.GameCore
 
             if (CurrentFoodItem != null && CurrentFoodItem.Position == p) {
                 return CurrentFoodItem.ScoreValue == GameSettings.BonusFoodScoreValue ? "cell food-bonus" : "cell food";
-            }
-
-            if (CurrentGameBoard != null && CurrentGameBoard.GatePosition == p) {
-                return CurrentGameBoard.IsGateOpen ? "cell gate-open" : "cell gate-closed";
-            }
-
-            if (CurrentGameBoard != null && CurrentGameBoard.Obstacles.Contains(p)) {
-                return "cell wall";
             }
 
             return "cell empty";

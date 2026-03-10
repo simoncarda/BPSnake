@@ -29,7 +29,6 @@ namespace BPSnake
             builder.Services.AddScoped<GameLoopService>();
             builder.Services.AddScoped<CollisionService>();
             builder.Services.AddScoped<FoodService>();
-            builder.Services.AddScoped<LevelService>();
             builder.Services.AddScoped<GameStateService>();
             builder.Services.AddScoped<ScoreService>();
 

@@ -9,7 +9,6 @@ namespace BPSnake.Services
         private readonly Random _random;
 
         public FoodItem CurrentFoodItem { get; private set; } = null!;
-        public int FoodEatenInLevel { get; private set; } = 0;
 
         public FoodService() : this(new Random()) { }
 
@@ -21,7 +20,6 @@ namespace BPSnake.Services
 
         public void Reset()
         {
-            FoodEatenInLevel = 0;
             CurrentFoodItem = null!; // Bude vzápětí vytvořen pomocí SpawnFood
         }
 
@@ -37,29 +35,20 @@ namespace BPSnake.Services
             do {
                 x = _random.Next(0, board.Width);
                 y = _random.Next(0, board.Height);
-            } while (snake.Body.Contains(new GridPoint(x, y)) || board.Obstacles.Contains(new GridPoint(x, y)));
-            
+            } while (snake.Body.Contains(new GridPoint(x, y)));
+
             CurrentFoodItem = new FoodItem(new GridPoint(x, y), value);
         }
 
         /// <summary>
         /// Zpracuje událost snědení jídla, vrátí zisk skóre a informaci o tom, zda se má otevřít brána.
         /// </summary>
-        public (int scoreValue, bool shouldOpenGate) EatCurrentFood(GameBoard board, Snake snake)
+        public int EatCurrentFood(GameBoard board, Snake snake)
         {
-            if (CurrentFoodItem == null) return (0, false);
-
             int score = CurrentFoodItem.ScoreValue;
-            FoodEatenInLevel++;
-            bool shouldOpenGate = FoodEatenInLevel >= GameSettings.FoodItemsToOpenGate;
-            
-            if (!shouldOpenGate) {
-                SpawnFood(board, snake);
-            } else {
-                CurrentFoodItem = null!; // Čekáme na další level
-            }
+            SpawnFood(board, snake);
 
-            return (score, shouldOpenGate);
+            return score;
         }
     }
 }

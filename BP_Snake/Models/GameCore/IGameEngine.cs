@@ -15,8 +15,6 @@ namespace BPSnake.Models.GameCore
         GameBoard CurrentGameBoard { get; }
         FoodItem CurrentFoodItem { get; }
         int CurrentGameScore { get; }
-        int CurrentLevel { get; }
-        int TotalLevelsCompleted { get; }
         GameState CurrentGameState { get; }
 
         event Func<Task>? OnStateChangedAsync;
