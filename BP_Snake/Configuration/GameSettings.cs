@@ -3,8 +3,6 @@ namespace BPSnake.Configuration
 {
     internal static class GameSettings
     {
-        public const int MaxPlayerNameLength = 10; // Maximální délka jména hráče pro zobrazení ve skóre
-
         public const int BonusFoodScoreValue = 10; // Počet bodů získaných za snězení bonusového jídla
         public const int NormalFoodScoreValue = 5; // Počet bodů získaných za snězení normálního jídla
 
