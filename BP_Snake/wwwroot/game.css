@@ -17,9 +17,10 @@
 }
 
 .gameboard {
+    /* Rozložení gridu (columns/rows) je zámìrnì vynecháno, definuje se dynamicky v .razor souboru */
     display: grid;
-    gap: 0; 
-    border: 2px solid black; 
+    gap: 0;
+    border: 2px solid black;
     margin: 10px auto;
     width: 30vw;
     aspect-ratio: 1 / 1;
