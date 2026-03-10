@@ -13,7 +13,6 @@ namespace BPSnake.Models.GameCore
         // což demonstruje princip zapouzdření (Encapsulation).
         Snake CurrentSnake { get; }
         GameBoard CurrentGameBoard { get; }
-        int CurrentGameScore { get; }
         GameState CurrentGameState { get; }
 
         event Func<Task>? OnStateChangedAsync;

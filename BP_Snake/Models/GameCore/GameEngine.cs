@@ -13,19 +13,16 @@ namespace BPSnake.Models.GameCore
     /// </remarks>
     internal class GameEngine(
         GameLoopService gameLoopService,
-        GameStateService gameStateService,
-        ScoreService scoreService) : IGameEngine, IDisposable
+        GameStateService gameStateService) : IGameEngine, IDisposable
     {
         // Stav hry (zvenčí pouze pro čtení díky get; a private set;)
         public Snake CurrentSnake { get; private set; } = null!;
         public GameBoard CurrentGameBoard { get; private set; } = null!;
-        public int CurrentGameScore => _scoreService.CurrentScore;
         public GameState CurrentGameState => _gameStateService.CurrentState; 
 
         // Služby
         private readonly GameLoopService _gameLoopService = gameLoopService;
         private readonly GameStateService _gameStateService = gameStateService;
-        private readonly ScoreService _scoreService = scoreService;
 
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
@@ -46,7 +43,6 @@ namespace BPSnake.Models.GameCore
         public void LoadNewGame()
         {
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
-            _scoreService.Reset();
             
             CurrentSnake = new Snake();
             CurrentGameBoard = new GameBoard();

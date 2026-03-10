@@ -45,21 +45,13 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Posune hada o jeden krok vpřed v jeho aktuálním směru, s volitelnou možností zvětšení jeho délky.
+        /// Posune hada o jeden krok vpřed v jeho aktuálním směru.
         /// </summary>
-        /// <remarks>
-        /// Pokud se had pohybuje s parametrem grow nastaveným na false, poslední článek je odstraněn, aby délka zůstala nezměněna.
-        /// Parametr grow použijte v případě, že se má had prodloužit, například po snědení jídla.
-        /// </remarks>
-        /// <param name="grow"> true pro zvětšení délky hada přidáním nového článku u hlavy; v opačném případě false pro zachování aktuální délky.</param>
-        public void Move(bool grow = false)
+        public void Move()
         {
             GridPoint nextHeadPosition = GetNextHeadPosition();
             Body.Insert(0, nextHeadPosition); // Přidání nové hlavy na začátek seznamu těla
-            if (!grow)
-            {
-                Body.RemoveAt(Body.Count - 1);
-            }
+            Body.RemoveAt(Body.Count - 1);
         }
     }
 }
