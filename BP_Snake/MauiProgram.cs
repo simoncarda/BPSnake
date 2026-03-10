@@ -27,7 +27,6 @@ namespace BPSnake
             
             // Herní služby převedené na Scoped (každý hráč/session dostane vlastní instanci služeb i vlastní herní smyčku)
             builder.Services.AddScoped<GameLoopService>();
-            builder.Services.AddScoped<FoodService>();
             builder.Services.AddScoped<GameStateService>();
             builder.Services.AddScoped<ScoreService>();
 

@@ -13,20 +13,17 @@ namespace BPSnake.Models.GameCore
     /// </remarks>
     internal class GameEngine(
         GameLoopService gameLoopService,
-        FoodService foodService,
         GameStateService gameStateService,
         ScoreService scoreService) : IGameEngine, IDisposable
     {
         // Stav hry (zvenčí pouze pro čtení díky get; a private set;)
         public Snake CurrentSnake { get; private set; } = null!;
         public GameBoard CurrentGameBoard { get; private set; } = null!;
-        public FoodItem CurrentFoodItem => _foodService.CurrentFoodItem;
         public int CurrentGameScore => _scoreService.CurrentScore;
         public GameState CurrentGameState => _gameStateService.CurrentState; 
 
         // Služby
         private readonly GameLoopService _gameLoopService = gameLoopService;
-        private readonly FoodService _foodService = foodService;
         private readonly GameStateService _gameStateService = gameStateService;
         private readonly ScoreService _scoreService = scoreService;
 
@@ -35,7 +32,6 @@ namespace BPSnake.Models.GameCore
 
         private int _currentGameSpeed => GameSettings.BaseGameSpeed;
         private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
-        private int _growBuffer = 0;
 
         /// <summary>
         /// Notifikuje všechny přihlášené posluchače události OnStateChangedAsync, že došlo ke změně stavu hry, a
@@ -50,15 +46,12 @@ namespace BPSnake.Models.GameCore
         public void LoadNewGame()
         {
             StopGameLoop(); // Pro jistotu zastavíme běžící smyčku, pokud existuje
-            _foodService.Reset();
             _scoreService.Reset();
             
             CurrentSnake = new Snake();
             CurrentGameBoard = new GameBoard();
-            _foodService.SpawnFood(CurrentGameBoard, CurrentSnake);
             
             _gameStateService.SetMenu();
-            _growBuffer = 0;
             
             // Vyvolání události pro aktualizaci UI (načtení hry)
             NotifyStateChanged();
@@ -118,32 +111,9 @@ namespace BPSnake.Models.GameCore
         private Task GameLogicTickAsync()
         {
             _directionChangedInCurrentTick = false;
-
-            // podmínka pro pohyb při kolizi s jídlem
-            if (CurrentFoodItem != null && CurrentSnake.GetNextHeadPosition() == CurrentFoodItem.Position) {
-                OnFoodEaten();
-            } else if (_growBuffer > 0){
-                CurrentSnake.Move(grow: true);
-                _growBuffer--;
-            } else {
-                CurrentSnake.Move();
-            }
-
+            CurrentSnake.Move();
             NotifyStateChanged();
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Zpracovává událost, kdy had sní položku jídla, a odpovídajícím způsobem aktualizuje stav hry.
-        /// </summary>
-        /// <remarks>Tato metoda zvětšuje délku hada, aktualizuje hráčovo skóre a spravuje postup hrou, jako je například otevírání bran při splnění určitých podmínek.</remarks>
-        private void OnFoodEaten()
-        {
-            _growBuffer = GameSettings.GrowthPerFood;
-            CurrentSnake.Move(grow: true);
-
-            var score = _foodService.EatCurrentFood(CurrentGameBoard, CurrentSnake);
-            _scoreService.Increase(score);
         }
 
         /// <summary>
@@ -192,10 +162,6 @@ namespace BPSnake.Models.GameCore
 
             if (CurrentSnake?.Body.Contains(p) == true) {
                 return "cell snake-body";
-            }
-
-            if (CurrentFoodItem != null && CurrentFoodItem.Position == p) {
-                return CurrentFoodItem.ScoreValue == GameSettings.BonusFoodScoreValue ? "cell food-bonus" : "cell food";
             }
 
             return "cell empty";

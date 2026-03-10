@@ -13,7 +13,6 @@ namespace BPSnake.Models.GameCore
         // což demonstruje princip zapouzdření (Encapsulation).
         Snake CurrentSnake { get; }
         GameBoard CurrentGameBoard { get; }
-        FoodItem CurrentFoodItem { get; }
         int CurrentGameScore { get; }
         GameState CurrentGameState { get; }
 

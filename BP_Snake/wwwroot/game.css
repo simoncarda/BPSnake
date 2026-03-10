@@ -62,14 +62,6 @@
     border-radius: 4px;
 }
 
-.food {
-    background-color: #F44336; /* Èervená */
-}
-
-.food-bonus {
-    background-color: #FFD700; /* Zlatá */
-}
-
 .d-pad {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 sloupce */
