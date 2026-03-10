@@ -37,8 +37,8 @@
 
 .gameboard {
     display: grid;
-    gap: 0; /* Žádný mezera mezi buòkami */
-    border: 2px solid black; /* Okraj kolem celé møížky */
+    gap: 0; 
+    border: 2px solid black; 
     margin: 10px auto;
     width: 30vw;
     aspect-ratio: 1 / 1;
@@ -46,7 +46,7 @@
     max-width: 600px;
 }
 
-/* Základní buòka - velikost a møížka */
+/* Základní buòka */
 .cell {
     border: 1px solid black;
     box-sizing: border-box;
@@ -76,13 +76,14 @@
     background-color: #FFD700; /* Zlatá */
 }
 
+/* Styl dotykového ovládání */
 .d-pad {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 sloupce */
-    grid-template-rows: repeat(3, 1fr); /* 2 øádky */
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(3, 1fr); 
 
     gap: 5px;
-    justify-content: center; /* Vycentrovat pod hrou */
+    justify-content: center;
     margin: 20px auto;
     width: 200px;
     max-width: 15vw;
@@ -105,5 +106,5 @@
     }
 
         .d-pad button:active {
-            background-color: #666; /* Zmìna barvy pøi stisku */
+            background-color: #666;
         }
