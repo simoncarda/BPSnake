@@ -102,7 +102,7 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Ukončí hru, zastaví herní smyčku a přepne stav hry na "GameOver". Uloží čas, kdy došlo k Game Over, pro pozdější zobrazení v UI.
+        /// Ukončí hru: zastaví herní smyčku a přepne stav hry na "GameOver".
         /// </summary>
         public void GameOver()
         {
@@ -149,31 +149,6 @@ namespace BPSnake.Models.GameCore
 
             NotifyStateChanged();
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Pokračuje hru na další úroveň, resetuje relevantní herní stav a inicializuje herní desku a hada pro novou úroveň.
-        /// </summary>
-        /// <remarks>Tato metoda zvyšuje počet dokončených úrovní, načítá další úroveň pomocí služby úrovní (level service), vynuluje počet snědených jablek v aktuální úrovni a restartuje herní smyčku. 
-        /// Měla by být volána ve chvíli, kdy hráč dokončí úroveň, aby bylo zajištěno, že stav hry bude správně aktualizován pro další fázi.</remarks>
-        private void LoadNextLevel()
-        {
-            CurrentGameBoard = new GameBoard();
-            CurrentSnake = new Snake();
-            _foodService.Reset();
-            _foodService.SpawnFood(CurrentGameBoard, CurrentSnake);
-            RestartGameLoop();
-        }
-
-        /// <summary>
-        /// Zastaví aktuální herní smyčku a spustí novou s aktualizovanou rychlostí, pokud je hra stále v stavu "Playing".
-        /// </summary>
-        private void RestartGameLoop()
-        {
-            StopGameLoop();
-            if (_gameStateService.IsPlaying()) {
-                _ = StartGameLoop();
-            } // Spustíme novou smyčku, discardujeme vrácený Task, protože nechceme čekat na jeho dokončení
         }
 
         /// <summary>
