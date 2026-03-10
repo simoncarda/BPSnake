@@ -5,11 +5,6 @@ namespace BPSnake.Models.GameCore
     /// <summary>
     /// Reprezentuje hada v klasické hře „had“, spravuje segmenty jeho těla a směr pohybu.
     /// </summary>
-    /// <remarks>
-    /// Třída Snake poskytuje metody pro pohyb hada, zvětšování jeho délky a detekci kolizí se sebou samým.
-    /// Tělo hada je reprezentováno jako seznam bodů, přičemž první bod odpovídá hlavě. Směr pohybu lze ovládat pomocí vlastnosti CurrentDirection.
-    /// Tato třída je určena k použití jako jádro logiky hry a nezajišťuje přímo vykreslování ani uživatelský vstup.
-    /// </remarks>
     internal class Snake
     {
         // List uchovává souřadnice jednotlivých článků. Index 0 představuje vždy hlavu.
@@ -28,11 +23,8 @@ namespace BPSnake.Models.GameCore
 
         /// <summary>
         /// Vypočítá příští pozici hlavy hada na základě jeho aktuálního směru pohybu.
+        /// Využívá moderní C# switch expression pro čistší syntaxi.
         /// </summary>
-        /// <remarks>
-        /// Tato metoda slouží k určení, kam se hlava hada posune při příští aktualizaci, aniž byste měnili stav hada.
-        /// Vrácená pozice závisí na aktuálním směru a nebere v úvahu kolize ani hranice herní plochy.
-        /// </remarks>
         /// <returns>A Bod <see cref="GridPoint"/> reprezentující pozici o jednu jednotku před aktuální hlavou ve směru určeném vlastností <see cref="CurrentDirection"/>.</returns>
         public GridPoint GetNextHeadPosition()
         {
@@ -49,6 +41,9 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
+        /// Provede fyzický posun hada po herní ploše.
+        /// Algoritmus posunu: Místo složitého přepočítávání všech článků se pouze 
+        /// přidá nová hlava na začátek seznamu a smaže se poslední článek (ocas).
         /// Posune hada o jeden krok vpřed v jeho aktuálním směru, s volitelnou možností zvětšení jeho délky.
         /// </summary>
         /// <remarks>

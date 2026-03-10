@@ -7,9 +7,9 @@ namespace BPSnake.Services
     internal sealed class GameLoopService: IDisposable
     {
         /// <summary>
-        /// Jednoduchá služba pro řízení hlavní herní smyčky.
+        /// Služba pro řízení hlavní herní smyčky.
         /// Implementuje PeriodicTimer a umožňuje bezpečné spuštění/zastavení smyčky.
-        /// Učební verze: jednoduchá a přehledná implementace.
+        /// Zároveň brání překrývání ticků a zbytečně nezatěžuje vlákna.
         /// </summary>
         private PeriodicTimer? _timer;
         private CancellationTokenSource? _cts;
@@ -34,8 +34,9 @@ namespace BPSnake.Services
             _timer = timer;
 
             try {
+                // Jádro smyčky. Vlákno zde asynchronně "spí" (neblokuje se) do dalšího ticku.
+                // Při zavolání cts.Cancel() vyvolá WaitForNextTickAsync výjimku OperationCanceledException.
                 while (await timer.WaitForNextTickAsync(cts.Token)) {
-                    // Zavolat zpracování jednoho kroku hry
                     await tickAsync();
                 }
             }
@@ -60,10 +61,6 @@ namespace BPSnake.Services
         /// <summary>
         /// Zastaví herní smyčku a uvolní všechny související prostředky.
         /// </summary>
-        /// <remarks>
-        /// Tuto metodu volejte pro zrušení veškerých probíhajících operací a pro zajištění, že prostředky,
-        /// jako jsou časovače (timers) a storno tokeny (cancellation tokens),budou řádně uvolněny.
-        /// </remarks>
         public void Stop()
         {
             _cts?.Cancel();
