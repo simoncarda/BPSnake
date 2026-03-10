@@ -23,7 +23,6 @@ namespace BPSnake.Models.GameCore
         void StartNewGame();
         void PauseGame();
         void ResumeGame();
-        void GameOver();
         void ChangeDirection(Direction newDirection);
 
         /// <summary>

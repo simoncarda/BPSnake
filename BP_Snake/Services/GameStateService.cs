@@ -27,11 +27,6 @@ namespace BPSnake.Services
             CurrentState = GameState.Paused;
         }
 
-        public void SetGameOver()
-        {
-            CurrentState = GameState.GameOver;
-        }
-
         public bool IsPlaying() => CurrentState == GameState.Playing;
         public bool IsPaused() => CurrentState == GameState.Paused;
     }

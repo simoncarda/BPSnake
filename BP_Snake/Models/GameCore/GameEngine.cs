@@ -12,8 +12,7 @@ namespace BPSnake.Models.GameCore
     /// Tato třída publikuje události pro aktualizaci uživatelského rozhraní (UI) a podporuje uvolňování prostředků prostřednictvím rozhraní IDisposable.
     /// </remarks>
     internal class GameEngine(
-        GameLoopService gameLoopService, 
-        CollisionService collisionService, 
+        GameLoopService gameLoopService,
         FoodService foodService,
         GameStateService gameStateService,
         ScoreService scoreService) : IGameEngine, IDisposable
@@ -27,7 +26,6 @@ namespace BPSnake.Models.GameCore
 
         // Služby
         private readonly GameLoopService _gameLoopService = gameLoopService;
-        private readonly CollisionService _collisionService = collisionService;
         private readonly FoodService _foodService = foodService;
         private readonly GameStateService _gameStateService = gameStateService;
         private readonly ScoreService _scoreService = scoreService;
@@ -102,16 +100,6 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Ukončí hru: zastaví herní smyčku a přepne stav hry na "GameOver".
-        /// </summary>
-        public void GameOver()
-        {
-            StopGameLoop();
-            _gameStateService.SetGameOver();
-            NotifyStateChanged();
-        }
-
-        /// <summary>
         /// Spustí herní smyčku asynchronně s aktuální rychlostí hry. 
         /// Tato metoda zajišťuje, že logika hry bude aktualizována v pravidelných intervalech, které se mohou měnit v závislosti na úrovni a počtu dokončených úrovní.
         /// </summary>
@@ -139,12 +127,6 @@ namespace BPSnake.Models.GameCore
                 _growBuffer--;
             } else {
                 CurrentSnake.Move();
-            }
-
-            // podmínka pro kolizi s překážkami, zdmi či sebou samým
-            if (_collisionService.IsCollisionDetected(CurrentGameBoard, CurrentSnake)) {
-                GameOver();
-                return Task.CompletedTask;
             }
 
             NotifyStateChanged();
