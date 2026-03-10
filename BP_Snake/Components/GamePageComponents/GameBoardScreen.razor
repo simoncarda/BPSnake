@@ -1,5 +1,7 @@
 ﻿@using BPSnake.Models;
 @using BPSnake.Models.GameCore;
+
+@* Nutné pro zavolání metody Dispose() a prevenci memory leaku *@
 @inject IGameEngine Engine
 @implements IDisposable
 
