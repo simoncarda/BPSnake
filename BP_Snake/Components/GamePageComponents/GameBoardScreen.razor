@@ -19,7 +19,8 @@
         </div>
     </div>
 
-    <div class="gameboard" style="grid-template-columns: repeat(@Engine.CurrentGameBoard.Width, 1fr); grid-template-rows: repeat(@Engine.CurrentGameBoard.Height, 1fr);" tabindex="0" @onkeydown="HandleInput" @ref="_boardElement">
+    @* tabindex="0" a @ref jsou nezbytné pro zachycení klávesnice *@
+    <div class="gameboard" style="grid-template-columns: repeat(@Engine.CurrentGameBoard.Width, 1fr); grid-template-rows: repeat(@Engine.CurrentGameBoard.Height, 1fr);" tabindex="0" @ref="_boardElement">
         @for (int y = 0; y < Engine.CurrentGameBoard.Height; y++) {
             @for (int x = 0; x < Engine.CurrentGameBoard.Width; x++) {
                 <div class="@Engine.GetCellCssClass(x, y)"></div>
@@ -56,6 +57,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender) {
+            // Automatický focus pro okamžité ovládání z klávesnice bez klikání myší
             await _boardElement.FocusAsync();
         }
     }
