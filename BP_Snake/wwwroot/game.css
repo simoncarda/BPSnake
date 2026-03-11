@@ -17,6 +17,7 @@
 }
 
 .game-over {
+    /* Centrování bloku s informacemi po konci hry */
     max-width: 600px;
     margin: 0 auto;
     gap: 15px;
@@ -55,7 +56,7 @@
 }
 
 /* --- BARVY --- */
-
+/* Tyto tøídy musí pøesnì odpovídat stringùm vraceným z metody GameEngine.GetCellCssClass() */
 .empty {
     background-color: #ffffff;
 }

@@ -4,18 +4,19 @@ using GridPoint = BPSnake.Models.GameCore.GridPoint;
 namespace BPSnake.Services
 {
     /// <summary>
-    /// Služba detekující kolize (zeď, překážka, self-collision).
-    /// Oddělení této logiky od GameEngine zlepšuje čitelnost a testovatelnost.
+    /// Služba detekující kolize.
+    /// Ukázka principu Single Responsibility Principle (SRP) – vyčlenění této logiky 
+    /// mimo GameEngine udržuje kód čistý a usnadňuje psaní automatizovaných testů (Unit Tests).
     /// </summary>
     internal sealed class CollisionService
     {
         /// <summary>
-        /// Vrátí true pokud došlo ke kolizi (se zdí, překážkou nebo tělem hada).
+        /// Vrátí true pokud došlo ke kolizi (se zdí, případnou překážkou nebo tělem hada).
         /// </summary>
         public bool IsCollisionDetected(GameBoard board, Snake snake)
         {
             GridPoint currentHead = snake.Body[0];
-            return IsCollisionWithBoundary(board, currentHead) || snake.IsSelfCollision();
+            return IsCollisionWithBoundary(board, currentHead) || IsCollisionWithSelf(snake);
         }
 
         /// <summary>
@@ -25,6 +26,24 @@ namespace BPSnake.Services
         {
             return head.X < 0 || head.X >= board.Width ||
                    head.Y < 0 || head.Y >= board.Height;
+        }
+
+        /// <summary>
+        /// Detekuje kolizi hada se zbytkem vlastního těla (podmínka pro Game Over).
+        /// </summary>
+        /// <returns>True, pokud se hlava překrývá s jakýmkoliv jiným článkem těla.</returns>
+        public bool IsCollisionWithSelf(Snake snake)
+        {
+            var body = snake.Body;
+            GridPoint head = body[0];
+
+            // Iterace začíná od indexu 1, čímž záměrně z porovnávání vynecháváme samotnou hlavu na pozici 0.
+            for (int i = 1; i < body.Count; i++) {
+                if (body[i] == head) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
