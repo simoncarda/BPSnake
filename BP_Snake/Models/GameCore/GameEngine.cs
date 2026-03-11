@@ -37,6 +37,8 @@ namespace BPSnake.Models.GameCore
         // Kritická proměnná chránící před tzv. "fast-click bugem", kdy uživatel stiskne 
         // 2 klávesy rychle za sebou a had by se mohl otočit do sebe dřív, než dojde k vykreslení.
         private bool _directionChangedInCurrentTick = false;
+        // Vyrovnávací paměť pro růst hada. Umožňuje hadovi vyrůst o více než 1 článek plynule
+        // během několika následujících ticků (kroků).
         private int _growBuffer = 0;
 
         /// <summary>
@@ -119,13 +121,18 @@ namespace BPSnake.Models.GameCore
         {
             _directionChangedInCurrentTick = false;
 
-            // podmínka pro pohyb při kolizi s jídlem
+            // DETEKCE KOLIZE (Collision Detection):
+            // Zjišťujeme, zda se budoucí pozice hlavy překrývá s pozicí jídla ještě dříve, než hada reálně posuneme.
             if (CurrentFoodItem != null && CurrentSnake.GetNextHeadPosition() == CurrentFoodItem.Position) {
                 OnFoodEaten();
-            } else if (_growBuffer > 0){
+            }
+
+            if (_growBuffer > 0){
+                // Zpracování postupné konzumace (růstu). Had roste "plynule" s každým tickem, dokud se buffer nevyprázdní.
                 CurrentSnake.Move(grow: true);
                 _growBuffer--;
             } else {
+                // Běžný pohyb bez růstu
                 CurrentSnake.Move();
             }
 
@@ -139,8 +146,8 @@ namespace BPSnake.Models.GameCore
         /// <remarks>Tato metoda zvětšuje délku hada, aktualizuje hráčovo skóre a spravuje postup hrou, jako je například otevírání bran při splnění určitých podmínek.</remarks>
         private void OnFoodEaten()
         {
-            _growBuffer = GameSettings.GrowthPerFood;
-            CurrentSnake.Move(grow: true);
+            // Naplníme buffer, aby had v následujících krocích plynule vyrostl
+            _growBuffer += GameSettings.GrowthPerFood;
 
             var score = _foodService.EatCurrentFood(CurrentGameBoard, CurrentSnake);
             _scoreService.Increase(score);
@@ -193,6 +200,7 @@ namespace BPSnake.Models.GameCore
                 return "cell snake-body";
             }
 
+            // Rozlišení běžného a bonusového jídla pro CSS stylování na základě hodnoty skóre
             if (CurrentFoodItem != null && CurrentFoodItem.Position == p) {
                 return CurrentFoodItem.ScoreValue == GameSettings.BonusFoodScoreValue ? "cell food-bonus" : "cell food";
             }
