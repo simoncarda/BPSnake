@@ -34,6 +34,9 @@ namespace BPSnake.Services
             int x;
             int y;
             int value = (_random.Next(0, 10) < 8) ? GameSettings.NormalFoodScoreValue : GameSettings.BonusFoodScoreValue;
+            // POZNÁMKA: Tento do-while cyklus je jednoduchý, ale pokud by had zabral 
+            // 100 % plochy, cyklus bude nekonečný. Protože však plánujeme omezit množství jídla přidáním systému levelů,
+            // tak je tento přístup pro účel aplikace dostačující.
             do {
                 x = _random.Next(0, board.Width);
                 y = _random.Next(0, board.Height);
@@ -43,7 +46,7 @@ namespace BPSnake.Services
         }
 
         /// <summary>
-        /// Zpracuje událost snědení jídla, vrátí zisk skóre a informaci o tom, zda se má otevřít brána.
+        /// Zpracuje událost konzumace potravy, ihned vygeneruje novou a vrátí získané skóre.
         /// </summary>
         public (int scoreValue, bool shouldOpenGate) EatCurrentFood(GameBoard board, Snake snake)
         {
