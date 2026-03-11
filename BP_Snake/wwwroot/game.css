@@ -23,6 +23,7 @@
 }
 
 .stats {
+    /* Flexbox zajišuje èisté horizontální rozloení statistik (skóre, level) bez ohledu na šíøku displeje */
     display: flex;
     flex-direction: row;
     justify-content: space-between;

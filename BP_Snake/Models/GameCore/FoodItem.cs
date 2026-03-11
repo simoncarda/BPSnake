@@ -3,11 +3,10 @@
 namespace BPSnake.Models.GameCore
 {
     /// <summary>
-    /// Reprezentuje položku jídla ve hře, která má specifickou pozici a hodnotu skóre přidělenou při jejím snězení.
+    /// Reprezentuje položku jídla ve hře, která má specifickou pozici a bodovou hodnotu.
     /// </summary>
     /// <remarks>
-    /// Pozice položky jídla je definována strukturou Point a hodnota skóre určuje počet bodů udělených hráči po sebrání.
-    /// Výchozí konstruktor inicializuje položku jídla na pozici (10, 10) s hodnotou skóre 5.
+    /// Instance této třídy jsou po vytvoření neměnné (immutable) zvenčí, což zvyšuje bezpečnost návrhu a zabraňuje nechtěnému posunutí jídla.
     /// </remarks>
     internal class FoodItem
     {

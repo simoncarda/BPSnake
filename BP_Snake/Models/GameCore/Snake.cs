@@ -13,7 +13,6 @@ namespace BPSnake.Models.GameCore
         public Direction CurrentDirection { get; set; }
         public Snake()
         {
-            // Inicializace počátečních článků těla.
             // Odečítáním 'i' se tělo generuje horizontálně za hlavou (směrem doleva).
             for (int i = 0; i < GameSettings.InitialSnakeLength; i++) {
                 Body.Add(new GridPoint(GameSettings.InitialSnakeStartX - i, GameSettings.InitialSnakeStartY));
@@ -25,7 +24,7 @@ namespace BPSnake.Models.GameCore
         /// Vypočítá příští pozici hlavy hada na základě jeho aktuálního směru pohybu.
         /// Využívá moderní C# switch expression pro čistší syntaxi.
         /// </summary>
-        /// <returns>A Bod <see cref="GridPoint"/> reprezentující pozici o jednu jednotku před aktuální hlavou ve směru určeném vlastností <see cref="CurrentDirection"/>.</returns>
+        /// <returns>Bod <see cref="GridPoint"/> reprezentující pozici o jednu jednotku před aktuální hlavou ve směru určeném vlastností <see cref="CurrentDirection"/>.</returns>
         public GridPoint GetNextHeadPosition()
         {
             GridPoint head = Body[0];
@@ -42,15 +41,10 @@ namespace BPSnake.Models.GameCore
 
         /// <summary>
         /// Provede fyzický posun hada po herní ploše.
-        /// Algoritmus posunu: Místo složitého přepočítávání všech článků se pouze 
-        /// přidá nová hlava na začátek seznamu a smaže se poslední článek (ocas).
-        /// Posune hada o jeden krok vpřed v jeho aktuálním směru, s volitelnou možností zvětšení jeho délky.
+        /// Z důvodu optimalizace výkonu se nepřepočítávají souřadnice všech článků, 
+        /// ale pouze se přidá nová hlava a případně se odstraní ocas.
         /// </summary>
-        /// <remarks>
-        /// Pokud se had pohybuje s parametrem grow nastaveným na false, poslední článek je odstraněn, aby délka zůstala nezměněna.
-        /// Parametr grow použijte v případě, že se má had prodloužit, například po snědení jídla.
-        /// </remarks>
-        /// <param name="grow"> true pro zvětšení délky hada přidáním nového článku u hlavy; v opačném případě false pro zachování aktuální délky.</param>
+        /// <param name="grow">Pokud je true (např. po konzumaci potravy), ocas se neodstraní a had se prodlouží.</param>
         public void Move(bool grow = false)
         {
             GridPoint nextHeadPosition = GetNextHeadPosition();
