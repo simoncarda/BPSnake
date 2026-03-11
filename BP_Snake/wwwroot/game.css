@@ -35,7 +35,7 @@
 }
 
 /* --- BARVY --- */
-
+/* Tyto tøídy musí pøesnì odpovídat stringùm vraceným z metody GameEngine.GetCellCssClass() */
 .empty {
     background-color: #ffffff;
 }
