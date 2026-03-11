@@ -22,7 +22,11 @@
     </div>
 
     @* tabindex="0" a @ref jsou nezbytné pro zachycení klávesnice *@
-    <div class="gameboard" style="grid-template-columns: repeat(@Engine.CurrentGameBoard.Width, 1fr); grid-template-rows: repeat(@Engine.CurrentGameBoard.Height, 1fr);" tabindex="0" @ref="_boardElement">
+    <div class="gameboard"
+         style="grid-template-columns: repeat(@Engine.CurrentGameBoard.Width, 1fr); grid-template-rows: repeat(@Engine.CurrentGameBoard.Height, 1fr);"
+         tabindex="0"
+         @ref="_boardElement"
+         @onkeydown="HandleKeyboardInput">
         @for (int y = 0; y < Engine.CurrentGameBoard.Height; y++) {
             @for (int x = 0; x < Engine.CurrentGameBoard.Width; x++) {
                 <div class="@Engine.GetCellCssClass(x, y)"></div>
