@@ -22,7 +22,7 @@
         <div>
             <p><strong>Finální score: @Engine.CurrentGameScore</strong></p>
             <p><strong>Úspěšně dokončeno levelů: @Engine.TotalLevelsCompleted</strong></p>
-            <p><strong>Zemřel jsi na levelu @Engine.CurrentLevel</strong></p>
+            <p><strong>Hra ukončena na levelu @Engine.CurrentLevel</strong></p>
         </div>
         <input type="text" placeholder="Jméno hráče" maxlength="@GameSettings.MaxPlayerNameLength" @bind-value="_playerName" />
     </div>
@@ -71,7 +71,5 @@
                 _isSaveSuccess = false;
                 break;
         }
-        // DatabaseService will notify subscribers (ScoreTable) to reload when appropriate.
-        await InvokeAsync(StateHasChanged);
     }
 }

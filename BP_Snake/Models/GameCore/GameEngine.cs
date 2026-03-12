@@ -7,8 +7,8 @@ namespace BPSnake.Models.GameCore
     /// Poskytuje základní funkcionalitu pro správu stavu hry, včetně zpracování vstupu hráče, postupu hrou a interakcí mezi herními prvky.
     /// </summary>
     /// <remarks>
-    /// Třída GameEngine je zodpovědná za inicializaci a řízení herní smyčky, správu aktuálního stavu hry a zprostředkování interakcí mezi hadem,
-    /// položkami jídla a herní plochou. Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení, obnovení a ukončení hry.
+    /// Třída GameEngine je zodpovědná za inicializaci a řízení herní smyčky a správu aktuálního stavu hry. 
+    /// Zpracovává také přechody mezi stavy hry, jako je spuštění, pozastavení a obnovení hry.
     /// Tato třída publikuje události pro aktualizaci uživatelského rozhraní (UI) a podporuje uvolňování prostředků prostřednictvím rozhraní IDisposable.
     /// </remarks>
     internal class GameEngine(
@@ -26,6 +26,7 @@ namespace BPSnake.Models.GameCore
         public int CurrentGameScore => _scoreService.CurrentScore;
         public int CurrentLevel => _levelService.CurrentLevel;
         public int TotalLevelsCompleted => _levelService.TotalLevelsCompleted;
+        // Přebírá čas ukončení hry od GameStateService, aby bylo možné ho předat do UI nebo databáze.
         public DateTime GameOverTime => _gameStateService.GameOverTime;
         public GameState CurrentGameState => _gameStateService.CurrentState; 
 
@@ -40,9 +41,18 @@ namespace BPSnake.Models.GameCore
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
 
-        private int _currentGameSpeed => Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
-        private bool _directionChangedInCurrentTick = false; // Pomocná proměnná pro zamezení více změn směru během jednoho ticku
+        // Kritická proměnná chránící před tzv. "fast-click bugem", kdy uživatel stiskne 
+        // 2 klávesy rychle za sebou a had by se mohl otočit do sebe dřív, než dojde k vykreslení.
+        private bool _directionChangedInCurrentTick = false;
+        // Vyrovnávací paměť pro růst hada. Umožňuje hadovi vyrůst o více než 1 článek plynule
+        // během několika následujících ticků (kroků).
         private int _growBuffer = 0;
+
+        /// <summary>
+        /// Vypočítá aktuální rychlost hry. S každým levelem se hra zrychluje (zkracuje se interval), 
+        /// ale Math.Max zaručí, že neklesne pod povolené minimum.
+        /// </summary>
+        private int _currentGameSpeed => Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
 
         /// <summary>
         /// Notifikuje všechny přihlášené posluchače události OnStateChangedAsync, že došlo ke změně stavu hry, a
@@ -51,8 +61,7 @@ namespace BPSnake.Models.GameCore
         private void NotifyStateChanged() => _ = OnStateChangedAsync?.Invoke();
 
         /// <summary>
-        /// Inicializuje nový herní stav pro začátek nové hry.
-        /// Resetuje všechny relevantní proměnné a připraví hru na nový start.
+        /// Inicializuje herní objekty a připraví hru ve stavu Menu.
         /// </summary>
         public void LoadNewGame()
         {
@@ -84,7 +93,7 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Zastaví herní smyčku a přepne stav hry na "Paused". Pokud je hra již pozastavena, nebude mít žádný efekt.
+        /// Pozastaví hru. Zastaví Timer běžící na pozadí a přepne stav hry na "Paused". Pokud je hra již pozastavena, nebude mít žádný efekt.
         /// </summary>
         public void PauseGame()
         {
@@ -96,7 +105,7 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Spustí herní smyčku a přepne stav hry zpět na "Playing". Pokud hra není v stavu "Paused", nebude mít žádný efekt.
+        /// Spustí herní smyčku a přepne stav hry zpět na "Playing". Pokud hra není ve stavu "Paused", nebude mít žádný efekt.
         /// </summary>
         public void ResumeGame()
         {
@@ -108,7 +117,7 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Ukončí hru, zastaví herní smyčku a přepne stav hry na "GameOver". Uloží čas, kdy došlo k Game Over, pro pozdější zobrazení v UI.
+        /// Ukončí hru, zastaví herní smyčku a přepne stav hry na "GameOver". 
         /// </summary>
         public void GameOver()
         {
@@ -132,18 +141,22 @@ namespace BPSnake.Models.GameCore
         /// <summary>
         /// Metoda obsahující hlavní logiku hry, která se vykonává při každém "ticku" herní smyčky.
         /// </summary>
-        /// <returns> Vrací Task, protože je volána asynchronně z GameLoopService, ale v současné implementaci neprovádí žádné asynchronní operace, takže vrací dokončený Task.</returns>
         private Task GameLogicTickAsync()
         {
             _directionChangedInCurrentTick = false;
 
-            // podmínka pro pohyb při kolizi s jídlem
+            // DETEKCE KOLIZE (Collision Detection):
+            // Zjišťujeme, zda se budoucí pozice hlavy překrývá s pozicí jídla ještě dříve, než hada reálně posuneme.
             if (CurrentFoodItem != null && CurrentSnake.GetNextHeadPosition() == CurrentFoodItem.Position) {
                 OnFoodEaten();
-            } else if (_growBuffer > 0){
+            }
+
+            if (_growBuffer > 0){
+                // Zpracování postupné konzumace (růstu). Had roste "plynule" s každým tickem, dokud se buffer nevyprázdní.
                 CurrentSnake.Move(grow: true);
                 _growBuffer--;
             } else {
+                // Běžný pohyb bez růstu
                 CurrentSnake.Move();
             }
 
@@ -165,8 +178,8 @@ namespace BPSnake.Models.GameCore
         /// <summary>
         /// Pokračuje hru na další úroveň, resetuje relevantní herní stav a inicializuje herní desku a hada pro novou úroveň.
         /// </summary>
-        /// <remarks>Tato metoda zvyšuje počet dokončených úrovní, načítá další úroveň pomocí služby úrovní (level service), vynuluje počet snědených jablek v aktuální úrovni a restartuje herní smyčku. 
-        /// Měla by být volána ve chvíli, kdy hráč dokončí úroveň, aby bylo zajištěno, že stav hry bude správně aktualizován pro další fázi.</remarks>
+        /// <remarks>Tato metoda zvyšuje počet dokončených úrovní, načítá další úroveň pomocí služby úrovní (level service), vynuluje počet snědeného jídla
+        /// v aktuální úrovni a restartuje herní smyčku.
         private void LoadNextLevel()
         {
             _levelService.MoveToNextLevel();
@@ -194,8 +207,8 @@ namespace BPSnake.Models.GameCore
         /// <remarks>Tato metoda zvětšuje délku hada, aktualizuje hráčovo skóre a spravuje postup hrou, jako je například otevírání bran při splnění určitých podmínek.</remarks>
         private void OnFoodEaten()
         {
-            _growBuffer = GameSettings.GrowthPerFood;
-            CurrentSnake.Move(grow: true);
+            // Naplníme buffer, aby had v následujících krocích plynule vyrostl
+            _growBuffer += GameSettings.GrowthPerFood;
 
             var (score, openGate) = _foodService.EatCurrentFood(CurrentGameBoard, CurrentSnake);
             _scoreService.Increase(score);
@@ -210,7 +223,6 @@ namespace BPSnake.Models.GameCore
         /// </summary>
         /// <remarks>Tato metoda zajišťuje, že se had nemůže otočit přímo do protisměru (například nahoru a hned dolů) a že je v rámci jednoho herního kroku povolena pouze jedna změna směru.
         /// Pokus o vícenásobnou změnu směru během stejného kroku nebo o změnu do neplatného směru nebude mít žádný vliv.</remarks>
-        /// <param name="newDirection">Směr, který se má hadovi nastavit. Tato hodnota nesmí být opačná k aktuálnímu směru.</param>
         public void ChangeDirection(Direction newDirection)
         {
             if (_directionChangedInCurrentTick) {
@@ -253,6 +265,7 @@ namespace BPSnake.Models.GameCore
                 return "cell snake-body";
             }
 
+            // Rozlišení běžného a bonusového jídla pro CSS stylování na základě hodnoty skóre
             if (CurrentFoodItem != null && CurrentFoodItem.Position == p) {
                 return CurrentFoodItem.ScoreValue == GameSettings.BonusFoodScoreValue ? "cell food-bonus" : "cell food";
             }
@@ -268,6 +281,10 @@ namespace BPSnake.Models.GameCore
             return "cell empty";
         }
 
+        /// <summary>
+        /// Uvolnění prostředků. Zásadní je zastavit běžící smyčku, 
+        /// jinak by na pozadí pokračoval "zombie proces" i po opuštění hry.
+        /// </summary>
         public void Dispose()
         {
             StopGameLoop();

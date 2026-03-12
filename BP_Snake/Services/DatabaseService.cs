@@ -28,7 +28,7 @@ namespace BPSnake.Services
 
         /// <summary>
         /// Asynchronně inicializuje SQLite připojení a vytvoří tabulku <see cref="GameScore"/>, pokud ještě neexistuje.
-        /// Bezpečné pro opakované a současné volání.
+        /// Bezpečné pro opakované a současné volání z více vláken.
         /// </summary>
         private async Task InitAsync()
         {
@@ -38,6 +38,7 @@ namespace BPSnake.Services
 
             await _initSemaphore.WaitAsync();
             try {
+                // Druhá kontrola uvnitř kritické sekce (pro případ, že jiné vlákno inicializaci právě dokončilo)
                 if (_initialized) {
                     return;
                 }
@@ -54,22 +55,14 @@ namespace BPSnake.Services
         }
 
         /// <summary>
-        /// Uloží skóre hráče do databáze.
+        /// Uloží skóre do databáze. Pokud hráč již existuje, aktualizuje záznam pouze tehdy, 
+        /// pokud je nové skóre vyšší než to dosavadní.
         /// </summary>
-        /// <returns>
-        /// <see cref="SaveResult"/> indikující výsledek operace:
-        /// - <c>InsertedNew</c> pokud byl vložen nový záznam,
-        /// - <c>UpdatedHighScore</c> pokud byl aktualizován stávající záznam na vyšší skóre,
-        /// - <c>ScoreTooLow</c> pokud existující skóre je vyšší nebo rovné novému skóre.
-        /// </returns>
-        /// <remarks>
-        /// Pokud již existuje záznam se stejným jménem hráče, provede se porovnání skóre a případná aktualizace.
-        /// </remarks>
         public async Task<SaveResult> SavePlayerScoreAsync(GameScore scoreData)
         {
             await InitAsync().ConfigureAwait(false);
 
-            // Vyhledání existujícího hráče
+            // Vyhledání existujícího hráče podle jména
             var existingPlayer = await _database!
                                        .Table<GameScore>()
                                        .Where(s => s.PlayerName == scoreData.PlayerName)

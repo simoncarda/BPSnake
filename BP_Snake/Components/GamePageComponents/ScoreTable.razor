@@ -1,6 +1,7 @@
 ﻿@using BPSnake.Models.DataLayer;
 @using BPSnake.Services;
 @inject IDatabaseService DbService
+@implements IDisposable
 
 <div>
     @if (!_highScores.Any()) {
@@ -49,21 +50,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // initial load
+        // Prvotní načtení dat
         _highScores = await DbService.GetScoresAsync();
-        // subscribe to changes so UI reloads automatically
+        // Přihlášení k odběru události pro reaktivní aktualizaci tabulky
         DbService.ScoresChanged += OnScoresChanged;
     }
 
     private async void OnScoresChanged()
     {
-        // Avoid blocking the event; reload and refresh UI
         _highScores = await DbService.GetScoresAsync();
+        // Překreslení je nutné vynutit ručně, protože událost přišla ze služby na pozadí
         await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
+        // Odhlášení odběru brání únikům paměti (memory leaks) při zničení komponenty
         DbService.ScoresChanged -= OnScoresChanged;
     }
 }

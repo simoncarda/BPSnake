@@ -10,6 +10,7 @@ namespace BPSnake.Services
     /// </summary>
     internal sealed class GameStateService
     {
+        // Vlastnosti lze měnit pouze zevnitř pomocí vyhrazených metod (princip zapouzdření)
         public GameState CurrentState { get; private set; } = GameState.Menu;
         public DateTime GameOverTime { get; private set; } = DateTime.MinValue;
 
