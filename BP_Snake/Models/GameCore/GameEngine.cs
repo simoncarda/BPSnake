@@ -27,7 +27,7 @@ namespace BPSnake.Models.GameCore
         // UDÁLOST: aktualizace UI
         public event Func<Task>? OnStateChangedAsync;
 
-        private int _currentGameSpeed => GameSettings.BaseGameSpeed;
+        private int CurrentGameSpeed => GameSettings.BaseGameSpeed;
         // Kritická proměnná chránící před tzv. "fast-click bugem", kdy uživatel stiskne 
         // 2 klávesy rychle za sebou a had by se mohl otočit do sebe dřív, než dojde k vykreslení.
         private bool _directionChangedInCurrentTick = false;
@@ -93,7 +93,7 @@ namespace BPSnake.Models.GameCore
         /// Spustí herní smyčku asynchronně s aktuální rychlostí hry. 
         /// Tato metoda zajišťuje, že logika hry bude aktualizována v pravidelných intervalech, které se mohou měnit v závislosti na úrovni a počtu dokončených úrovní.
         /// </summary>
-        private Task StartGameLoop() => _gameLoopService.StartAsync(GameLogicTickAsync, _currentGameSpeed);
+        private Task StartGameLoop() => _gameLoopService.StartAsync(GameLogicTickAsync, CurrentGameSpeed);
 
         /// <summary>
         /// Zastaví herní smyčku a zruší všechny plánované aktualizace stavu hry. 
