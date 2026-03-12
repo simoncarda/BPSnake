@@ -46,7 +46,8 @@ namespace BPSnake.Services
         }
 
         /// <summary>
-        /// Zpracuje událost konzumace potravy, ihned vygeneruje novou a vrátí získané skóre.
+        /// Zpracuje událost konzumace potravy. Vrací získané skóre a informaci, zda se má otevřít brána do další úrovně.
+        /// Nová potrava se vygeneruje pouze v případě, že brána ještě nebyla otevřena.
         /// </summary>
         public (int scoreValue, bool shouldOpenGate) EatCurrentFood(GameBoard board, Snake snake)
         {

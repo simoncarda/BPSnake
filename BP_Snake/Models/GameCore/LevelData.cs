@@ -4,14 +4,10 @@ using BPSnake.Configuration;
 
 namespace BPSnake.Models.GameCore
 {
-    ///<summary>
-    /// Třída pro získávání konfigurace úrovní hry. Obsahuje metodu GetLevel, která vrací LevelConfig pro danou úroveň.
-    /// LevelConfig obsahuje informace o pozici brány, překážkách a velikosti herního pole.
-    /// Překážky jsou generovány pomocí pomocných metod CreateHorizontalLine a CreateVerticalLine, které vytvářejí řady překážek podle zadaných parametrů.
-    /// Tato třída umožňuje snadné přidávání nových úrovní s různými konfiguracemi překážek a brány.
-    /// Herní mřížka obsahuje 20x20 políček, přičemž pozice (0,0) je v levém horním rohu a pozice (19,19) je v pravém dolním rohu.
-    /// Brána se nachází na pozici (9,1) pro všechny úrovně, ale překážky se mění podle úrovně.
-    ///</summary>
+    /// <summary>
+    /// Statická "továrna" poskytující konfiguraci pro jednotlivé úrovně hry.
+    /// Definuje rozměry herního pole, pozici brány a rozložení překážek pro každý level.
+    /// </summary>
     internal static class LevelData
     {
         public static LevelConfig GetLevel(int levelIndex) {
