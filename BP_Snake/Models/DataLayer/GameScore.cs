@@ -4,14 +4,10 @@ using BPSnake.Configuration;
 namespace BPSnake.Models.DataLayer
 {
     /// <summary>
-    /// Reprezentuje záznam o skóre hráče ve hře, včetně jména hráče, dosaženého skóre,
-    /// počtu dokončených úrovní a data a času, kdy bylo skóre dosaženo.
+    /// Datový model reprezentující záznam o skóre hráče v databázi SQLite.
+    /// Zajišťuje validaci délky jména a definuje databázové schéma pomocí atributů.
+    /// Kolace NOCASE zaručuje, že databáze při porovnávání jmen nebude rozlišovat velká a malá písmena.
     /// </summary>
-    /// <remarks>
-    /// Tato třída se obvykle používá k ukládání a načítání hráčských skóre z databáze.
-    /// Vlastnost PlayerName nerozlišuje velká a malá písmena.
-    /// Vlastnost Id slouží jako primární klíč a je automaticky inkrementována.
-    /// </remarks>
     [Table("Scores")]
     public class GameScore
     {

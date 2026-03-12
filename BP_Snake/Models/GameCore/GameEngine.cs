@@ -26,6 +26,7 @@ namespace BPSnake.Models.GameCore
         public int CurrentGameScore => _scoreService.CurrentScore;
         public int CurrentLevel => _levelService.CurrentLevel;
         public int TotalLevelsCompleted => _levelService.TotalLevelsCompleted;
+        // Přebírá čas ukončení hry od GameStateService, aby bylo možné ho předat do UI nebo databáze.
         public DateTime GameOverTime => _gameStateService.GameOverTime;
         public GameState CurrentGameState => _gameStateService.CurrentState; 
 
@@ -116,7 +117,7 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Ukončí hru, zastaví herní smyčku a přepne stav hry na "GameOver".
+        /// Ukončí hru, zastaví herní smyčku a přepne stav hry na "GameOver". 
         /// </summary>
         public void GameOver()
         {
