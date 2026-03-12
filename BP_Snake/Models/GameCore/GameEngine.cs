@@ -50,7 +50,7 @@ namespace BPSnake.Models.GameCore
         /// Vypočítá aktuální rychlost hry. S každým levelem se hra zrychluje (zkracuje se interval), 
         /// ale Math.Max zaručí, že neklesne pod povolené minimum.
         /// </summary>
-        private int _currentGameSpeed => Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
+        private int CurrentGameSpeed => Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
 
         /// <summary>
         /// Notifikuje všechny přihlášené posluchače události OnStateChangedAsync, že došlo ke změně stavu hry, a
@@ -128,7 +128,7 @@ namespace BPSnake.Models.GameCore
         /// Spustí herní smyčku asynchronně s aktuální rychlostí hry. 
         /// Tato metoda zajišťuje, že logika hry bude aktualizována v pravidelných intervalech, které se mohou měnit v závislosti na úrovni a počtu dokončených úrovní.
         /// </summary>
-        private Task StartGameLoop() => _gameLoopService.StartAsync(GameLogicTickAsync, _currentGameSpeed);
+        private Task StartGameLoop() => _gameLoopService.StartAsync(GameLogicTickAsync, CurrentGameSpeed);
 
         /// <summary>
         /// Zastaví herní smyčku a zruší všechny plánované aktualizace stavu hry. 
@@ -177,7 +177,7 @@ namespace BPSnake.Models.GameCore
         /// Pokračuje hru na další úroveň, resetuje relevantní herní stav a inicializuje herní desku a hada pro novou úroveň.
         /// </summary>
         /// <remarks>Tato metoda zvyšuje počet dokončených úrovní, načítá další úroveň pomocí služby úrovní (level service), vynuluje počet snědeného jídla
-        /// v aktuální úrovni a restartuje herní smyčku.
+        /// v aktuální úrovni a restartuje herní smyčku.</remarks>
         private void LoadNextLevel()
         {
             _levelService.MoveToNextLevel();
