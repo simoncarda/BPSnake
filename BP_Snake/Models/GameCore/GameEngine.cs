@@ -45,6 +45,11 @@ namespace BPSnake.Models.GameCore
         // Vyrovnávací paměť pro růst hada. Umožňuje hadovi vyrůst o více než 1 článek plynule
         // během několika následujících ticků (kroků).
         private int _growBuffer = 0;
+
+        /// <summary>
+        /// Vypočítá aktuální rychlost hry. S každým levelem se hra zrychluje (zkracuje se interval), 
+        /// ale Math.Max zaručí, že neklesne pod povolené minimum.
+        /// </summary>
         private int _currentGameSpeed => Math.Max(GameSettings.BaseGameSpeed - (TotalLevelsCompleted * GameSettings.GameSpeedIncreasePerLevel), GameSettings.MinGameSpeed);
 
         /// <summary>
@@ -110,7 +115,7 @@ namespace BPSnake.Models.GameCore
         }
 
         /// <summary>
-        /// Ukončí hru, zastaví herní smyčku a přepne stav hry na "GameOver". Uloží čas, kdy došlo k Game Over, pro pozdější zobrazení v UI.
+        /// Ukončí hru, zastaví herní smyčku a přepne stav hry na "GameOver".
         /// </summary>
         public void GameOver()
         {
@@ -171,8 +176,8 @@ namespace BPSnake.Models.GameCore
         /// <summary>
         /// Pokračuje hru na další úroveň, resetuje relevantní herní stav a inicializuje herní desku a hada pro novou úroveň.
         /// </summary>
-        /// <remarks>Tato metoda zvyšuje počet dokončených úrovní, načítá další úroveň pomocí služby úrovní (level service), vynuluje počet snědených jablek v aktuální úrovni a restartuje herní smyčku. 
-        /// Měla by být volána ve chvíli, kdy hráč dokončí úroveň, aby bylo zajištěno, že stav hry bude správně aktualizován pro další fázi.</remarks>
+        /// <remarks>Tato metoda zvyšuje počet dokončených úrovní, načítá další úroveň pomocí služby úrovní (level service), vynuluje počet snědeného jídla
+        /// v aktuální úrovni a restartuje herní smyčku.
         private void LoadNextLevel()
         {
             _levelService.MoveToNextLevel();
