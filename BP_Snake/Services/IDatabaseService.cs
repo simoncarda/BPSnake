@@ -4,6 +4,9 @@ using BPSnake.Models.DataLayer;
 
 namespace BPSnake.Services
 {
+    /// <summary>
+    /// Interface pro službu zodpovědnou za správu databáze SQLite.
+    /// </summary>
     public interface IDatabaseService
     {
         /// <summary>
