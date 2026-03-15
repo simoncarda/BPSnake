@@ -17,7 +17,7 @@ namespace BPSnake.Models.GameCore
             SetupLevel();
         }
 
-        public void SetupLevel()
+        private void SetupLevel()
         {
             Width = GameSettings.GameBoardWidth;
             Height = GameSettings.GameBoardHeight;
