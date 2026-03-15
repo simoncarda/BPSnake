@@ -21,7 +21,7 @@ namespace BPSnake.Models.GameCore
         /// <summary>
         /// Inicializuje parametry herní plochy na základě definice úrovně z konfigurace.
         /// </summary>
-        public void SetupLevel(LevelConfig data)
+        private void SetupLevel(LevelConfig data)
         {
             Obstacles.Clear();
             Width = data.Width;
