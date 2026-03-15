@@ -9,6 +9,9 @@ using GridPoint = BPSnake.Models.GameCore.GridPoint;
 
 namespace BPSnake.Components.Pages
 {
+    /// <summary>
+    /// Stránka pro zobrazení a ovládání samotné hry. Tato komponenta je zodpovědná za zobrazení herní plochy a zpracování uživatelského vstupu
+    /// </summary>
     public partial class GamePage
     {
         [Inject] private IGameEngine _engine { get; set; } = default!;
@@ -67,7 +70,6 @@ namespace BPSnake.Components.Pages
                 _engine.ChangeDirection(newDir.Value);
             }
         }
-
         public void Dispose()
         {
             // Ochrana před Memory Leakem: odhlášení události, když je komponenta zničena
