@@ -9,12 +9,12 @@ namespace BPSnake.Services
     /// </summary>
     internal sealed class LevelService
     {
-        public int CurrentLevel { get; private set; } = 1;
+        public int CurrentLevel { get; private set; } = GameSettings.StartingLevel;
         public int TotalLevelsCompleted { get; private set; } = 0;
 
         public void Reset()
         {
-            CurrentLevel = 1;
+            CurrentLevel = GameSettings.StartingLevel;
             TotalLevelsCompleted = 0;
         }
 
