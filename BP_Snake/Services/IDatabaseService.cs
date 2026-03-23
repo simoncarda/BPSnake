@@ -10,8 +10,7 @@ namespace BPSnake.Services
     public interface IDatabaseService
     {
         /// <summary>
-        /// Event raised when leaderboard data changes (insert/update/clear).
-        /// Subscribers should reload cached data when this fires.
+        /// Událost vyvolaná při změně dat v žebříčku (vložení/aktualizace/vymazání).
         /// </summary>
         event Action? ScoresChanged;
         /// <summary>
