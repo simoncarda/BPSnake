@@ -60,7 +60,7 @@ namespace BPSnake.Services
         /// </summary>
         public async Task<SaveResult> SavePlayerScoreAsync(GameScore scoreData)
         {
-            await InitAsync().ConfigureAwait(false);
+            await InitAsync();
 
             // Vyhledání existujícího hráče podle jména
             var existingPlayer = await _database!
@@ -91,7 +91,7 @@ namespace BPSnake.Services
         /// <returns>Seznam až 10 nejlepších <see cref="GameScore"/> záznamů.</returns>
         public async Task<List<GameScore>> GetScoresAsync()
         {
-            await InitAsync().ConfigureAwait(false);
+            await InitAsync();
 
             return await _database!
                          .Table<GameScore>()
