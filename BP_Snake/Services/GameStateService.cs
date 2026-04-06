@@ -5,8 +5,8 @@ namespace BPSnake.Services
 {
     /// <summary>
     /// Služba pro správu celkového stavu herní instance.
-    /// Demonstruje návrhový vzor State Machine - drží informaci o tom, co se s hrou aktuálně děje (Menu, Hraní, Pozastaveno, Konec)
-    /// a umožňuje čisté oddělení stavu od herní logiky (Enginu).
+    /// Drží informaci o tom, co se s hrou aktuálně děje (Menu, Hraní, Pozastaveno, Konec) a umožňuje čisté 
+    /// oddělení stavu od herní logiky (Enginu).
     /// </summary>
     internal sealed class GameStateService
     {
